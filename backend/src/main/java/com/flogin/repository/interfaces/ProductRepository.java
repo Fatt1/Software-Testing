@@ -9,7 +9,8 @@ import java.util.Optional;
 public interface ProductRepository {
     Optional<Product> findById(long id);
     Page<Product> findAll(Pageable pageable);
-    void deleteById(long id);
+    void deleteProduct(Product product);
     Product save(Product product);
 
+    void deleteById(Product existingProduct);
 }
