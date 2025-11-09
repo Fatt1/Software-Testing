@@ -1,17 +1,29 @@
 package com.flogin.dto.ProductDtos;
 
+import com.flogin.entity.Product;
+
+import java.math.BigDecimal;
+
 public class ProductDto {
 
     private long id;
     private double price;
     private String productName;
-    private  Integer quantity;
+    private Integer quantity;
     private String description;
     private String category;
 
 
     public ProductDto(long id, String category, double price, String productName, String description, Integer quantity) {
         this.id = id;
+        this.category = category;
+        this.price = price;
+        this.productName = productName;
+        this.description = description;
+        this.quantity = quantity;
+    }
+
+    public ProductDto(String productName,double price ,String description, Integer quantity, String category) {
         this.category = category;
         this.price = price;
         this.productName = productName;
