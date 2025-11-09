@@ -1,4 +1,4 @@
-import { validateUsername, validatePassword } from '../tests/vailidation';
+import { validateUsername, validatePassword } from '../../tests/vailidation.js';
 import { describe, test, expect } from '@jest/globals';
 
 /**

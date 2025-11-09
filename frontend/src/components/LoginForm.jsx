@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { login } from '../utils/api/authService';
 import './LoginForm.css';
 
 export default function LoginForm() {
@@ -26,15 +27,27 @@ export default function LoginForm() {
       return;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setSuccess(true);
-    setIsLoading(false);
-    setTimeout(() => {
-      setSuccess(false);
-      setEmail('');
-      setPassword('');
-    }, 2000);
+    try {
+      // call auth service (mocked in tests)
+      const res = await login(email, password);
+      if (res && res.success) {
+        setSuccess(true);
+        setIsLoading(false);
+
+        setTimeout(() => {
+          setSuccess(false);
+          setEmail('');
+          setPassword('');
+        }, 2000);
+        return;
+      }
+      // fallback
+      setError('Có lỗi xảy ra');
+      setIsLoading(false);
+    } catch (err) {
+      setError(err?.message || 'Có lỗi xảy ra');
+      setIsLoading(false);
+    }
   };
 
   return (
