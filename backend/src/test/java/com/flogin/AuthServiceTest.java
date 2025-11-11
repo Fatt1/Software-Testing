@@ -25,7 +25,6 @@ import static org.mockito.Mockito.*;
 /**
  * AuthService Unit Test
  * Coverage >= 85%
- * 
  * Test scenarios:
  * - authenticate() với các trường hợp: success, user không tồn tại, password sai, validation errors
  * - validate() methods riêng lẻ cho username và password
@@ -305,10 +304,6 @@ public class AuthServiceTest {
     // ========================================================================================
     // B) TEST VALIDATION METHODS riêng lẻ (1 điểm)
     // ========================================================================================
-
-    @Nested
-    @DisplayName("Test validate() method - Username validation")
-    class UsernameValidationTests {
 
     @Nested
     @DisplayName("Test validate() method - Username validation")
