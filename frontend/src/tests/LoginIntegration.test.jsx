@@ -19,7 +19,7 @@ describe('Login - Integration Testing', () => {
   });
 
   /**
-   * Test 1: Rendering và User Interactions (2 điểm)
+   * Test 1: Rendering và User Interactions
    */
   describe('Test 1: Rendering và User Interactions', () => {
     
@@ -82,7 +82,7 @@ describe('Login - Integration Testing', () => {
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       expect(passwordInput).toHaveAttribute('type', 'password');
       
-      // Tìm toggle button (nếu có)
+      // Tìm toggle button 
       const toggleButtons = screen.getAllByRole('button');
       const toggleBtn = toggleButtons.find(btn => btn.title?.includes('password') || btn.textContent?.includes('👁'));
       
@@ -281,7 +281,7 @@ describe('Login - Integration Testing', () => {
   });
 
   /**
-   * Test 3: Error Handling và Success Messages (1 điểm)
+   * Test 3: Error Handling và Success Messages 
    */
   describe('Test 3: Error Handling và Success Messages', () => {
     

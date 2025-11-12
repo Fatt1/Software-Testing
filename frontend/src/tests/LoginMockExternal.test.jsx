@@ -18,7 +18,7 @@ describe('Login - Mock External Dependencies', () => {
   });
 
   /**
-   * Mock authService.login() (1 điểm)
+   * Mock authService.login()
    */
   describe('Test 1: Mock authService.login() (1 điểm)', () => {
 
@@ -290,7 +290,7 @@ describe('Login - Mock External Dependencies', () => {
   });
 
   /**
-   * Verify mock calls (0.5 điểm)
+   * Verify mock calls
    */
   describe('Test 3: Verify Mock Calls (0.5 điểm)', () => {
 
