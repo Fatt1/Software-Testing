@@ -2,6 +2,19 @@
  * Auth Service - API calls cho authentication
  */
 
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
+// Tạo instance axios
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
 /**
  * Login user
  * @param {string} email - User email
@@ -10,32 +23,23 @@
  */
 export const login = async (email, password) => {
   try {
-    // In thực tế, đây sẽ gọi backend API
-    // const response = await fetch('/api/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email, password })
-    // });
-    // return response.json();
-    
-    // Mock for testing
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email && password && email.includes('@')) {
-          resolve({ 
-            success: true, 
-            message: 'Login successful',
-            user: { email, id: '123' }
-          });
-        } else {
-          reject(new Error('Invalid credentials'));
-        }
-      }, 500);
+    const response = await axiosInstance.post('/auth/login', {
+      email,
+      password
     });
+    
+    // Lưu token nếu có
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    }
+    
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Login failed');
   }
 };
+
 
 /**
  * Logout user
@@ -43,13 +47,15 @@ export const login = async (email, password) => {
  */
 export const logout = async () => {
   try {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true, message: 'Logged out successfully' });
-      }, 300);
-    });
+    const response = await axiosInstance.post('/auth/logout');
+    
+    // Xóa token
+    localStorage.removeItem('token');
+    delete axiosInstance.defaults.headers.common['Authorization'];
+    
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Logout failed');
   }
 };
 
@@ -62,20 +68,28 @@ export const logout = async () => {
  */
 export const register = async (email, password, name) => {
   try {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email && password && name && email.includes('@')) {
-          resolve({ 
-            success: true, 
-            message: 'Registration successful',
-            user: { email, name, id: '456' }
-          });
-        } else {
-          reject(new Error('Invalid registration data'));
-        }
-      }, 500);
+    const response = await axiosInstance.post('/auth/register', {
+      email,
+      password,
+      name
     });
+    
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Registration failed');
   }
 };
+
+/**
+ * Set authorization token cho tất cả request
+ * @param {string} token - JWT token
+ */
+export const setAuthToken = (token) => {
+  if (token) {
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete axiosInstance.defaults.headers.common['Authorization'];
+  }
+};
+
+export default axiosInstance;

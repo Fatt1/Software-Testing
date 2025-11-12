@@ -2,26 +2,29 @@
  * Product Service - API calls cho quản lý sản phẩm
  */
 
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
+// Tạo instance axios
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
 /**
  * Get all products
  * @returns {Promise} - List of products
  */
 export const getAllProducts = async () => {
   try {
-    // In thực tế: await fetch('/api/products');
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          data: [
-            { id: 1, name: 'Laptop', price: 1000, quantity: 5, category: 'Electronics', description: 'High performance laptop' },
-            { id: 2, name: 'Mouse', price: 25, quantity: 50, category: 'Electronics', description: 'Wireless mouse for computer' }
-          ]
-        });
-      }, 300);
-    });
+    const response = await axiosInstance.get('/products');
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Failed to fetch products');
   }
 };
 
@@ -32,20 +35,10 @@ export const getAllProducts = async () => {
  */
 export const getProductById = async (id) => {
   try {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (id) {
-          resolve({
-            success: true,
-            data: { id, name: 'Laptop', price: 1000, quantity: 5, category: 'Electronics', description: 'High performance laptop' }
-          });
-        } else {
-          reject(new Error('Product not found'));
-        }
-      }, 300);
-    });
+    const response = await axiosInstance.get(`/products/${id}`);
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Failed to fetch product');
   }
 };
 
@@ -56,20 +49,10 @@ export const getProductById = async (id) => {
  */
 export const createProduct = async (product) => {
   try {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (product && product.name && product.price) {
-          resolve({
-            success: true,
-            data: { id: Math.random(), ...product }
-          });
-        } else {
-          reject(new Error('Invalid product data'));
-        }
-      }, 300);
-    });
+    const response = await axiosInstance.post('/products', product);
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Failed to create product');
   }
 };
 
@@ -81,20 +64,10 @@ export const createProduct = async (product) => {
  */
 export const updateProduct = async (id, product) => {
   try {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (id && product) {
-          resolve({
-            success: true,
-            data: { id, ...product }
-          });
-        } else {
-          reject(new Error('Invalid update data'));
-        }
-      }, 300);
-    });
+    const response = await axiosInstance.put(`/products/${id}`, product);
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Failed to update product');
   }
 };
 
@@ -105,19 +78,11 @@ export const updateProduct = async (id, product) => {
  */
 export const deleteProduct = async (id) => {
   try {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (id) {
-          resolve({
-            success: true,
-            message: 'Product deleted successfully'
-          });
-        } else {
-          reject(new Error('Invalid product ID'));
-        }
-      }, 300);
-    });
+    const response = await axiosInstance.delete(`/products/${id}`);
+    return response.data;
   } catch (error) {
-    throw error;
+    throw new Error(error.response?.data?.message || 'Failed to delete product');
   }
 };
+
+export default axiosInstance;
