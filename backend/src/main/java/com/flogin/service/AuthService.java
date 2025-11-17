@@ -2,6 +2,7 @@ package com.flogin.service;
 
 import com.flogin.dto.LoginDto.LoginRequest;
 import com.flogin.dto.LoginDto.LoginResponse;
+import com.flogin.dto.UserDtos.UserDto;
 import com.flogin.entity.User;
 import com.flogin.repository.interfaces.UserRepository;
 import jakarta.validation.ConstraintViolation;
@@ -76,17 +77,19 @@ public class AuthService {
         
         // Generate JWT token
         String token = jwtService.generateToken(user);
+        
+        // Tạo UserDto từ User entity
+        UserDto userDto = new UserDto(user.getUserName(), user.getEmail());
 
-        return new LoginResponse(true, "Login thành công", token);
+        return new LoginResponse(true, "Login thành công", token, userDto);
     }
 
     /**
      * Validate LoginRequest và trả về list of error messages
-     * Method này để tương thích với tests cũ
      */
     public java.util.List<String> validate(LoginRequest request) {
         Set<ConstraintViolation<LoginRequest>> violations = validator.validate(request);
-        
+
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());

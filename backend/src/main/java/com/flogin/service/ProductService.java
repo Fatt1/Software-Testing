@@ -117,12 +117,7 @@ public class ProductService {
         return toDto(updatedProduct);
     }
 
-    // FIX 3: Xóa bỏ toàn bộ phương thức validateProduct()
-    /*
-    public List<String> validateProduct(ProductDto dto) {
-        // ... (TOÀN BỘ PHƯƠNG THỨC NÀY ĐÃ BỊ XÓA)
-    }
-    */
+
 
     /**
      * Chuyển đổi từ Product (Entity) sang ProductDto (DTO).

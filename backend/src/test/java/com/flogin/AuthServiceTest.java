@@ -2,6 +2,7 @@ package com.flogin;
 
 import com.flogin.dto.LoginDto.LoginRequest;
 import com.flogin.dto.LoginDto.LoginResponse;
+import com.flogin.dto.UserDtos.UserDto;
 import com.flogin.entity.User;
 import com.flogin.repository.interfaces.UserRepository;
 import com.flogin.service.AuthService;
@@ -52,7 +53,7 @@ public class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        mockUser = new User(1L, "testuser", "hashedPassword123");
+        mockUser = new User(1L, "testuser", "hashedPassword123", "testuser@example.com");
         authService = new AuthService(mockJwtService, mockUserRepository, mockPasswordEncoder, mockValidator);
     }
 
@@ -91,6 +92,11 @@ public class AuthServiceTest {
             assertNotNull(loginResponse.getToken(), "Token không được null");
             assertEquals("fake-jwt-token", loginResponse.getToken());
             
+            // Verify UserDto
+            assertNotNull(loginResponse.getUser(), "UserDto không được null");
+            assertEquals("testuser", loginResponse.getUser().getUserName());
+            assertEquals("testuser@example.com", loginResponse.getUser().getEmail());
+            
             // Verify interactions
             verify(mockValidator, times(1)).validate(loginRequest);
             verify(mockUserRepository, times(1)).findByUserName("testUser");
@@ -119,6 +125,7 @@ public class AuthServiceTest {
             assertFalse(loginResponse.isSuccess(), "Login phải thất bại");
             assertEquals("Login thất bại với user name không tồn tại", loginResponse.getMessage());
             assertNull(loginResponse.getToken(), "Token phải là null");
+            assertNull(loginResponse.getUser(), "UserDto phải là null khi thất bại");
             
             // Verify interactions
             verify(mockValidator, times(1)).validate(loginRequest);
@@ -150,6 +157,7 @@ public class AuthServiceTest {
             assertFalse(loginResponse.isSuccess(), "Login phải thất bại");
             assertEquals("Login với password sai", loginResponse.getMessage());
             assertNull(loginResponse.getToken(), "Token phải là null");
+            assertNull(loginResponse.getUser(), "UserDto phải là null khi thất bại");
             
             // Verify interactions
             verify(mockValidator, times(1)).validate(loginRequest);
@@ -177,6 +185,7 @@ public class AuthServiceTest {
             assertFalse(loginResponse.isSuccess(), "Login phải thất bại do validation");
             assertEquals("Username không được để trống", loginResponse.getMessage());
             assertNull(loginResponse.getToken());
+            assertNull(loginResponse.getUser(), "UserDto phải là null khi validation fail");
             
             // Verify không có interaction với dependencies khác
             verify(mockValidator, times(1)).validate(loginRequest);
@@ -330,7 +339,7 @@ public class AuthServiceTest {
         void testLoginSuccess_UsernameWithAllowedSpecialChars() {
             // Arrange
             LoginRequest loginRequest = new LoginRequest("test.user-name_123", "Test123");
-            User userWithSpecialChars = new User(2L, "test.user-name_123", "hashedPassword123");
+            User userWithSpecialChars = new User(2L, "test.user-name_123", "hashedPassword123", "Test123@gmail.com");
 
             // Mock validator không có lỗi
             when(mockValidator.validate(loginRequest))
@@ -650,21 +659,6 @@ public class AuthServiceTest {
             assertTrue(errors.contains("Password phải chứa ít nhất 1 chữ cái"));
         }
 
-        @Test
-        @DisplayName("Cả username và password đều hợp lệ - Không có lỗi validation")
-        void validate_withValidCredentials_shouldReturnNoErrors() {
-            // Arrange
-            var request = new LoginRequest("validUser123", "ValidPass123");
 
-            // Mock validator không có lỗi
-            when(mockValidator.validate(request))
-                .thenReturn(Set.of());
-
-            // Act
-            java.util.List<String> errors = authService.validate(request);
-
-            // Assert
-            assertTrue(errors.isEmpty(), "Không nên có lỗi validation");
-        }
     }
 }

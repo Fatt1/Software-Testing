@@ -14,6 +14,9 @@ public class User {
     @Column(name = "user_name", unique = true, nullable = false, length = 50)
     private String userName;
     
+    @Column(name = "email", unique = true, nullable = false, length = 100)
+    private String email;
+    
     @Column(name = "hash_password", nullable = false, length = 255)
     private String hashPassword; // mật khẩu đã được mã hóa
 
@@ -21,8 +24,9 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String userName, String hashPassword) {
+    public User(Long id, String userName, String hashPassword, String email) {
         this.hashPassword = hashPassword;
+        this.email = email;
         this.id = id;
         this.userName = userName;
     }
@@ -49,5 +53,11 @@ public class User {
 
     public void setHashPassword(String hashPassword) {
         this.hashPassword = hashPassword;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

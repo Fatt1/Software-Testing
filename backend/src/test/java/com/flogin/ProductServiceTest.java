@@ -502,7 +502,7 @@ public class ProductServiceTest {
     }
 
     // ========================================================================================
-    // C) TEST UPDATE (Đã tinh gọn, chỉ test logic Update)
+    // C) TEST UPDATE (test logic Update)
     // ========================================================================================
 
     @Nested
