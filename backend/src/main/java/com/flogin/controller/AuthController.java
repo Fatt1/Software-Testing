@@ -39,12 +39,5 @@ public class AuthController {
         }
     }
 
-    /**
-     * GET /api/auth/health - Health check endpoint
-     * @return Simple message để kiểm tra server có hoạt động không
-     */
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Auth service is running");
-    }
+
 }

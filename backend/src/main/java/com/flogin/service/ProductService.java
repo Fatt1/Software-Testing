@@ -92,6 +92,11 @@ public class ProductService {
     }
 
     public ProductDto updateProduct(long id, UpdateProductRequest request) {
+
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
+
+
         // Validate DTO bằng Bean Validation
         Set<ConstraintViolation<UpdateProductRequest>> violations = validator.validate(request);
         
@@ -113,8 +118,7 @@ public class ProductService {
                     "' không hợp lệ. Các giá trị hợp lệ: " + Category.getAllValidValues());
         }
 
-        Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
+
 
         // Cập nhật các trường
         existingProduct.setProductName(request.getProductName());

@@ -502,14 +502,5 @@ public class AuthControllerIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
-        @Test
-        @DisplayName("7. Test endpoint health check")
-        void testHealthCheckEndpoint() throws Exception {
-            // Act & Assert: Test health check endpoint
-            mockMvc.perform(get("/api/auth/health")
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("Auth service is running"));
-        }
     }
 }
