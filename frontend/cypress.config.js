@@ -3,7 +3,7 @@ const { defineConfig } = require('cypress');
 module.exports = defineConfig({
   e2e: {
     // Test environment configuration
-    baseUrl: 'http://localhost:5173', // Vite dev server default port
+    baseUrl: 'http://localhost:5174', // Updated to use available port
     viewportWidth: 1280,
     viewportHeight: 720,
     

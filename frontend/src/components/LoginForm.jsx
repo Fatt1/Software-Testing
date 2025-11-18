@@ -3,7 +3,7 @@ import { login } from '../services/authService';
 import './LoginForm.css';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -15,28 +15,28 @@ export default function LoginForm() {
     setError('');
     setIsLoading(true);
 
-    if (!email || !password) {
-      setError('Vui lòng nhập email và mật khẩu');
+    if (!username || !password) {
+      setError('Vui lòng nhập username và mật khẩu');
       setIsLoading(false);
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Email không hợp lệ');
+    if (username.length < 3) {
+      setError('Username phải có ít nhất 3 ký tự');
       setIsLoading(false);
       return;
     }
 
     try {
       // call auth service (mocked in tests)
-      const res = await login(email, password);
+      const res = await login(username, password);
       if (res && res.success) {
         setSuccess(true);
         setIsLoading(false);
 
         setTimeout(() => {
           setSuccess(false);
-          setEmail('');
+          setUsername('');
           setPassword('');
         }, 2000);
         return;
@@ -73,14 +73,14 @@ export default function LoginForm() {
             </div>
           ) : (
             <div>
-              {/* Email Input */}
+              {/* Username Input */}
               <div style={styles.formGroup}>
-                <label style={styles.label}>Email</label>
+                <label style={styles.label}>Username</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="your_username"
                   style={styles.input}
                   disabled={isLoading}
                 />

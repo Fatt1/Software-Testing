@@ -30,15 +30,15 @@ describe('Login - Mock External Dependencies', () => {
 
     test('nên set up mock với mockResolvedValue', async () => {
       const user = userEvent.setup();
-      authService.login.mockResolvedValue({ success: true, user: { email: 'test@example.com' } });
+      authService.login.mockResolvedValue({ success: true, user: { username: 'testuser' } });
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -54,11 +54,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -70,8 +70,8 @@ describe('Login - Mock External Dependencies', () => {
 
     test('nên set up mock với mockImplementation', async () => {
       const user = userEvent.setup();
-      authService.login.mockImplementation((email, password) => {
-        if (email && password) {
+      authService.login.mockImplementation((username, password) => {
+        if (username && password) {
           return Promise.resolve({ success: true });
         }
         return Promise.reject(new Error('Invalid credentials'));
@@ -79,11 +79,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -102,11 +102,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -125,11 +125,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -151,18 +151,18 @@ describe('Login - Mock External Dependencies', () => {
         message: 'Login successful',
         user: { 
           id: '123', 
-          email: 'test@example.com',
+          username: 'testuser',
           name: 'Test User'
         }
       });
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -179,11 +179,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'wrongpassword');
       await user.click(submitButton);
       
@@ -200,11 +200,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -221,11 +221,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -242,7 +242,7 @@ describe('Login - Mock External Dependencies', () => {
         success: true,
         user: {
           id: 'user-123',
-          email: 'john@example.com',
+          username: 'johndoe',
           name: 'John Doe',
           role: 'admin'
         }
@@ -251,17 +251,17 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'john@example.com');
+      await user.type(usernameInput, 'johndoe');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
       // Verify success message
       await waitFor(() => {
-        expect(authService.login).toHaveBeenCalledWith('john@example.com', 'password123');
+        expect(authService.login).toHaveBeenCalledWith('johndoe', 'password123');
       });
     });
 
@@ -274,11 +274,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -300,17 +300,17 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'user@example.com');
+      await user.type(usernameInput, 'user123');
       await user.type(passwordInput, 'pass123');
       await user.click(submitButton);
       
       await waitFor(() => {
         // Verify mock được gọi với đúng parameters
-        expect(authService.login).toHaveBeenCalledWith('user@example.com', 'pass123');
+        expect(authService.login).toHaveBeenCalledWith('user123', 'pass123');
       });
     });
 
@@ -320,11 +320,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -355,17 +355,17 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'first@example.com');
+      await user.type(usernameInput, 'firstuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
       await waitFor(() => {
         // Verify first call
-        expect(authService.login).toHaveBeenNthCalledWith(1, 'first@example.com', 'password123');
+        expect(authService.login).toHaveBeenNthCalledWith(1, 'firstuser', 'password123');
       });
     });
 
@@ -375,18 +375,18 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
       await waitFor(() => {
         // Verify mock.calls array
         expect(authService.login.mock.calls.length).toBe(1);
-        expect(authService.login.mock.calls[0][0]).toBe('test@example.com');
+        expect(authService.login.mock.calls[0][0]).toBe('testuser');
         expect(authService.login.mock.calls[0][1]).toBe('password123');
       });
     });
@@ -398,11 +398,11 @@ describe('Login - Mock External Dependencies', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       

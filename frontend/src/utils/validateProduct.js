@@ -21,8 +21,8 @@ export const validateProduct = (product) => {
       errors.price = 'Giá sản phẩm không được âm';
     } else if (priceNum === 0) {
       errors.price = 'Giá sản phẩm phải lớn hơn 0';
-    } else if (priceNum > 1000000000) {
-      errors.price = 'Giá sản phẩm không được vượt quá 1 tỷ';
+    } else if (priceNum > 999999999) {
+      errors.price = 'Giá sản phẩm không được vượt quá 999,999,999';
     }
   }
 
@@ -37,8 +37,8 @@ export const validateProduct = (product) => {
       errors.quantity = 'Số lượng phải là số nguyên';
     } else if (quantityNum < 0) {
       errors.quantity = 'Số lượng không được âm';
-    } else if (quantityNum > 10000) {
-      errors.quantity = 'Số lượng không được vượt quá 10000';
+    } else if (quantityNum > 99999) {
+      errors.quantity = 'Số lượng không được vượt quá 99,999';
     }
   }
 

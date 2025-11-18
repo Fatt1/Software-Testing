@@ -32,12 +32,12 @@ describe('Login - Integration Testing', () => {
       expect(screen.getByText(/Chào mừng bạn quay lại/i)).toBeInTheDocument();
     });
 
-    test('nên có email input field', () => {
+    test('nên có username input field', () => {
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
-      expect(emailInput).toBeInTheDocument();
-      expect(emailInput).toHaveAttribute('type', 'email');
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
+      expect(usernameInput).toBeInTheDocument();
+      expect(usernameInput).toHaveAttribute('type', 'text');
     });
 
     test('nên có password input field', () => {
@@ -55,14 +55,14 @@ describe('Login - Integration Testing', () => {
       expect(submitButton).toBeInTheDocument();
     });
 
-    test('nên có thể nhập email vào input', async () => {
+    test('nên có thể nhập username vào input', async () => {
       const user = userEvent.setup();
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
-      await user.type(emailInput, 'test@example.com');
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
+      await user.type(usernameInput, 'testuser');
       
-      expect(emailInput.value).toBe('test@example.com');
+      expect(usernameInput.value).toBe('testuser');
     });
 
     test('nên có thể nhập password vào input', async () => {
@@ -103,11 +103,11 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -122,10 +122,10 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       
       // Có thể nhấn Enter hoặc click submit
@@ -144,8 +144,8 @@ describe('Login - Integration Testing', () => {
       
       // Chờ error message
       await waitFor(() => {
-        const errorMessage = screen.queryByText(/Vui lòng nhập email và mật khẩu/i) ||
-                            screen.queryByText(/Email không hợp lệ/i);
+        const errorMessage = screen.queryByText(/Vui lòng nhập username và mật khẩu/i) ||
+                            screen.queryByText(/username không hợp lệ/i);
         expect(errorMessage).toBeInTheDocument();
       });
     });
@@ -162,31 +162,31 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
       // Chờ API được gọi
       await waitFor(() => {
-        expect(authService.login).toHaveBeenCalledWith('test@example.com', 'password123');
+        expect(authService.login).toHaveBeenCalledWith('testuser', 'password123');
       });
     });
 
-    test('nên pass đúng email và password tới API', async () => {
+    test('nên pass đúng username và password tới API', async () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true });
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'user@test.com');
+      await user.type(usernameInput, 'user@test.com');
       await user.type(passwordInput, 'securePassword123');
       await user.click(submitButton);
       
@@ -195,19 +195,19 @@ describe('Login - Integration Testing', () => {
       });
     });
 
-    test('nên không gọi API nếu email không hợp lệ', async () => {
+    test('nên không gọi API nếu username không hợp lệ', async () => {
       const user = userEvent.setup();
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'invalid-email');
+      await user.type(usernameInput, 'ab');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
-      // API không nên được gọi
+      // API không nên được gọi vì username < 3 ký tự
       expect(authService.login).not.toHaveBeenCalled();
     });
 
@@ -215,17 +215,17 @@ describe('Login - Integration Testing', () => {
       const user = userEvent.setup();
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.click(submitButton);
       
       // API không nên được gọi
       expect(authService.login).not.toHaveBeenCalled();
     });
 
-    test('nên không gọi API nếu email trống', async () => {
+    test('nên không gọi API nếu username trống', async () => {
       const user = userEvent.setup();
       render(<LoginForm />);
       
@@ -245,11 +245,11 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -264,11 +264,11 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -285,7 +285,7 @@ describe('Login - Integration Testing', () => {
    */
   describe('Test 3: Error Handling và Success Messages', () => {
     
-    test('nên hiển thị error khi email trống', async () => {
+    test('nên hiển thị error khi username trống', async () => {
       const user = userEvent.setup();
       render(<LoginForm />);
       
@@ -293,25 +293,25 @@ describe('Login - Integration Testing', () => {
       await user.click(submitButton);
       
       await waitFor(() => {
-        const errorMessage = screen.getByText(/Vui lòng nhập email và mật khẩu/i);
+        const errorMessage = screen.getByText(/Vui lòng nhập username và mật khẩu/i);
         expect(errorMessage).toBeInTheDocument();
       });
     });
 
-    test('nên hiển thị error khi email không hợp lệ', async () => {
+    test('nên hiển thị error khi username không hợp lệ', async () => {
       const user = userEvent.setup();
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'invalid-email');
+      await user.type(usernameInput, 'ab');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
       await waitFor(() => {
-        const errorMessage = screen.getByText(/Email không hợp lệ/i);
+        const errorMessage = screen.getByText(/Username phải có ít nhất 3 ký tự/i);
         expect(errorMessage).toBeInTheDocument();
       });
     });
@@ -322,11 +322,11 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'wrongpassword');
       await user.click(submitButton);
       
@@ -345,12 +345,12 @@ describe('Login - Integration Testing', () => {
       
       // Error hiển thị
       await waitFor(() => {
-        expect(screen.getByText(/Vui lòng nhập email và mật khẩu/i)).toBeInTheDocument();
+        expect(screen.getByText(/Vui lòng nhập username và mật khẩu/i)).toBeInTheDocument();
       });
       
-      // Nhập email
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
-      await user.type(emailInput, 'test@example.com');
+      // Nhập username
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
+      await user.type(usernameInput, 'testuser');
       
       // Error nên bị xóa khi nhập (nếu có logic này)
       // Có thể không xóa ngay, phụ thuộc vào implementation
@@ -364,7 +364,7 @@ describe('Login - Integration Testing', () => {
       await user.click(submitButton);
       
       await waitFor(() => {
-        const errorMessage = screen.getByText(/Vui lòng nhập email và mật khẩu/i);
+        const errorMessage = screen.getByText(/Vui lòng nhập username và mật khẩu/i);
         // Error message nên có class hoặc styling error
         expect(errorMessage).toBeInTheDocument();
         expect(errorMessage.className || errorMessage.style.color).toBeTruthy();
@@ -377,11 +377,11 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
@@ -398,11 +398,11 @@ describe('Login - Integration Testing', () => {
       
       render(<LoginForm />);
       
-      const emailInput = screen.getByPlaceholderText(/you@example.com/i);
+      const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
-      await user.type(emailInput, 'test@example.com');
+      await user.type(usernameInput, 'testuser');
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
       
