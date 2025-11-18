@@ -13,23 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     
-    /**
-     * Các methods dưới đây được JpaRepository cung cấp sẵn:
-     * - Optional<Product> findById(Long id)
-     * - Page<Product> findAll(Pageable pageable)
-     * - List<Product> findAll()
-     * - Product save(Product product)
-     * - void deleteById(Long id)
-     * - void delete(Product product)
-     * - boolean existsById(Long id)
-     * - long count()
-     */
     
-    // Custom query methods theo naming convention của Spring Data JPA
-    
-    /**
-     * Tìm products theo category
-     */
     List<Product> findByCategory(Category category);
     
     /**
@@ -41,4 +25,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * Tìm products có giá trong khoảng
      */
     List<Product> findByPriceBetween(double minPrice, double maxPrice);
+
+     // Thêm method kiểm tra tên sản phẩm đã tồn tại
+    boolean existsByProductName(String productName);
+
+     //Thêm method kiểm tra tên trùng nhưng không phải chính sản phẩm đó (cho update)
+    boolean existsByProductNameAndIdNot(String productName, Long id);
 }

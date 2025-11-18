@@ -1,6 +1,8 @@
 package com.flogin.service;
 
+import com.flogin.dto.ProductDtos.CreateProductRequest;
 import com.flogin.dto.ProductDtos.ProductDto;
+import com.flogin.dto.ProductDtos.UpdateProductRequest;
 import com.flogin.entity.Category;
 import com.flogin.entity.Product;
 import com.flogin.repository.interfaces.ProductRepository;
@@ -33,9 +35,9 @@ public class ProductService {
     public ProductService() {
     }
 
-    public ProductDto createProduct(ProductDto productDto) {
+    public ProductDto createProduct(CreateProductRequest request) {
         // Validate DTO bằng Bean Validation
-        Set<ConstraintViolation<ProductDto>> violations = validator.validate(productDto);
+        Set<ConstraintViolation<CreateProductRequest>> violations = validator.validate(request);
         
         if (!violations.isEmpty()) {
             String errorMessage = "Validation failed: " + violations.stream()
@@ -44,22 +46,27 @@ public class ProductService {
             throw new IllegalArgumentException(errorMessage);
         }
         
+        // Kiểm tra tên sản phẩm đã tồn tại chưa
+        if (productRepository.existsByProductName(request.getProductName())) {
+            throw new IllegalArgumentException("Product name '" + request.getProductName() + "' đã tồn tại");
+        }
+        
         // Validate category với enum
-        if (!Category.isValid(productDto.getCategory())) {
-            throw new IllegalArgumentException("Category '" + productDto.getCategory() + 
+        if (!Category.isValid(request.getCategory())) {
+            throw new IllegalArgumentException("Category '" + request.getCategory() + 
                     "' không hợp lệ. Các giá trị hợp lệ: " + Category.getAllValidValues());
         }
 
         // Convert category string sang enum
-        Category category = Category.fromString(productDto.getCategory());
+        Category category = Category.fromString(request.getCategory());
 
         // Tạo Product với constructor mặc định và set fields (ID sẽ được database tự sinh)
         Product product = new Product();
         product.setCategory(category);
-        product.setDescription(productDto.getDescription());
-        product.setQuantity(productDto.getQuantity());
-        product.setProductName(productDto.getProductName());
-        product.setPrice(productDto.getPrice());
+        product.setDescription(request.getDescription());
+        product.setQuantity(request.getQuantity());
+        product.setProductName(request.getProductName());
+        product.setPrice(request.getPrice());
         
         Product savedProduct = productRepository.save(product);
 
@@ -84,9 +91,9 @@ public class ProductService {
         return toDto(product);
     }
 
-    public ProductDto updateProduct(ProductDto productDto) {
+    public ProductDto updateProduct(long id, UpdateProductRequest request) {
         // Validate DTO bằng Bean Validation
-        Set<ConstraintViolation<ProductDto>> violations = validator.validate(productDto);
+        Set<ConstraintViolation<UpdateProductRequest>> violations = validator.validate(request);
         
         if (!violations.isEmpty()) {
             String errorMessage = "Validation failed: " + violations.stream()
@@ -94,24 +101,27 @@ public class ProductService {
                     .collect(Collectors.joining(", "));
             throw new IllegalArgumentException(errorMessage);
         }
+
+        // Kiểm tra tên sản phẩm đã tồn tại chưa
+        if (productRepository.existsByProductName(request.getProductName())) {
+            throw new IllegalArgumentException("Product name '" + request.getProductName() + "' đã tồn tại");
+        }
         
         // Validate category với enum
-        if (!Category.isValid(productDto.getCategory())) {
-            throw new IllegalArgumentException("Category '" + productDto.getCategory() + 
+        if (!Category.isValid(request.getCategory())) {
+            throw new IllegalArgumentException("Category '" + request.getCategory() + 
                     "' không hợp lệ. Các giá trị hợp lệ: " + Category.getAllValidValues());
         }
 
-        Product existingProduct = productRepository.findById(productDto.getId())
-                .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productDto.getId()));
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
 
         // Cập nhật các trường
-        existingProduct.setProductName(productDto.getProductName());
-        existingProduct.setPrice(productDto.getPrice());
-        existingProduct.setQuantity(productDto.getQuantity());
-        existingProduct.setCategory(Category.fromString(productDto.getCategory()));
-        
-        // FIX 2: Thêm dòng cập nhật description
-        existingProduct.setDescription(productDto.getDescription()); // <-- ĐÃ THÊM
+        existingProduct.setProductName(request.getProductName());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setQuantity(request.getQuantity());
+        existingProduct.setCategory(Category.fromString(request.getCategory()));
+        existingProduct.setDescription(request.getDescription());
 
         Product updatedProduct = productRepository.save(existingProduct);
         return toDto(updatedProduct);

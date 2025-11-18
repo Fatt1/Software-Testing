@@ -1,5 +1,7 @@
 package com.flogin.entity;
 
+import java.util.Arrays;
+
 /**
  * Enum Category cho Product
  * Định nghĩa các danh mục sản phẩm hợp lệ trong hệ thống
@@ -44,16 +46,9 @@ public enum Category {
      * Kiểm tra xem một string có phải là category hợp lệ không
      */
     public static boolean isValid(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return false;
-        }
-
-        for (Category category : Category.values()) {
-            if (category.value.equalsIgnoreCase(value.trim())) {
-                return true;
-            }
-        }
-        return false;
+        if (value == null) return false; // ← Thêm dòng này
+        return Arrays.stream(Category.values())
+                .anyMatch(category -> category.getValue().equals(value));
     }
 
     /**

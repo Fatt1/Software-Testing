@@ -14,8 +14,4 @@ public class FloginApplication {
 		SpringApplication.run(FloginApplication.class, args);
 	}
 
-    @GetMapping("/hello")
-    public String Hello() {
-        return "hello!";
-    }
 }
