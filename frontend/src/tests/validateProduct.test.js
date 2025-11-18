@@ -125,19 +125,19 @@ describe('validateProduct - Kiểm tra giá (kiểm thử biên)', () => {
     expect(result.errors.price).toBeUndefined();
   });
 
-  test('hợp lệ khi giá bằng 1000000000 (giá trị lớn nhất hợp lệ)', () => {
-    const product = { name: 'Product', price: 1000000000, quantity: 10, description: 'Valid description', category: 'Electronics' };
+  test('hợp lệ khi giá bằng 999999999 (giá trị lớn nhất hợp lệ)', () => {
+    const product = { name: 'Product', price: 999999999, quantity: 10, description: 'Valid description', category: 'Electronics' };
     const result = validateProduct(product);
     
     expect(result.errors.price).toBeUndefined();
   });
 
-  test('trả về lỗi khi giá vượt quá 1000000000', () => {
-    const product = { name: 'Product', price: 1000000001, quantity: 10, description: 'Valid description', category: 'Electronics' };
+  test('trả về lỗi khi giá vượt quá 999999999', () => {
+    const product = { name: 'Product', price: 1000000000, quantity: 10, description: 'Valid description', category: 'Electronics' };
     const result = validateProduct(product);
     
     expect(result.isValid).toBe(false);
-    expect(result.errors.price).toBe('Giá sản phẩm không được vượt quá 1 tỷ');
+    expect(result.errors.price).toBe('Giá sản phẩm không được vượt quá 999,999,999');
   });
 
   test('hợp lệ khi giá hợp lệ (trường hợp điển hình)', () => {
@@ -204,19 +204,19 @@ describe('validateProduct - Kiểm tra số lượng', () => {
     expect(result.errors.quantity).toBeUndefined();
   });
 
-  test('hợp lệ khi số lượng đúng 10000 (giá trị lớn nhất hợp lệ)', () => {
-    const product = { name: 'Product', price: 100, quantity: 10000, description: 'Valid description', category: 'Electronics' };
+  test('hợp lệ khi số lượng đúng 99999 (giá trị lớn nhất hợp lệ)', () => {
+    const product = { name: 'Product', price: 100, quantity: 99999, description: 'Valid description', category: 'Electronics' };
     const result = validateProduct(product);
     
     expect(result.errors.quantity).toBeUndefined();
   });
 
-  test('trả về lỗi khi số lượng vượt quá 10000', () => {
-    const product = { name: 'Product', price: 100, quantity: 10001, description: 'Valid description', category: 'Electronics' };
+  test('trả về lỗi khi số lượng vượt quá 99999', () => {
+    const product = { name: 'Product', price: 100, quantity: 100000, description: 'Valid description', category: 'Electronics' };
     const result = validateProduct(product);
     
     expect(result.isValid).toBe(false);
-    expect(result.errors.quantity).toBe('Số lượng không được vượt quá 10000');
+    expect(result.errors.quantity).toBe('Số lượng không được vượt quá 99,999');
   });
 
   test('hợp lệ khi số lượng là số nguyên hợp lệ', () => {

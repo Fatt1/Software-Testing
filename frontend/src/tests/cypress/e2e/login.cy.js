@@ -38,7 +38,7 @@ describe('Login - E2E Automation Testing', () => {
       // Verify page objects are available
       expect(LoginPage).to.have.property('navigateToLoginPage');
       expect(LoginPage).to.have.property('login');
-      expect(LoginPage).to.have.property('enterEmail');
+      expect(LoginPage).to.have.property('enterUsername');
       expect(LoginPage).to.have.property('enterPassword');
     });
 
@@ -46,7 +46,7 @@ describe('Login - E2E Automation Testing', () => {
       cy.fixture('users').then(users => {
         expect(users).to.have.property('validUser');
         expect(users).to.have.property('invalidUser');
-        expect(users.validUser).to.have.property('email');
+        expect(users.validUser).to.have.property('username');
         expect(users.validUser).to.have.property('password');
       });
     });
@@ -104,17 +104,17 @@ describe('Login - E2E Automation Testing', () => {
 
     it('LoginPage có tất cả required methods', () => {
       expect(LoginPage).to.have.property('navigateToLoginPage');
-      expect(LoginPage).to.have.property('enterEmail');
+      expect(LoginPage).to.have.property('enterUsername');
       expect(LoginPage).to.have.property('enterPassword');
       expect(LoginPage).to.have.property('clickLogin');
       expect(LoginPage).to.have.property('login');
       expect(LoginPage).to.have.property('verifyErrorMessage');
     });
 
-    it('Có thể input email qua Page Object', () => {
-      const email = 'test@example.com';
-      LoginPage.enterEmail(email);
-      LoginPage.verifyEmailValue(email);
+    it('Có thể input username qua Page Object', () => {
+      const username = 'testuser';
+      LoginPage.enterUsername(username);
+      LoginPage.verifyUsernameValue(username);
     });
 
     it('Có thể input password qua Page Object', () => {
@@ -124,12 +124,12 @@ describe('Login - E2E Automation Testing', () => {
     });
 
     it('Có thể submit form qua Page Object', () => {
-      LoginPage.login('test@example.com', 'Test123@');
+      LoginPage.login('testuser', 'Test123@');
       // Form submitted
     });
 
     it('Có thể verify error message qua Page Object', () => {
-      LoginPage.enterEmail('invalid@example.com');
+      LoginPage.enterUsername('invaliduser');
       LoginPage.enterPassword('invalid');
       LoginPage.clickLogin();
       // Wait for error to appear
@@ -139,7 +139,7 @@ describe('Login - E2E Automation Testing', () => {
 
     it('Page Object methods support chaining', () => {
       // Verify fluent interface
-      const result = LoginPage.enterEmail('test@example.com')
+      const result = LoginPage.enterUsername('testuser')
         .enterPassword('Test123@')
         .verifyFormElementsVisible();
       expect(result).to.equal(LoginPage);
@@ -151,9 +151,9 @@ describe('Login - E2E Automation Testing', () => {
     });
 
     it('LoginPage can clear inputs', () => {
-      LoginPage.enterEmail('test@example.com');
-      LoginPage.clearEmail();
-      LoginPage.emailInput.should('have.value', '');
+      LoginPage.enterUsername('testuser');
+      LoginPage.clearUsername();
+      LoginPage.usernameInput.should('have.value', '');
     });
 
     it('LoginPage can toggle password visibility', () => {
@@ -168,37 +168,37 @@ describe('Login - E2E Automation Testing', () => {
    */
   describe('Form Validation via Page Object', () => {
 
-    it('Email input có placeholder', () => {
-      LoginPage.emailInput.should('have.attr', 'placeholder');
+    it('Username input có placeholder', () => {
+      LoginPage.usernameInput.should('have.attr', 'placeholder');
     });
 
     it('Password input có placeholder', () => {
       LoginPage.passwordInput.should('have.attr', 'placeholder');
     });
 
-    it('Có thể nhập email và submit', () => {
-      LoginPage.enterEmail('test@example.com')
+    it('Có thể nhập username và submit', () => {
+      LoginPage.enterUsername('testuser')
         .enterPassword('Test123@')
         .clickLogin();
     });
 
     it('Login button enabled khi form filled', () => {
-      LoginPage.enterEmail('test@example.com')
+      LoginPage.enterUsername('testuser')
         .enterPassword('Test123@')
         .verifyLoginButtonEnabled();
     });
 
-    it('Page Object getEmailValue() works', () => {
-      const testEmail = 'test@example.com';
-      LoginPage.enterEmail(testEmail);
-      LoginPage.getEmailValue().should('equal', testEmail);
+    it('Page Object getUsernameValue() works', () => {
+      const testUsername = 'testuser';
+      LoginPage.enterUsername(testUsername);
+      LoginPage.getUsernameValue().should('equal', testUsername);
     });
 
     it('Page Object clearAllInputs() works', () => {
-      LoginPage.enterEmail('test@example.com')
+      LoginPage.enterUsername('testuser')
         .enterPassword('Test123@')
         .clearAllInputs();
-      LoginPage.emailInput.should('have.value', '');
+      LoginPage.usernameInput.should('have.value', '');
       LoginPage.passwordInput.should('have.value', '');
     });
 
@@ -248,23 +248,23 @@ describe('Login - E2E Automation Testing', () => {
    */
   describe('User Interactions via Page Object', () => {
 
-    it('Người dùng có thể nhập email từng ký tự', () => {
-      LoginPage.emailInput.type('a', { delay: 50 });
-      LoginPage.emailInput.should('have.value', 'a');
+    it('Người dùng có thể nhập username từng ký tự', () => {
+      LoginPage.usernameInput.type('a', { delay: 50 });
+      LoginPage.usernameInput.should('have.value', 'a');
     });
 
-    it('Người dùng có thể xoá email sau khi nhập', () => {
-      LoginPage.enterEmail('test@example.com');
-      LoginPage.clearEmail();
-      LoginPage.emailInput.should('have.value', '');
+    it('Người dùng có thể xoá username sau khi nhập', () => {
+      LoginPage.enterUsername('testuser');
+      LoginPage.clearUsername();
+      LoginPage.usernameInput.should('have.value', '');
     });
 
     it('Người dùng có thể nhập password và submit', () => {
-      LoginPage.login('test@example.com', 'Test123@');
+      LoginPage.login('testuser', 'Test123@');
     });
 
     it('Người dùng có thể click multiple times', () => {
-      LoginPage.enterEmail('test@example.com');
+      LoginPage.enterUsername('testuser');
       LoginPage.enterPassword('Test123@');
       LoginPage.clickLogin();
       // Form submitted
@@ -276,12 +276,12 @@ describe('Login - E2E Automation Testing', () => {
     });
 
     it('Người dùng có thể interact với form multiple times', () => {
-      LoginPage.enterEmail('test1@example.com')
-        .clearEmail()
-        .enterEmail('test2@example.com')
-        .clearEmail()
-        .enterEmail('test3@example.com');
-      LoginPage.verifyEmailValue('test3@example.com');
+      LoginPage.enterUsername('user1')
+        .clearUsername()
+        .enterUsername('user2')
+        .clearUsername()
+        .enterUsername('user3');
+      LoginPage.verifyUsernameValue('user3');
     });
   });
 });

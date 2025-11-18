@@ -30,14 +30,14 @@ const axiosInstance = axios.create({
 
 /**
  * Login user
- * @param {string} email - User email
+ * @param {string} username - Username
  * @param {string} password - User password
  * @returns {Promise} - Login result
  */
-export const login = async (email, password) => {
+export const login = async (username, password) => {
   try {
     const response = await axiosInstance.post('/auth/login', {
-      email,
+      userName: username,
       password
     });
     
@@ -74,15 +74,15 @@ export const logout = async () => {
 
 /**
  * Register new user
- * @param {string} email - User email
+ * @param {string} username - Username
  * @param {string} password - User password
  * @param {string} name - User name
  * @returns {Promise} - Registration result
  */
-export const register = async (email, password, name) => {
+export const register = async (username, password, name) => {
   try {
     const response = await axiosInstance.post('/auth/register', {
-      email,
+      userName: username,
       password,
       name
     });

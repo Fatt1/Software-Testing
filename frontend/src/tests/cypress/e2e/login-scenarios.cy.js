@@ -28,10 +28,10 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
       LoginPage.verifyFormElementsVisible();
     });
 
-    it('SC1.2: Người dùng có thể nhập email hợp lệ', () => {
-      const email = 'test@example.com';
-      LoginPage.enterEmail(email);
-      LoginPage.verifyEmailValue(email);
+    it('SC1.2: Người dùng có thể nhập username hợp lệ', () => {
+      const username = 'test';
+      LoginPage.enterUsername(username);
+      LoginPage.verifyUsernameValue(username);
     });
 
     it('SC1.3: Người dùng có thể nhập password hợp lệ', () => {
@@ -41,30 +41,30 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     });
 
     it('SC1.4: Người dùng có thể submit form với data hợp lệ', () => {
-      LoginPage.login('test@example.com', 'Test123@');
+      LoginPage.login('test', 'Test123@');
       // Form submitted - có thể verify bằng network call
     });
 
-    it('SC1.5: Login button enabled khi email & password filled', () => {
-      LoginPage.enterEmail('test@example.com')
+    it('SC1.5: Login button enabled khi username & password filled', () => {
+      LoginPage.enterUsername('test')
         .enterPassword('Test123@')
         .verifyLoginButtonEnabled();
     });
 
     it('SC1.6: Form hiển thị loading state sau khi submit', () => {
-      LoginPage.enterEmail('test@example.com');
+      LoginPage.enterUsername('test');
       LoginPage.enterPassword('Test123@');
       LoginPage.clickLogin();
       // Có thể verify button disabled hoặc spinner
       cy.wait(500);
     });
 
-    it('SC1.7: Người dùng có thể clear email và nhập lại', () => {
-      LoginPage.enterEmail('test@example.com');
-      LoginPage.clearEmail();
-      LoginPage.emailInput.should('have.value', '');
-      LoginPage.enterEmail('new@example.com');
-      LoginPage.verifyEmailValue('new@example.com');
+    it('SC1.7: Người dùng có thể clear username và nhập lại', () => {
+      LoginPage.enterUsername('test');
+      LoginPage.clearUsername();
+      LoginPage.usernameInput.should('have.value', '');
+      LoginPage.enterUsername('new');
+      LoginPage.verifyUsernameValue('new');
     });
 
     it('SC1.8: Người dùng có thể clear password và nhập lại', () => {
@@ -77,7 +77,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
 
     it('SC1.9: Complete flow: Input -> Verify -> Clear -> Resubmit', () => {
       // First attempt
-      LoginPage.enterEmail('user1@example.com')
+      LoginPage.enterUsername('user1')
         .enterPassword('Pass123@')
         .clickLogin();
       
@@ -89,12 +89,12 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
 
     it('SC1.10: Người dùng có thể interact với form multiple times', () => {
       // Attempt 1
-      LoginPage.enterEmail('attempt1@example.com')
+      LoginPage.enterUsername('attempt1')
         .enterPassword('Pass1@');
       LoginPage.clearAllInputs();
       
       // Attempt 2
-      LoginPage.enterEmail('attempt2@example.com')
+      LoginPage.enterUsername('attempt2')
         .enterPassword('Pass2@')
         .verifyFormElementsVisible();
     });
@@ -112,33 +112,33 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
       LoginPage.loginButton.should('be.visible');
     });
 
-    it('SC2.2: Validation khi email trống, password filled', () => {
+    it('SC2.2: Validation khi username trống, password filled', () => {
       LoginPage.enterPassword('Test123@');
-      LoginPage.clearEmail();
+      LoginPage.clearUsername();
       LoginPage.clickLogin();
       cy.wait(300);
-      LoginPage.emailInput.should('have.value', '');
+      LoginPage.usernameInput.should('have.value', '');
     });
 
-    it('SC2.3: Validation khi email filled, password trống', () => {
-      LoginPage.enterEmail('test@example.com');
+    it('SC2.3: Validation khi username filled, password trống', () => {
+      LoginPage.enterUsername('test');
       LoginPage.clearPassword();
       LoginPage.clickLogin();
       cy.wait(300);
       LoginPage.passwordInput.should('have.value', '');
     });
 
-    it('SC2.4: Validation với email format không hợp lệ', () => {
-      LoginPage.enterEmail('invalid-email');
+    it('SC2.4: Validation với username format không hợp lệ', () => {
+      LoginPage.enterUsername('invalid-username');
       LoginPage.enterPassword('Test123@');
       LoginPage.clickLogin();
       cy.wait(300);
-      // Email input should still have invalid value
-      LoginPage.emailInput.should('have.value', 'invalid-email');
+      // username input should still have invalid value
+      LoginPage.usernameInput.should('have.value', 'invalid-username');
     });
 
     it('SC2.5: Validation với password yếu', () => {
-      LoginPage.enterEmail('test@example.com');
+      LoginPage.enterUsername('test');
       LoginPage.enterPassword('123');
       LoginPage.clickLogin();
       cy.wait(300);
@@ -157,7 +157,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
       cy.wait(300);
       
       // Now fill and submit
-      LoginPage.enterEmail('test@example.com')
+      LoginPage.enterUsername('test')
         .enterPassword('Test123@')
         .clickLogin();
     });
@@ -177,21 +177,21 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
 
     it('SC3.1: Successful login dengan valid credentials', () => {
       cy.fixture('users').then(users => {
-        LoginPage.login(users.validUser.email, users.validUser.password);
+        LoginPage.login(users.validUser.username, users.validUser.password);
         cy.wait(500);
       });
     });
 
     it('SC3.2: Failed login dengan invalid credentials', () => {
       cy.fixture('users').then(users => {
-        LoginPage.login(users.invalidUser.email, users.invalidUser.password);
+        LoginPage.login(users.invalidUser.username, users.invalidUser.password);
         cy.wait(500);
       });
     });
 
     it('SC3.3: Error message visible on failed login', () => {
       cy.fixture('users').then(users => {
-        LoginPage.login(users.invalidUser.email, users.invalidUser.password);
+        LoginPage.login(users.invalidUser.username, users.invalidUser.password);
         cy.wait(500);
         // Error message may appear
       });
@@ -199,7 +199,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
 
     it('SC3.4: Success message visible on successful login', () => {
       cy.fixture('users').then(users => {
-        LoginPage.login(users.validUser.email, users.validUser.password);
+        LoginPage.login(users.validUser.username, users.validUser.password);
         cy.wait(500);
         // Success message may appear
       });
@@ -208,17 +208,17 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     it('SC3.5: User can retry after failed login', () => {
       cy.fixture('users').then(users => {
         // First attempt - fail
-        LoginPage.login(users.invalidUser.email, users.invalidUser.password);
+        LoginPage.login(users.invalidUser.username, users.invalidUser.password);
         cy.wait(500);
         
         // Clear and retry
         LoginPage.clearAllInputs();
-        LoginPage.login(users.validUser.email, users.validUser.password);
+        LoginPage.login(users.validUser.username, users.validUser.password);
       });
     });
 
     it('SC3.6: Error handling for network issues', () => {
-      LoginPage.enterEmail('test@example.com')
+      LoginPage.enterUsername('test')
         .enterPassword('Test123@')
         .clickLogin();
       cy.wait(300);
@@ -226,7 +226,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     });
 
     it('SC3.7: Timeout handling during login', () => {
-      LoginPage.login('test@example.com', 'Test123@');
+      LoginPage.login('test', 'Test123@');
       cy.wait(1000);
       // Verify form still responsive
       LoginPage.loginButton.should('be.visible');
@@ -240,7 +240,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
       // Verify can interact again
       LoginPage.loginButton.should('be.visible');
       LoginPage.clearAllInputs();
-      LoginPage.verifyEmailEmpty().verifyPasswordEmpty();
+      LoginPage.verifyusernameEmpty().verifyPasswordEmpty();
     });
   });
 
@@ -286,12 +286,12 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     });
 
     it('SC4.6: All form labels are visible', () => {
-      cy.contains('label', /email|Email/i).should('be.visible');
+      cy.contains('label', /username|username/i).should('be.visible');
       cy.contains('label', /password|mật khẩu|Password/i).should('be.visible');
     });
 
     it('SC4.7: Form placeholders are visible', () => {
-      LoginPage.emailInput.should('have.attr', 'placeholder');
+      LoginPage.usernameInput.should('have.attr', 'placeholder');
       LoginPage.passwordInput.should('have.attr', 'placeholder');
     });
 
@@ -306,13 +306,13 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     });
 
     it('SC4.10: Form is responsive to interactions', () => {
-      // Click email
-      LoginPage.emailInput.click();
-      LoginPage.emailInput.should('be.focused');
+      // Click username
+      LoginPage.usernameInput.click();
+      LoginPage.usernameInput.should('be.focused');
       
-      // Type in email
-      LoginPage.emailInput.type('test');
-      LoginPage.emailInput.should('have.value', 'test');
+      // Type in username
+      LoginPage.usernameInput.type('test');
+      LoginPage.usernameInput.should('have.value', 'test');
       
       // Click password
       LoginPage.passwordInput.click();
@@ -338,7 +338,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
         LoginPage.checkRememberMe();
         
         // Fill form
-        LoginPage.enterEmail(users.validUser.email)
+        LoginPage.enterUsername(users.validUser.username)
           .enterPassword(users.validUser.password);
         
         // Verify button enabled
@@ -354,24 +354,24 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     it('SC5.2: User handles form errors gracefully', () => {
       cy.fixture('users').then(users => {
         // First attempt with wrong credentials
-        LoginPage.login(users.invalidUser.email, users.invalidUser.password);
+        LoginPage.login(users.invalidUser.username, users.invalidUser.password);
         cy.wait(500);
         
         // Clear form
         LoginPage.clearAllInputs();
         
         // Verify form cleared
-        LoginPage.emailInput.should('have.value', '');
+        LoginPage.usernameInput.should('have.value', '');
         LoginPage.passwordInput.should('have.value', '');
         
         // Second attempt with correct credentials
-        LoginPage.login(users.validUser.email, users.validUser.password);
+        LoginPage.login(users.validUser.username, users.validUser.password);
         cy.wait(500);
       });
     });
 
     it('SC5.3: User can toggle password visibility while typing', () => {
-      LoginPage.enterEmail('test@example.com');
+      LoginPage.enterUsername('test');
       LoginPage.enterPassword('Test123@');
       
       // Password entered as dots
@@ -387,7 +387,7 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     });
 
     it('SC5.4: User can check remember me while typing', () => {
-      LoginPage.enterEmail('test@example.com');
+      LoginPage.enterUsername('test');
       LoginPage.checkRememberMe();
       LoginPage.rememberMeCheckbox.should('be.checked');
       
@@ -396,9 +396,9 @@ describe('E2E Test Scenarios - Complete Login Flow', () => {
     });
 
     it('SC5.5: Multiple rapid interactions work correctly', () => {
-      LoginPage.enterEmail('test1@example.com')
-        .clearEmail()
-        .enterEmail('test2@example.com')
+      LoginPage.enterUsername('test1')
+        .clearUsername()
+        .enterUsername('test2')
         .enterPassword('Pass1@')
         .clearPassword()
         .enterPassword('Pass2@')

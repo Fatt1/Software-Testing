@@ -4,8 +4,8 @@
  */
 class LoginPage {
   // Selectors
-  get emailInput() {
-    return cy.get('input[type="email"]');
+  get usernameInput() {
+    return cy.get('input[type="text"]').first();
   }
 
   get passwordInput() {
@@ -59,10 +59,10 @@ class LoginPage {
   }
 
   /**
-   * Enter email
+   * Enter username
    */
-  enterEmail(email) {
-    this.emailInput.clear().type(email, { delay: 100 });
+  enterUsername(username) {
+    this.usernameInput.clear().type(username, { delay: 100 });
     return this;
   }
 
@@ -85,8 +85,8 @@ class LoginPage {
   /**
    * Complete login flow
    */
-  login(email, password) {
-    this.enterEmail(email);
+  login(username, password) {
+    this.enterUsername(username);
     this.enterPassword(password);
     this.clickLogin();
     return this;
@@ -181,10 +181,10 @@ class LoginPage {
   }
 
   /**
-   * Verify email input has value
+   * Verify username input has value
    */
-  verifyEmailValue(value) {
-    this.emailInput.should('have.value', value);
+  verifyUsernameValue(value) {
+    this.usernameInput.should('have.value', value);
     return this;
   }
 
@@ -205,10 +205,10 @@ class LoginPage {
   }
 
   /**
-   * Clear email input
+   * Clear username input
    */
-  clearEmail() {
-    this.emailInput.clear();
+  clearUsername() {
+    this.usernameInput.clear();
     return this;
   }
 
@@ -224,16 +224,16 @@ class LoginPage {
    * Clear all inputs
    */
   clearAllInputs() {
-    this.clearEmail();
+    this.clearUsername();
     this.clearPassword();
     return this;
   }
 
   /**
-   * Get email input value
+   * Get username input value
    */
-  getEmailValue() {
-    return this.emailInput.invoke('val');
+  getUsernameValue() {
+    return this.usernameInput.invoke('val');
   }
 
   /**
@@ -244,10 +244,10 @@ class LoginPage {
   }
 
   /**
-   * Verify email input is visible
+   * Verify username input is visible
    */
-  verifyEmailInputVisible() {
-    this.emailInput.should('be.visible');
+  verifyUsernameInputVisible() {
+    this.usernameInput.should('be.visible');
     return this;
   }
 
@@ -264,17 +264,17 @@ class LoginPage {
    */
   verifyFormElementsVisible() {
     this.verifyPageTitle();
-    this.emailInput.should('be.visible');
+    this.usernameInput.should('be.visible');
     this.passwordInput.should('be.visible');
     this.loginButton.should('be.visible');
     return this;
   }
 
   /**
-   * Verify email input is empty
+   * Verify username input is empty
    */
-  verifyEmailEmpty() {
-    this.emailInput.should('have.value', '');
+  verifyUsernameEmpty() {
+    this.usernameInput.should('have.value', '');
     return this;
   }
 
