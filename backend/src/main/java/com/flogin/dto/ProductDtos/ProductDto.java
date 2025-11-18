@@ -29,6 +29,9 @@ public class ProductDto {
     @NotBlank(message = "Category không được rỗng")
     private String category;
 
+    // Constructor mặc định (bắt buộc cho Jackson deserialization)
+    public ProductDto() {
+    }
 
     public ProductDto(long id, String category, Double price, String productName, String description, Integer quantity) {
         this.id = id;
@@ -39,7 +42,7 @@ public class ProductDto {
         this.quantity = quantity;
     }
 
-    public ProductDto(String productName,Double price ,String description, Integer quantity, String category) {
+    public ProductDto(String productName, Double price, String description, Integer quantity, String category) {
         this.category = category;
         this.price = price;
         this.productName = productName;
@@ -71,8 +74,27 @@ public class ProductDto {
         return price;
     }
 
-    public void setId(long id){
+    public void setId(long id) {
         this.id = id;
     }
 
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

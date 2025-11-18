@@ -1,4 +1,4 @@
-package com.flogin.config;
+package com.flogin.service;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
