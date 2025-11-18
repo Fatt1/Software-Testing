@@ -3,4 +3,8 @@ const presets = [
   '@babel/preset-react',
 ];
 
-module.exports = { presets };
+const plugins = [
+  ['@babel/plugin-syntax-import-meta'],
+];
+
+module.exports = { presets, plugins };

@@ -4,7 +4,20 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+// Lấy API URL từ environment, hỗ trợ cả Vite và Jest
+const getApiUrl = () => {
+  // Cho Jest/Node environment
+  if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  // Cho Vite environment (phía client)
+  if (typeof window !== 'undefined') {
+    return 'http://localhost:8080/api';
+  }
+  return 'http://localhost:8080/api';
+};
+
+const API_BASE_URL = getApiUrl();
 
 // Tạo instance axios
 const axiosInstance = axios.create({
