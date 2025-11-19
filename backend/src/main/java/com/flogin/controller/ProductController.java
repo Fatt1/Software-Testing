@@ -91,6 +91,6 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable long id) {
             productService.deleteProduct(id);
             return ResponseEntity.noContent().build();
-       
+
     }
 }
