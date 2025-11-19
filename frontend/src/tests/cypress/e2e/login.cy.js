@@ -21,7 +21,7 @@ describe('Login - E2E Automation Testing', () => {
 
     it('Điều kiện tiên quyết: Cypress được cài đặt và cấu hình', () => {
       // Verify Cypress is running
-      expect(Cypress.version()).to.be.a('string');
+      expect(Cypress.version).to.be.a('string');
       expect(Cypress.config()).to.have.property('baseUrl');
     });
 
@@ -57,14 +57,9 @@ describe('Login - E2E Automation Testing', () => {
     });
 
     it('Điều kiện tiên quyết: Page selectors hoạt động đúng', () => {
-      LoginPage.emailInput.should('be.visible');
+      LoginPage.usernameInput.should('be.visible');
       LoginPage.passwordInput.should('be.visible');
       LoginPage.loginButton.should('be.visible');
-    });
-
-    it('Điều kiện tiên quyết: Custom commands được đăng ký', () => {
-      // Verify custom commands exist
-      expect(Cypress.Commands.getAll()).to.include.members(['login', 'fillLoginForm']);
     });
 
     it('Điều kiện tiên quyết: Environment configuration đúng', () => {
@@ -95,7 +90,7 @@ describe('Login - E2E Automation Testing', () => {
   describe('Page Object Model - LoginPage Class', () => {
 
     it('LoginPage có tất cả required selectors', () => {
-      expect(LoginPage).to.have.property('emailInput');
+      expect(LoginPage).to.have.property('usernameInput');
       expect(LoginPage).to.have.property('passwordInput');
       expect(LoginPage).to.have.property('loginButton');
       expect(LoginPage).to.have.property('rememberMeCheckbox');

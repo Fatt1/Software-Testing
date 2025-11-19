@@ -5,7 +5,7 @@ import ProductManagement from './components/ProductManagement'
 function App() {
   return (
     <>
-      <LoginForm/>
+      <ProductManagement/>
     </>
   )
 }
