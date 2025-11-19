@@ -12,9 +12,9 @@ const getApiUrl = () => {
   }
   // Cho Vite environment (phía client)
   if (typeof window !== 'undefined') {
-    return 'http://localhost:8080/api';
+    return 'https://swearingly-pseudocubic-beth.ngrok-free.dev/api';
   }
-  return 'http://localhost:8080/api';
+  return 'https://swearingly-pseudocubic-beth.ngrok-free.dev/api';
 };
 
 const API_BASE_URL = getApiUrl();
