@@ -13,11 +13,11 @@ class ProductPage {
   }
 
   get searchInput() {
-    return cy.get('input[placeholder*="Tìm kiếm"]');
+    return cy.get('.search-input');
   }
 
   get categoryFilter() {
-    return cy.get('select').eq(0);
+    return cy.get('.filter-select');
   }
 
   // ============ TABLE SELECTORS ============
@@ -446,7 +446,10 @@ class ProductPage {
    * Verify table empty
    */
   verifyTableEmpty() {
-    this.emptyState.should('be.visible');
+    // Check if empty state element exists or table shows empty message
+    cy.get('.product-table tbody tr').then($rows => {
+      expect($rows.text()).to.include('Không có sản phẩm');
+    });
     return this;
   }
 
@@ -454,7 +457,9 @@ class ProductPage {
    * Verify table not empty
    */
   verifyTableNotEmpty() {
-    this.emptyState.should('not.exist');
+    cy.get('.product-table tbody tr').then($rows => {
+      expect($rows.text()).not.to.include('Không có sản phẩm');
+    });
     return this;
   }
 
