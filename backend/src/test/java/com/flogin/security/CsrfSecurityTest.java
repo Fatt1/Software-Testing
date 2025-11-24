@@ -39,10 +39,44 @@ public class CsrfSecurityTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private com.flogin.repository.interfaces.UserRepository userRepository;
+
+    @Autowired
+    private com.flogin.repository.interfaces.ProductRepository productRepository;
+
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     private String authToken;
+    private Long productId;
 
     @BeforeEach
     void setUp() throws Exception {
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+
+        com.flogin.entity.User admin = new com.flogin.entity.User();
+        admin.setUserName("admin");
+        admin.setEmail("admin@example.com");
+        admin.setHashPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+
+        com.flogin.entity.User user = new com.flogin.entity.User();
+        user.setUserName("user01");
+        user.setEmail("user01@example.com");
+        user.setHashPassword(passwordEncoder.encode("password123"));
+        userRepository.save(user);
+
+        com.flogin.entity.Product product = new com.flogin.entity.Product();
+        product.setProductName("Test Product");
+        product.setPrice(100.0);
+        product.setQuantity(10);
+        product.setDescription("Test Description");
+        product.setCategory("Electronics");
+        product = productRepository.save(product);
+        productId = product.getId();
+
         LoginRequest loginRequest = new LoginRequest("admin", "admin123");
 
 
@@ -64,7 +98,7 @@ public class CsrfSecurityTest {
     void testCsrf_CreateProduct_WithJwt() throws Exception {
         // Với JWT authentication, CSRF token có thể không cần thiết
         // nhưng vẫn test để đảm bảo không có lỗ hổng
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 1.1", 100.0, "Test", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)
@@ -76,7 +110,7 @@ public class CsrfSecurityTest {
     @Test
     @DisplayName("TC1.2: CSRF - Create product without Authorization header")
     void testCsrf_CreateProduct_NoAuth() throws Exception {
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 1.2", 100.0, "Test", 10, "Electronics");
 
         // Backend allows creating product without auth - VULNERABILITY
         mockMvc.perform(post("/api/products")
@@ -97,7 +131,7 @@ public class CsrfSecurityTest {
         UpdateProductRequest request = new UpdateProductRequest("Hacked Product", 0.01, "Hacked", 999, "Electronics");
 
         // Request từ different origin sẽ bị CORS block
-        mockMvc.perform(put("/api/products/1")
+        mockMvc.perform(put("/api/products/" + productId)
                 .header("Authorization", authToken)
                 .header("Origin", "http://evil.com")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -115,14 +149,14 @@ public class CsrfSecurityTest {
     @DisplayName("TC3.1: CSRF - Delete product without proper authorization")
     void testCsrf_DeleteProduct_NoAuth() throws Exception {
         // Backend allows deletion without auth - VULNERABILITY
-        mockMvc.perform(delete("/api/products/1"))
+        mockMvc.perform(delete("/api/products/" + productId))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("TC3.2: CSRF - Delete product với valid token")
     void testCsrf_DeleteProduct_WithValidToken() throws Exception {
-        mockMvc.perform(delete("/api/products/1")
+        mockMvc.perform(delete("/api/products/" + productId)
                 .header("Authorization", authToken))
                 .andExpect(status().isNoContent()); // DELETE returns 204 not 200
     }
@@ -134,7 +168,7 @@ public class CsrfSecurityTest {
     @Test
     @DisplayName("TC4.1: CSRF - Request từ different origin")
     void testCsrf_DifferentOrigin() throws Exception {
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 4.1", 100.0, "Test", 10, "Electronics");
 
         // Request từ evil domain
         mockMvc.perform(post("/api/products")
@@ -154,7 +188,7 @@ public class CsrfSecurityTest {
     @Test
     @DisplayName("TC5.1: CSRF - Missing Referer header")
     void testCsrf_MissingReferer() throws Exception {
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 5.1", 100.0, "Test", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)
@@ -166,7 +200,7 @@ public class CsrfSecurityTest {
     @Test
     @DisplayName("TC5.2: CSRF - Spoofed Referer header")
     void testCsrf_SpoofedReferer() throws Exception {
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 5.2", 100.0, "Test", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)
@@ -186,7 +220,7 @@ public class CsrfSecurityTest {
     @DisplayName("TC6.1: CSRF - Token in cookie vs token in request mismatch")
     void testCsrf_DoubleSubmitCookie_Mismatch() throws Exception {
         // Test double submit cookie pattern nếu được implement
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 6.1", 100.0, "Test", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)
@@ -222,7 +256,7 @@ public class CsrfSecurityTest {
     @DisplayName("TC8.1: CSRF - Custom header required")
     void testCsrf_CustomHeader() throws Exception {
         // Custom headers (như X-Requested-With) không thể được set bởi simple CORS requests
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 8.1", 100.0, "Test", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)
@@ -248,7 +282,7 @@ public class CsrfSecurityTest {
     @Test
     @DisplayName("TC9.2: CSRF - POST request requires authentication")
     void testCsrf_PostRequest_RequiresAuth() throws Exception {
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 9.2", 100.0, "Test", 10, "Electronics");
 
         // Backend allows POST without auth - VULNERABILITY
         mockMvc.perform(post("/api/products")
@@ -266,7 +300,7 @@ public class CsrfSecurityTest {
     void testCsrf_JsonContentType() throws Exception {
         // Requests với JSON content-type không thể được gửi từ simple HTML forms
         // Đây là một layer of protection chống CSRF
-        CreateProductRequest request = new CreateProductRequest("Test Product", 100.0, "Test", 10, "Electronics");
+        CreateProductRequest request = new CreateProductRequest("Test Product 10.1", 100.0, "Test", 10, "Electronics");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", authToken)

@@ -136,6 +136,27 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Xử lý HttpMessageNotReadableException (JSON parse error)
+     */
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(
+            org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+        errors.put("general", "Malformed JSON request");
+        
+        response.put("success", false);
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Bad Request");
+        response.put("message", "Dữ liệu không hợp lệ");
+        response.put("errors", errors);
+        response.put("timestamp", System.currentTimeMillis());
+        
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    /**
      * Xử lý generic exceptions
      */
     @ExceptionHandler(Exception.class)

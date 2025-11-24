@@ -4,12 +4,14 @@ import com.flogin.dto.LoginDto.LoginRequest;
 import com.flogin.entity.User;
 import com.flogin.repository.interfaces.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,26 @@ public class AuthenticationBypassTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void setUp() {
+        userRepository.deleteAll();
+
+        User admin = new User();
+        admin.setUserName("admin");
+        admin.setEmail("admin@example.com");
+        admin.setHashPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+
+        User user = new User();
+        user.setUserName("user01");
+        user.setEmail("user01@example.com");
+        user.setHashPassword(passwordEncoder.encode("password123"));
+        userRepository.save(user);
+    }
 
     // ===================================================================
     // TC1: Missing Credentials

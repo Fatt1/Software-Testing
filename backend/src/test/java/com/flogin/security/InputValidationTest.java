@@ -41,10 +41,24 @@ public class InputValidationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private com.flogin.repository.interfaces.UserRepository userRepository;
+
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     private String authToken;
 
     @BeforeEach
     void setUp() throws Exception {
+        userRepository.deleteAll();
+
+        com.flogin.entity.User admin = new com.flogin.entity.User();
+        admin.setUserName("admin");
+        admin.setEmail("admin@example.com");
+        admin.setHashPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+
         LoginRequest loginRequest = new LoginRequest("admin", "admin123");
 
         String response = mockMvc.perform(post("/api/auth/login")
@@ -188,7 +202,7 @@ public class InputValidationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.price").value(99.99));
+                .andExpect(jsonPath("$.price").value(99.99));
     }
 
     // ===================================================================
@@ -312,7 +326,7 @@ public class InputValidationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.productName").value("Product <>&\"'"));
+                .andExpect(jsonPath("$.productName").value("Product <>&\"'"));
     }
 
     @Test
@@ -325,7 +339,7 @@ public class InputValidationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.productName").value("Sản phẩm điện tử 📱"));
+                .andExpect(jsonPath("$.productName").value("Sản phẩm điện tử 📱"));
     }
 
     // ===================================================================
@@ -454,7 +468,7 @@ public class InputValidationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.price").value(0.01));
+                .andExpect(jsonPath("$.price").value(0.01));
     }
 
     @Test
@@ -467,6 +481,6 @@ public class InputValidationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.quantity").value(0));
+                .andExpect(jsonPath("$.quantity").value(0));
     }
 }

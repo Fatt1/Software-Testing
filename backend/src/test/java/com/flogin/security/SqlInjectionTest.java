@@ -48,10 +48,32 @@ public class SqlInjectionTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     private String authToken;
+    private Long productId;
 
     @BeforeEach
     void setUp() throws Exception {
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+
+        com.flogin.entity.User admin = new com.flogin.entity.User();
+        admin.setUserName("admin");
+        admin.setEmail("admin@example.com");
+        admin.setHashPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+
+        com.flogin.entity.Product product = new com.flogin.entity.Product();
+        product.setProductName("Test Product");
+        product.setPrice(100.0);
+        product.setQuantity(10);
+        product.setDescription("Test Description");
+        product.setCategory("Electronics");
+        product = productRepository.save(product);
+        productId = product.getId();
+
         // Login để lấy token
         LoginRequest loginRequest = new LoginRequest("admin", "admin123");
 
@@ -209,7 +231,7 @@ public class SqlInjectionTest {
 
         long countBefore = productRepository.count();
 
-        mockMvc.perform(put("/api/products/1")
+        mockMvc.perform(put("/api/products/" + productId)
                 .header("Authorization", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(maliciousRequest)))
