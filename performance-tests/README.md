@@ -79,8 +79,8 @@ performance-tests/
 
 2. **Đảm bảo server đang chạy:**
 
-   - URL: http://localhost:8080
-   - Test endpoint: http://localhost:8080/api/auth/login
+   - URL: http://localhost:6969
+   - Test endpoint: http://localhost:6969/api/auth/login
 
 3. **Seed test data:**
    - Đảm bảo có 3 users trong database (đã tự động seed khi khởi động app)
