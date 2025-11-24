@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Eye, X, Check, AlertCircle } from 'lucide-react';
 import "./ProductManagement.css"; // Đảm bảo bạn đã import file CSS
 

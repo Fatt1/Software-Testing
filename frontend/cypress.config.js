@@ -3,7 +3,7 @@ const { defineConfig } = require('cypress');
 module.exports = defineConfig({
   e2e: {
     // Test environment configuration
-    baseUrl: 'http://localhost:5174', // Updated to use available port
+    baseUrl: 'http://localhost:5173', // Updated to use available port
     viewportWidth: 1280,
     viewportHeight: 720,
     
@@ -19,8 +19,9 @@ module.exports = defineConfig({
     videoOnFailure: false,
 
     // Test configuration
-    specPattern: 'cypress/e2e/**/*.cy.js',
-    supportFile: 'cypress/support/e2e.js',
+    specPattern: 'src/tests/cypress/e2e/**/*.cy.js',
+    supportFile: 'src/tests/cypress/support/e2e.js',
+    fixturesFolder: 'src/tests/cypress/fixtures',
 
     // Browser settings
     chromeWebSecurity: false,
@@ -38,7 +39,7 @@ module.exports = defineConfig({
       framework: 'react',
       bundler: 'vite',
     },
-    specPattern: 'cypress/component/**/*.cy.jsx',
-    supportFile: 'cypress/support/component.js'
+    specPattern: 'src/tests/cypress/component/**/*.cy.jsx',
+    supportFile: 'src/tests/cypress/support/component.js'
   }
 });

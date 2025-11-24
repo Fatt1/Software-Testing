@@ -24,6 +24,10 @@ class LoginPage {
     return cy.get('a').contains(/quên|forgot/i);
   }
 
+  get emailInput() {
+    return cy.get('input[type="text"]').first();
+  }
+
   get signupLink() {
     return cy.get('a').contains(/đăng ký|sign up|register/i);
   }
@@ -305,4 +309,4 @@ class LoginPage {
 }
 
 // Export page object
-module.exports = new LoginPage();
+export default new LoginPage();
