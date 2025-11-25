@@ -1,0 +1,29 @@
+THRESHOLDS
+
+    http_req_duration
+    ✗ 'p(95)<2000' p(95)=2.22s
+    ✓ 'p(99)<3000' p(99)=2.26s
+
+    http_req_failed
+    ✗ 'rate<0.01' rate=3.90%
+
+    login_success_rate
+    ✗ 'rate>0.99' rate=21.60%
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 39415  605.621523/s
+    checks_succeeded...: 81.97% 32311 out of 39415
+    checks_failed......: 18.02% 7104 out of 39415
+
+    ✗ status is 200
+      ↳  96% — ✓ 7575 / ✗ 308
+    ✗ has success field
+      ↳  96% — ✓ 7575 / ✗ 308
+    ✗ login successful
+      ↳  96% — ✓ 7575 / ✗ 308
+    ✗ has token
+      ↳  96% — ✓ 7575 / ✗ 308
+    ✗ response time < 2000ms
+      ↳  25% — ✓ 2011 / ✗ 5872

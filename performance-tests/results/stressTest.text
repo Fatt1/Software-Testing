@@ -1,0 +1,23 @@
+  http_req_duration
+    ✗ 'p(95)<2000' p(95)=37.76s
+    ✗ 'p(99)<3000' p(99)=37.94s
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+    login_success_rate
+    ✗ 'rate>0.99' rate=4.30%
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 445465 585.185519/s
+    checks_succeeded...: 80.86% 360203 out of 445465
+    checks_failed......: 19.13% 85262 out of 445465
+
+    ✓ status is 200
+    ✓ has success field
+    ✓ login successful
+    ✓ has token
+    ✗ response time < 2000ms
+      ↳  4% — ✓ 3831 / ✗ 85262

@@ -61,7 +61,7 @@ public class AuthService {
         }
 
         // Kiểm tra user có tồn tại không
-        Optional<User> userOptional = userRepository.findByUserNameIgnoreCase(request.getUserName());
+        Optional<User> userOptional = userRepository.findByUserName(request.getUserName());
         if (userOptional.isEmpty()) {
             return new LoginResponse(false, "Login thất bại với user name không tồn tại");
         }
