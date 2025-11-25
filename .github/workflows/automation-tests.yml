@@ -2,20 +2,25 @@ name: Automation Tests - Login E2E & Integration
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'frontend/**'
-      - '.github/workflows/**'
+      - "frontend/**"
+      - ".github/workflows/**"
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'frontend/**'
+      - "frontend/**"
   workflow_dispatch:
+  inputs:
+    reason:
+      description: "Lý do deploy"
+      required: false
+      default: "Manual run"
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -30,8 +35,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "frontend/package-lock.json"
 
       # 3. Install dependencies
       - name: Install dependencies
