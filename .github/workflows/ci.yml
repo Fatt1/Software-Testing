@@ -105,6 +105,8 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
           SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
           SPRING_TEST_DATABASE_REPLACE: NONE
+          # 👇 THÊM DÒNG NÀY ĐỂ SỬA LỖI "CASCADE":
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.SQLServerDialect
 
       - name: 🌐 Run Integration Tests
         run: |
@@ -115,6 +117,8 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:sqlserver://localhost:1433;databaseName=STDatabase_Test;trustServerCertificate=true
           SPRING_DATASOURCE_USERNAME: sa
           SPRING_DATASOURCE_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
+          # 👇 THÊM DÒNG NÀY ĐỂ SỬA LỖI "CASCADE":
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.SQLServerDialect
 
       - name: 📊 Generate JaCoCo Coverage Report
         run: |
