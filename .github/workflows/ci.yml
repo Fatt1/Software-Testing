@@ -33,9 +33,9 @@ jobs:
         options: >-
           --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q 'SELECT 1' || exit 1"
           --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-          --health-start-period 30s
+          --health-timeout 10s
+          --health-retries 20
+          --health-start-period 60s
 
     steps:
       - name: 📥 Checkout code
@@ -228,9 +228,9 @@ jobs:
         options: >-
           --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q 'SELECT 1' || exit 1"
           --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-          --health-start-period 30s
+          --health-timeout 10s
+          --health-retries 20
+          --health-start-period 60s
 
     steps:
       - name: 📥 Checkout code
@@ -353,9 +353,9 @@ jobs:
         options: >-
           --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q 'SELECT 1' || exit 1"
           --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-          --health-start-period 30s
+          --health-timeout 10s
+          --health-retries 20
+          --health-start-period 60s
 
     steps:
       - name: 📥 Checkout code
