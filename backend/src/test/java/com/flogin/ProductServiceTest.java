@@ -534,6 +534,7 @@ public class ProductServiceTest {
             // Arrange
             UpdateProductRequest request = new UpdateProductRequest(null, 0.0, null, -1, null);
 
+
             ConstraintViolation<UpdateProductRequest> violation1 = mock(ConstraintViolation.class);
             when(violation1.getMessage()).thenReturn("Product Name không được rỗng");
 
@@ -552,8 +553,11 @@ public class ProductServiceTest {
         void testUpdateProduct_InvalidCategory() {
             // Arrange
             UpdateProductRequest request = new UpdateProductRequest("Laptop", 15000.0, "Description", 10, "InvalidCategory");
+            Product existingProduct = new Product(1L, "Electronics", "Old description", 10, "Old Laptop", 15000.0);
 
             when(mockValidator.validate(request)).thenReturn(Set.of());
+            when(productRepository.findById(1L)).thenReturn(Optional.of(existingProduct));
+            when(productRepository.existsByProductName("Laptop")).thenReturn(false);
 
             // Act & Assert
             IllegalArgumentException exception = assertThrows(
@@ -562,7 +566,7 @@ public class ProductServiceTest {
             );
 
             assertTrue(exception.getMessage().contains("Category"));
-            verify(productRepository, never()).findById(anyLong());
+            verify(productRepository, times(1)).findById(1L);
         }
 
         @Test
@@ -570,7 +574,6 @@ public class ProductServiceTest {
         void testUpdateProduct_NotFound() {
             UpdateProductRequest request = new UpdateProductRequest("Updated Laptop", 20000.0, "Description", 15, "Electronics");
             
-            when(mockValidator.validate(request)).thenReturn(Set.of());
             when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
             NoSuchElementException exception = assertThrows(
@@ -579,6 +582,7 @@ public class ProductServiceTest {
             );
 
             assertTrue(exception.getMessage().contains("Product not found with id: 999"));
+            verify(mockValidator,  times(1)).validate(request);
         }
     }
 

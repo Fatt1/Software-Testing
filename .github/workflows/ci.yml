@@ -31,7 +31,8 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd@' -Q 'SELECT 1' || exit 1"
+          --user 0:0
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd@' -C -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
@@ -52,7 +53,7 @@ jobs:
         run: |
           echo "Waiting for SQL Server to start..."
           for i in {1..30}; do
-            if docker exec $(docker ps -q -f ancestor=mcr.microsoft.com/mssql/server:2022-latest) /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${{ env.SQL_SERVER_SA_PASSWORD }}" -Q "SELECT 1" > /dev/null 2>&1; then
+            if docker exec $(docker ps -q -f ancestor=mcr.microsoft.com/mssql/server:2022-latest) /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd@' -C -Q "SELECT 1" > /dev/null 2>&1; then
               echo "SQL Server is ready!"
               break
             fi
@@ -63,9 +64,9 @@ jobs:
       - name: 🗄️ Create Test Database
         run: |
           docker exec $(docker ps -q -f ancestor=mcr.microsoft.com/mssql/server:2022-latest) \
-            /opt/mssql-tools/bin/sqlcmd \
-            -S localhost -U sa -P "${{ env.SQL_SERVER_SA_PASSWORD }}" \
-            -Q "CREATE DATABASE STDatabase_Test;"
+            /opt/mssql-tools18/bin/sqlcmd \
+            -S localhost -U sa -P 'YourStrong!Passw0rd@' \
+           -C -Q "CREATE DATABASE STDatabase_Test;"
           echo "Test database created successfully"
 
       - name: 🔍 Verify Maven wrapper
@@ -90,6 +91,10 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:sqlserver://localhost:1433;databaseName=STDatabase_Test;trustServerCertificate=true
           SPRING_DATASOURCE_USERNAME: sa
           SPRING_DATASOURCE_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          SPRING_TEST_DATABASE_REPLACE: NONE
+          # 👇 SỬA LẠI TÊN BIẾN NÀY
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
 
       - name: 🔐 Run Security Tests
         run: |
@@ -100,6 +105,10 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:sqlserver://localhost:1433;databaseName=STDatabase_Test;trustServerCertificate=true
           SPRING_DATASOURCE_USERNAME: sa
           SPRING_DATASOURCE_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          SPRING_TEST_DATABASE_REPLACE: NONE
+          # 👇 SỬA LẠI TÊN BIẾN NÀY
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
 
       - name: 🌐 Run Integration Tests
         run: |
