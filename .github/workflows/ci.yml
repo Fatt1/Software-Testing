@@ -24,7 +24,6 @@ jobs:
       # SQL Server for integration tests
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
-        user: "0:0"
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
@@ -32,6 +31,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
+          --user 0:0
           --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd@' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 5s
