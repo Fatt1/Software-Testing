@@ -1,0 +1,16 @@
+ http_req_duration
+    ✓ 'p(95)<2000' p(95)=83.03ms
+    ✓ 'p(99)<3000' p(99)=642.26ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+    login_success_rate
+    ✓ 'rate>0.99' rate=100.00%
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 14810   234.114435/s
+    checks_succeeded...: 100.00% 14810 out of 14810
+    checks_failed......: 0.00%   0 out of 14810
