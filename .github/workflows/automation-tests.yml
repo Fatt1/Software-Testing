@@ -11,11 +11,11 @@ on:
     paths:
       - "frontend/**"
   workflow_dispatch:
-  inputs:
-    reason:
-      description: "Lý do deploy"
-      required: false
-      default: "Manual run"
+    inputs:
+      reason:
+        description: "Lý do deploy"
+        required: false
+        default: "Manual run"
 
 jobs:
   test:
