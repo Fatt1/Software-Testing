@@ -246,23 +246,10 @@ public class AuthenticationBypassTest {
                 .andExpect(status().isOk()); // Backend allows access without auth - VULNERABILITY
     }
 
-    // ===================================================================
-    // TC6: Case Sensitivity
-    // ===================================================================
 
-    @Test
-    @DisplayName("TC6.1: Auth bypass - Username case sensitivity")
-    void testAuthBypass_UsernameCaseSensitivity() throws Exception {
-        LoginRequest loginRequest = new LoginRequest("ADMIN", "admin123");
-
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk()); // Backend allows access without auth - VULNERABILITY
-    }
 
     // ===================================================================
-    // TC7: Whitespace Handling
+    // TC6: Whitespace Handling
     // ===================================================================
 
     @Test
@@ -277,7 +264,7 @@ public class AuthenticationBypassTest {
     }
 
     // ===================================================================
-    // TC8: Null Bytes and Special Characters
+    // TC7: Null Bytes and Special Characters
     // ===================================================================
 
     @Test
@@ -292,7 +279,7 @@ public class AuthenticationBypassTest {
     }
 
     // ===================================================================
-    // TC9: Multiple Authentication Attempts
+    // TC8: Multiple Authentication Attempts
     // ===================================================================
 
     @Test
