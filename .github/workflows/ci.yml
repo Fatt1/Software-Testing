@@ -24,7 +24,6 @@ jobs:
       # SQL Server for integration tests
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
-        user: "0:0" # <--- THÊM DÒNG NÀY ĐỂ SỬA LỖI
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
