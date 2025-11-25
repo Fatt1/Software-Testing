@@ -23,13 +23,13 @@ export const options = {
   // },
 
   // LOAD TEST: 500 concurrent users
-  // scenarios: {
-  //   load_500: {
-  //     executor: "constant-vus",
-  //     vus: 500,
-  //     duration: "1m",
-  //   },
-  // },
+  scenarios: {
+    load_500: {
+      executor: "constant-vus",
+      vus: 500,
+      duration: "1m",
+    },
+  },
 
   // // LOAD TEST: 1000 concurrent users
   // scenarios: {
@@ -41,30 +41,30 @@ export const options = {
   // },
 
   // // STRESS TEST: Tìm breaking point
-  scenarios: {
-    stress_test_step: {
-      executor: "ramping-vus",
-      startVUs: 0,
-      stages: [
-        // Khởi động nhẹ
-        { duration: "30s", target: 100 },
+  // scenarios: {
+  //   stress_test_step: {
+  //     executor: "ramping-vus",
+  //     startVUs: 0,
+  //     stages: [
+  //       // Khởi động nhẹ
+  //       { duration: "30s", target: 100 },
 
-        // Tăng tốc lên 1000
-        { duration: "1m", target: 1000 },
-        { duration: "2m", target: 1000 }, // Giữ 2p là đủ thấy lỗi rồi
+  //       // Tăng tốc lên 1000
+  //       { duration: "1m", target: 1000 },
+  //       { duration: "2m", target: 1000 }, // Giữ 2p là đủ thấy lỗi rồi
 
-        // Tăng tốc lên 3000
-        { duration: "1m", target: 3000 },
-        { duration: "2m", target: 3000 },
+  //       // Tăng tốc lên 3000
+  //       { duration: "1m", target: 3000 },
+  //       { duration: "2m", target: 3000 },
 
-        // Đẩy lên cực hạn 5000
-        { duration: "2m", target: 5000 }, // Tìm breaking point ở đoạn này
-        { duration: "3m", target: 5000 }, // Chỉ giữ nếu chưa sập
+  //       // Đẩy lên cực hạn 5000
+  //       { duration: "2m", target: 5000 }, // Tìm breaking point ở đoạn này
+  //       { duration: "3m", target: 5000 }, // Chỉ giữ nếu chưa sập
 
-        { duration: "1m", target: 0 },
-      ],
-    },
-  },
+  //       { duration: "1m", target: 0 },
+  //     ],
+  //   },
+  // },
 
   thresholds: {
     http_req_failed: ["rate<0.01"], // < 1% errors
