@@ -21,6 +21,110 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * AuthControllerMockTest - Backend Mocking Strategy Tests
+ * 
+ * Test Suite Purpose: (2.5 điểm total)
+ * Demonstrates advanced backend mocking techniques using Mockito and Spring's
+ * mocking infrastructure. Focuses on verifying mock interactions and testing
+ * controller behavior with controlled service responses.
+ * 
+ * Testing Focus:
+ * - Backend Mocking: Using @MockitoBean to mock Spring-managed beans
+ * - Mock Verification: Ensuring mocks are called correctly
+ * - Interaction Testing: Verifying method calls and arguments
+ * - Isolation: Testing controller completely isolated from service logic
+ * 
+ * What is Backend Mocking?
+ * In Spring Boot testing, backend mocking refers to replacing real service
+ * layer beans with mock objects that have controlled, predictable behavior.
+ * This allows:
+ * - Testing controller logic in isolation
+ * - Simulating various service responses
+ * - Verifying controller-service interactions
+ * - Avoiding complex service/database setup
+ * 
+ * Spring Boot Mocking Annotations:
+ * 
+ * @MockitoBean (1 điểm)
+ * - Spring Boot's integration of Mockito into Spring context
+ * - Creates a Mockito mock and registers it as a Spring bean
+ * - Replaces any existing bean of the same type
+ * - Mock is automatically injected into controllers via dependency injection
+ * - Lifecycle managed by Spring test framework
+ * 
+ * Comparison: @MockitoBean vs @Mock
+ * @MockitoBean:
+ * - Spring-aware mocking
+ * - Registered in Spring application context
+ * - Automatically injected via @Autowired or constructor injection
+ * - Used with @WebMvcTest, @SpringBootTest
+ * - Best for integration tests with Spring
+ * 
+ * @Mock (plain Mockito):
+ * - Pure Mockito mocking (no Spring)
+ * - Not registered in Spring context
+ * - Manual injection with @InjectMocks
+ * - Used with @ExtendWith(MockitoExtension.class)
+ * - Best for unit tests without Spring
+ * 
+ * Test Categories:
+ * 
+ * A) Mock AuthService and Test Controller with Mocked Service - Success (1 điểm)
+ * - Mock successful login response
+ * - Verify controller returns correct HTTP 200
+ * - Check response JSON structure
+ * - Validate service method is called
+ * 
+ * B) Verify Mock Interactions (0.5 điểm)
+ * - Use Mockito.verify() to check method calls
+ * - Verify service.authenticate() was called
+ * - Check correct arguments passed to service
+ * - Validate number of interactions
+ * 
+ * C) Mock Return Values (1 điểm)
+ * - Configure mock to return specific values
+ * - Test controller with different mock responses
+ * - Simulate success and error scenarios
+ * - Verify controller handles all cases
+ * 
+ * Mockito Verification Methods:
+ * - verify(mock).method() - Verify method was called
+ * - verify(mock, times(n)).method() - Verify call count
+ * - verify(mock, never()).method() - Verify NOT called
+ * - verifyNoMoreInteractions(mock) - No other calls made
+ * - ArgumentCaptor - Capture and inspect arguments
+ * 
+ * Mock Configuration Methods:
+ * - when(mock.method()).thenReturn(value) - Configure return value
+ * - when(mock.method()).thenThrow(exception) - Configure exception
+ * - doNothing().when(mock).method() - Mock void methods
+ * - any() - Argument matcher for any value
+ * 
+ * Testing Workflow:
+ * 1. Setup: Configure mock behavior with when().thenReturn()
+ * 2. Execute: Perform HTTP request via MockMvc
+ * 3. Verify: Check response status and content
+ * 4. Verify: Confirm service method was called (Mockito.verify)
+ * 
+ * Why Mock Service Layer in Controller Tests?
+ * - Isolation: Test controller logic independently
+ * - Speed: No database or complex setup required
+ * - Control: Predictable service responses
+ * - Focus: Test only HTTP layer concerns
+ * - Simplicity: Easier to set up than full integration tests
+ * 
+ * Real-World Scenarios Tested:
+ * ✅ Controller correctly calls service layer
+ * ✅ Controller handles service success responses
+ * ✅ Controller handles service error responses
+ * ✅ Controller passes correct parameters to service
+ * ✅ Controller transforms service results to HTTP responses
+ * 
+ * @see com.flogin.controller.AuthController - Controller under test
+ * @see com.flogin.service.AuthService - Mocked service dependency
+ */
+
+/**
  * AuthControllerMockTest - Backend Mocking Tests (2.5 điểm)
  * 
  * Mục đích: Test controller với mocked dependencies

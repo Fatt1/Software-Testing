@@ -26,6 +26,152 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
+ * ProductServiceMockTest - Repository Mocking in Service Layer Tests
+ * 
+ * Test Suite Purpose: (2.5 điểm total)
+ * Demonstrates advanced repository mocking techniques in service layer testing.
+ * Shows how to properly mock data access layer (Repository) when testing
+ * business logic layer (Service).
+ * 
+ * Testing Strategy:
+ * - Mock Repository: Replace real JPA repository with Mockito mock
+ * - Inject Mocks: Automatically inject mocked dependencies into service
+ * - Test Isolation: Test service business logic without database
+ * - Behavior Verification: Verify service calls repository correctly
+ * 
+ * What is Repository Mocking?
+ * In Spring Boot applications, the repository layer handles database operations.
+ * Mocking the repository allows testing service business logic without:
+ * - Setting up actual database
+ * - Managing test data
+ * - Dealing with database state
+ * - Slow database queries
+ * 
+ * Mockito Annotations Used:
+ * 
+ * @Mock (1 điểm)
+ * - Creates a Mockito mock object
+ * - Replaces real dependency with controllable fake
+ * - All methods return default values unless configured
+ * - Enables interaction verification
+ * 
+ * Applied to:
+ * - ProductRepository - Data access layer mock
+ * - Validator - Bean validation mock
+ * 
+ * @InjectMocks
+ * - Creates instance of class under test
+ * - Automatically injects @Mock dependencies
+ * - Uses constructor, setter, or field injection
+ * - Simplifies test setup
+ * 
+ * Applied to:
+ * - ProductService - Service under test with injected mocks
+ * 
+ * Dependency Injection Pattern:
+ * @InjectMocks will inject mocks into ProductService:
+ * 
+ * class ProductService {
+ *     private final ProductRepository repository; // @Mock injected here
+ *     private final Validator validator;         // @Mock injected here
+ *     
+ *     // Constructor injection (preferred)
+ *     public ProductService(ProductRepository repo, Validator val) {
+ *         this.repository = repo;
+ *         this.validator = val;
+ *     }
+ * }
+ * 
+ * Test Categories:
+ * 
+ * a) Mock ProductRepository (1 điểm)
+ * - Verify repository is properly mocked
+ * - Configure mock repository behavior
+ * - Test service with mocked repository responses
+ * 
+ * b) Test Service with Mocked Repository (1 điểm)
+ * - Create product - mock repository.save()
+ * - Find product - mock repository.findById()
+ * - Update product - mock find and save
+ * - Delete product - mock repository.deleteById()
+ * - Test service logic with various mock responses
+ * 
+ * c) Verify Repository Interactions (0.5 điểm)
+ * - Verify repository methods were called
+ * - Check correct arguments passed
+ * - Validate call counts
+ * - Ensure no unexpected interactions
+ * 
+ * Mock Configuration Patterns:
+ * 
+ * 1. Mock findById to return product:
+ * when(productRepository.findById("product-id"))
+ *     .thenReturn(Optional.of(mockProduct));
+ * 
+ * 2. Mock findById to return empty (not found):
+ * when(productRepository.findById("invalid-id"))
+ *     .thenReturn(Optional.empty());
+ * 
+ * 3. Mock save to return saved product:
+ * when(productRepository.save(any(Product.class)))
+ *     .thenReturn(savedProduct);
+ * 
+ * 4. Mock delete (void method):
+ * doNothing().when(productRepository).deleteById("product-id");
+ * 
+ * Verification Patterns:
+ * 
+ * 1. Verify method was called:
+ * verify(productRepository).save(any(Product.class));
+ * 
+ * 2. Verify with specific argument:
+ * verify(productRepository).findById("product-123");
+ * 
+ * 3. Verify call count:
+ * verify(productRepository, times(1)).save(any());
+ * 
+ * 4. Verify never called:
+ * verify(productRepository, never()).deleteById(any());
+ * 
+ * Test Scenarios:
+ * 
+ * Create Product:
+ * - Service receives CreateProductRequest
+ * - Service validates request
+ * - Service converts DTO to Entity
+ * - Service calls repository.save()
+ * - Repository returns saved entity
+ * - Service converts entity to DTO
+ * - Service returns ProductDto
+ * 
+ * Get Product:
+ * - Service calls repository.findById()
+ * - If found: return ProductDto
+ * - If not found: throw NoSuchElementException
+ * 
+ * Update Product:
+ * - Service calls repository.findById()
+ * - If found: update fields, call repository.save()
+ * - If not found: throw exception
+ * 
+ * Delete Product:
+ * - Service calls repository.findById() to verify exists
+ * - Service calls repository.deleteById()
+ * - If not found: throw exception
+ * 
+ * Why Mock Repository in Service Tests?
+ * - Isolation: Test business logic separately from database
+ * - Speed: No database overhead, tests run fast
+ * - Control: Predictable repository responses
+ * - Simplicity: No test data setup required
+ * - Focus: Test only service layer concerns
+ * - Coverage: Easy to test error scenarios
+ * 
+ * @see com.flogin.service.ProductService - Service under test
+ * @see com.flogin.repository.interfaces.ProductRepository - Mocked repository
+ */
+
+/**
  * ProductServiceMockTest - Mock Repository trong Service Tests (2.5 điểm)
  * Test service layer với mocked repository
  */

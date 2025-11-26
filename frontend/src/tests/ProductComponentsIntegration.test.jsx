@@ -1,3 +1,59 @@
+/**
+ * Product Components Integration Tests - UI Component Testing
+ * 
+ * Test Suite Purpose:
+ * Integration-level testing of ProductManagement component, focusing on
+ * UI element rendering, user interactions, and component behavior without
+ * mocking the service layer.
+ * 
+ * Testing Approach:
+ * - Integration Testing: Test component with real interactions
+ * - UI-Focused: Verify all UI elements render correctly
+ * - User-Centric: Test from user's perspective (clicking, typing, etc.)
+ * - No Service Mocking: Component uses real service layer (or default behavior)
+ * 
+ * Component Under Test:
+ * ProductManagement - Main product CRUD interface containing:
+ * - Product list/table display
+ * - Search functionality
+ * - Category filtering
+ * - Add/Edit/Delete product forms
+ * - Action buttons
+ * 
+ * Testing Categories (2 điểm):
+ * 1. ProductList Component with API (2 điểm)
+ *    - Component rendering verification
+ *    - Search and filter controls
+ *    - Product table structure
+ *    - Action buttons availability
+ *    - Empty state handling
+ * 
+ * Test Coverage:
+ * - ✅ Component renders successfully
+ * - ✅ Search input field exists
+ * - ✅ Category filter dropdown exists
+ * - ✅ Add Product button exists
+ * - ✅ Product table displays correctly
+ * - ✅ Action buttons (Edit, Delete, View) exist
+ * - ✅ Pagination controls
+ * - ✅ Empty state message
+ * 
+ * Testing Tools:
+ * - React Testing Library: DOM testing utilities
+ * - @testing-library/user-event: Realistic user interactions
+ * - jest-dom: Custom DOM matchers
+ * - screen queries: getByRole, getByText, queryBy*
+ * 
+ * Why Integration Tests?
+ * - Test components in realistic scenarios
+ * - Verify UI/UX behavior
+ * - Catch integration issues between sub-components
+ * - Ensure accessibility (using role-based queries)
+ * - Validate user workflows
+ * 
+ * @see ../components/ProductManagement.jsx - Main component under test
+ */
+
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

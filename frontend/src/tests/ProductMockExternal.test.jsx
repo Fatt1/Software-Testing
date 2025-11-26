@@ -1,9 +1,60 @@
+/**
+ * Product Mock External Dependencies Tests - CRUD Service Mocking
+ * 
+ * Test Suite Purpose:
+ * Advanced mocking tests for ProductManagement component, demonstrating
+ * how to mock complex CRUD operations and verify component-service interactions.
+ * 
+ * Testing Strategy:
+ * - Mock all CRUD operations (Create, Read, Update, Delete)
+ * - Verify mock function calls with correct parameters
+ * - Test both success and error scenarios
+ * - Validate component behavior with mocked responses
+ * 
+ * Service Functions Mocked:
+ * - getAllProducts() - Fetch product list
+ * - getProductById(id) - Fetch single product
+ * - createProduct(data) - Create new product
+ * - updateProduct(id, data) - Update existing product
+ * - deleteProduct(id) - Remove product
+ * 
+ * Testing Categories (2.5 điểm):
+ * 1. Mock CRUD Operations (1.5 điểm)
+ *    - Verify all CRUD functions are mocked
+ *    - Test mockResolvedValue for success scenarios
+ *    - Test mockRejectedValue for error scenarios
+ * 
+ * 2. Mock Return Values & Spy (1 điểm)
+ *    - Verify function calls with correct arguments
+ *    - Check mock call counts
+ *    - Validate returned data structure
+ * 
+ * Mock Testing Patterns:
+ * - jest.mock() - Module-level mocking
+ * - jest.isMockFunction() - Verify mock setup
+ * - mockResolvedValue() - Async success responses
+ * - mockRejectedValue() - Async error responses
+ * - toHaveBeenCalledWith() - Argument verification
+ * - toHaveBeenCalledTimes() - Call count verification
+ * 
+ * Benefits of CRUD Mocking:
+ * - Test component without real backend
+ * - Simulate various response scenarios
+ * - Verify correct API parameters
+ * - Test error handling paths
+ * - Fast, reliable test execution
+ * 
+ * @see ../components/ProductManagement.jsx - Component under test
+ * @see ../services/productService.js - Mocked CRUD service
+ */
+
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ProductManagement from '../components/ProductManagement';
 import * as productService from '../services/productService';
 
+// Mock the entire productService module for isolated component testing
 jest.mock('../services/productService');
 
 /**

@@ -1,3 +1,87 @@
+/**
+ * Product Validation Unit Tests - Business Rules Validation
+ * 
+ * Test Suite Purpose:
+ * Comprehensive unit tests for product validation logic that enforces business
+ * rules for product data. Critical for data integrity and user experience.
+ * 
+ * Function Under Test:
+ * validateProduct(product) - Validates all product fields against business rules
+ * 
+ * Product Data Structure:
+ * {
+ *   name: string,        // Product name
+ *   price: number,       // Product price (positive)
+ *   quantity: number,    // Stock quantity (non-negative)
+ *   description: string, // Product description
+ *   category: string     // Product category (Electronics, Fashion, etc.)
+ * }
+ * 
+ * Validation Rules:
+ * 
+ * 1. Product Name:
+ *    - Not empty/null/whitespace
+ *    - Minimum: 3 characters
+ *    - Maximum: 100 characters
+ * 
+ * 2. Price:
+ *    - Required field
+ *    - Must be a number
+ *    - Must be positive (> 0)
+ *    - Cannot be negative or zero
+ * 
+ * 3. Quantity:
+ *    - Required field
+ *    - Must be a number
+ *    - Must be non-negative (>= 0)
+ *    - Zero is allowed (out of stock)
+ * 
+ * 4. Description:
+ *    - Required field
+ *    - Minimum: 10 characters
+ *    - Maximum: 500 characters
+ * 
+ * 5. Category:
+ *    - Required field
+ *    - Must be from predefined list
+ *    - Valid categories: Điện tử, Thời trang, Thực phẩm, etc.
+ * 
+ * Return Format:
+ * Success: { isValid: true }
+ * Failure: { 
+ *   isValid: false, 
+ *   errors: {
+ *     name?: 'Error message',
+ *     price?: 'Error message',
+ *     quantity?: 'Error message',
+ *     description?: 'Error message',
+ *     category?: 'Error message'
+ *   }
+ * }
+ * 
+ * Testing Strategy:
+ * - Field-by-Field Testing: Each field tested independently
+ * - Boundary Testing: Test min/max length limits
+ * - Negative Testing: Invalid data types, negative numbers
+ * - Positive Testing: Valid data scenarios
+ * - Combined Validation: Multiple errors at once
+ * 
+ * Test Organization:
+ * - Tests grouped by field being validated
+ * - Each describe block covers one field
+ * - Progressive complexity: simple to complex cases
+ * 
+ * Why These Tests Matter:
+ * - Data Integrity: Prevent invalid products in database
+ * - UX: Show specific field errors to users
+ * - Business Logic: Enforce pricing and inventory rules
+ * - Security: Prevent malicious data injection
+ * - Maintenance: Document validation requirements
+ * 
+ * @see ../utils/validateProduct.js - Validation function under test
+ * @see ../components/ProductManagement.jsx - Uses this validator
+ */
+
 import { validateProduct } from '../utils/validateProduct.js';
 import { describe, test, expect } from '@jest/globals';
 

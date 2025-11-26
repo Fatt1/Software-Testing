@@ -26,6 +26,139 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
+ * AuthServiceTest - Unit Testing for Authentication Business Logic
+ * 
+ * Test Suite Purpose:
+ * Comprehensive unit testing of AuthService business logic, focusing on
+ * authentication workflows, password verification, JWT token generation,
+ * and Jakarta Bean Validation integration.
+ * 
+ * Target Coverage: >= 85%
+ * 
+ * Testing Level: Unit Testing
+ * - Tests Service layer in complete isolation
+ * - All dependencies are mocked (Repository, PasswordEncoder, JwtService, Validator)
+ * - No Spring context loaded (pure unit tests)
+ * - Fast execution, no database or external dependencies
+ * 
+ * Service Under Test:
+ * AuthService.authenticate(LoginRequest) -> LoginResponse
+ * - Validates login credentials using Jakarta Bean Validation
+ * - Looks up user in database via UserRepository
+ * - Verifies password using BCrypt PasswordEncoder
+ * - Generates JWT token using JwtService
+ * - Returns LoginResponse with user data and token
+ * 
+ * Testing Framework: JUnit 5 + Mockito
+ * 
+ * @ExtendWith(MockitoExtension.class)
+ * - Enables Mockito annotations in JUnit 5
+ * - Initializes @Mock and @InjectMocks
+ * - No Spring context required
+ * - Lightweight and fast
+ * 
+ * Mockito Annotations:
+ * 
+ * @Mock
+ * - Creates a mock object (fake implementation)
+ * - All methods return default values unless configured
+ * - Used to replace real dependencies
+ * - Enables verification of interactions
+ * 
+ * Mock Dependencies:
+ * 1. UserRepository - Database access layer
+ *    - Mocked to avoid real database queries
+ *    - Returns predefined User objects
+ * 
+ * 2. PasswordEncoder - Spring Security BCrypt encoder
+ *    - Mocked to control password matching behavior
+ *    - Avoids expensive BCrypt computations in tests
+ * 
+ * 3. JwtService - JWT token generation
+ *    - Mocked to return predefined tokens
+ *    - Avoids cryptographic operations
+ * 
+ * 4. Validator - Jakarta Bean Validation
+ *    - Mocked to control validation results
+ *    - Returns ConstraintViolation sets for invalid data
+ * 
+ * Jakarta Bean Validation:
+ * This test suite uses Jakarta Bean Validation annotations on LoginRequest:
+ * - @NotBlank - Field must not be empty
+ * - @Size(min=3, max=50) - Field length constraints
+ * - @Pattern(regexp="...") - Field format validation
+ * 
+ * Validation Annotations on LoginRequest:
+ * - username: @NotBlank, @Size(min=3, max=50)
+ * - password: @NotBlank, @Size(min=6, max=50)
+ * 
+ * Test Scenarios:
+ * 
+ * 1. Authentication Success
+ *    - Valid credentials provided
+ *    - User exists in database
+ *    - Password matches (BCrypt verification)
+ *    - JWT token generated
+ *    - LoginResponse returned with user data and token
+ * 
+ * 2. Authentication Failures
+ *    - User not found (username doesn't exist)
+ *    - Wrong password (password mismatch)
+ *    - Account locked/disabled
+ * 
+ * 3. Validation Errors
+ *    - Empty username
+ *    - Empty password
+ *    - Username too short (<3 characters)
+ *    - Password too short (<6 characters)
+ *    - Invalid username format (special characters)
+ *    - Invalid password format (missing letters/numbers)
+ * 
+ * Test Method Patterns:
+ * - testAuthenticate_Success() - Happy path
+ * - testAuthenticate_UserNotFound() - Negative test
+ * - testAuthenticate_WrongPassword() - Negative test
+ * - testAuthenticate_ValidationError_EmptyUsername() - Validation test
+ * - testAuthenticate_ValidationError_ShortPassword() - Boundary test
+ * 
+ * Mocking Patterns:
+ * 1. Repository Mocking:
+ *    when(userRepository.findByUserName("admin"))
+ *        .thenReturn(Optional.of(mockUser));
+ * 
+ * 2. Password Encoder Mocking:
+ *    when(passwordEncoder.matches("password", "hashedPassword"))
+ *        .thenReturn(true);
+ * 
+ * 3. JWT Service Mocking:
+ *    when(jwtService.generateToken(any(User.class)))
+ *        .thenReturn("mock.jwt.token");
+ * 
+ * 4. Validator Mocking:
+ *    when(validator.validate(any(LoginRequest.class)))
+ *        .thenReturn(Set.of(violation));
+ * 
+ * Assertion Examples:
+ * - assertNotNull(response) - Response exists
+ * - assertTrue(response.isSuccess()) - Success flag is true
+ * - assertEquals("admin", response.getUser().getUsername()) - Correct user
+ * - assertFalse(response.isSuccess()) - Failure case
+ * - assertTrue(response.getMessage().contains("not found")) - Error message
+ * 
+ * Why Unit Test Service Layer?
+ * - Test business logic in isolation
+ * - Fast execution (no database/network)
+ * - Easy to test edge cases and errors
+ * - High code coverage
+ * - Documents business rules
+ * - Catches regressions early
+ * 
+ * @see com.flogin.service.AuthService - Service under test
+ * @see com.flogin.dto.LoginDto.LoginRequest - Request DTO with validation
+ * @see com.flogin.dto.LoginDto.LoginResponse - Response DTO
+ */
+
+/**
  * AuthService Unit Test với Bean Validation
  * Coverage >= 85%
  * Test scenarios:
