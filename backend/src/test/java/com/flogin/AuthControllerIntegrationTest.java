@@ -172,44 +172,44 @@ public class AuthControllerIntegrationTest {
     @DisplayName("B) Test Response Structure và Status Codes")
     class ResponseStructureTests {
         
-//        @Test
-//        @DisplayName("1. Response structure có đầy đủ các field khi login thành công")
-//        void testSuccessResponseStructure() throws Exception {
-//            // Arrange
-//            LoginRequest request = new LoginRequest("testuser", "Test123");
-//            UserDto userDto = new UserDto("testuser", "testuser@example.com");
-//            LoginResponse mockResponse = new LoginResponse(
-//                true,
-//                "Login thành công",
-//                "token.jwt.here",
-//                userDto
-//            );
-//
-//            when(authService.authenticate(any(LoginRequest.class)))
-//                .thenReturn(mockResponse);
-//
-//            // Act & Assert: Verify response có đầy đủ field
-//            mockMvc.perform(post("/api/auth/login")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(objectMapper.writeValueAsString(request)))
-//                    .andExpect(status().isOk())
-//                    .andExpect(jsonPath("$.success").exists())
-//                    .andExpect(jsonPath("$.success").isBoolean())
-//                    .andExpect(jsonPath("$.message").exists())
-//                    .andExpect(jsonPath("$.message").isString())
-//                    .andExpect(jsonPath("$.token").exists())
-//                    .andExpect(jsonPath("$.token").isString())
-//                    .andExpect(jsonPath("$.user").exists())
-//                    .andExpect(jsonPath("$.user.userName").exists())
-//                    .andExpect(jsonPath("$.user.email").exists());
-//        }
-
         @Test
         @DisplayName("1. Response structure có đầy đủ các field khi login thành công")
         void testSuccessResponseStructure() throws Exception {
-            //Arrange
-//            LoginRequest request = new LoginRequest(())
+            // Arrange
+            LoginRequest request = new LoginRequest("testuser", "Test123");
+            UserDto userDto = new UserDto("testuser", "testuser@example.com");
+            LoginResponse mockResponse = new LoginResponse(
+                true,
+                "Login thành công",
+                "token.jwt.here",
+                userDto
+            );
+
+            when(authService.authenticate(any(LoginRequest.class)))
+                .thenReturn(mockResponse);
+
+            // Act & Assert: Verify response có đầy đủ field
+            mockMvc.perform(post("/api/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.success").exists())
+                    .andExpect(jsonPath("$.success").isBoolean())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").isString())
+                    .andExpect(jsonPath("$.token").exists())
+                    .andExpect(jsonPath("$.token").isString())
+                    .andExpect(jsonPath("$.user").exists())
+                    .andExpect(jsonPath("$.user.userName").exists())
+                    .andExpect(jsonPath("$.user.email").exists());
         }
+
+//        @Test
+//        @DisplayName("1. Response structure có đầy đủ các field khi login thành công")
+//        void testSuccessResponseStructure() throws Exception {
+//            //Arrange
+////            LoginRequest request = new LoginRequest(())
+//        }
         @Test
         @DisplayName("2. Response structure khi login thất bại (không có token)")
         void testFailureResponseStructure() throws Exception {
