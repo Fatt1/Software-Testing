@@ -1,5 +1,5 @@
 name: Automation Tests - Login E2E & Integration
-
+# ...
 on:
   push:
     branches: [main, develop]
@@ -11,26 +11,21 @@ on:
     paths:
       - "frontend/**"
   workflow_dispatch:
-  inputs:
-    reason:
-      description: "Lý do deploy"
-      required: false
-      default: "Manual run"
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15 # Tự hủy nếu treo quá 15p
 
     strategy:
       matrix:
         node-version: [18.x, 20.x]
+      fail-fast: false # Node 18 lỗi thì Node 20 vẫn chạy tiếp để check
 
     steps:
-      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -38,56 +33,51 @@ jobs:
           cache: "npm"
           cache-dependency-path: "frontend/package-lock.json"
 
-      # 3. Install dependencies
       - name: Install dependencies
         working-directory: ./frontend
         run: npm ci
 
-      # 4. Run Integration Tests (Jest)
+      # --- FIX 1: Xóa continue-on-error ở Jest ---
       - name: Run Integration Tests (Jest)
         working-directory: ./frontend
         run: npm test -- --coverage --testPathPattern="Integration|Mock" --passWithNoTests
-        continue-on-error: true
+        # Đã xóa continue-on-error: true -> Để nếu lỗi thì báo FAIL ngay
 
-      # 5. Upload Jest Coverage Reports
       - name: Upload Jest Coverage Reports
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() 
         with:
           name: jest-coverage-${{ matrix.node-version }}
           path: frontend/coverage/
-          retention-days: 30
+          retention-days: 15
 
-      # 6. Build the frontend
       - name: Build frontend
         working-directory: ./frontend
         run: npm run build
-        continue-on-error: false
 
-      # 7. Start dev server in background
-      - name: Start dev server
+      # --- FIX 2: Thay sleep bằng wait-on ---
+      - name: Start dev server & Wait
         working-directory: ./frontend
         run: |
           npm run dev &
-          sleep 5
-        timeout-minutes: 2
+          npx wait-on http://localhost:5173 --timeout 60000
 
-      # 8. Run E2E Tests (Cypress)
+      # --- FIX 3: Xóa continue-on-error ở Cypress ---
       - name: Run E2E Tests (Cypress)
         working-directory: ./frontend
         run: npx cypress run --spec "src/tests/cypress/e2e/login-scenarios.cy.js" --record false
-        continue-on-error: true
         env:
           CYPRESS_BASE_URL: http://localhost:5173
+        # Đã xóa continue-on-error: true -> Để kích hoạt if: failure() bên dưới
 
-      # 9. Upload Cypress Screenshots & Videos
+      # Các bước Upload này giờ sẽ hoạt động đúng
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() 
         with:
           name: cypress-screenshots-${{ matrix.node-version }}
           path: frontend/src/tests/cypress/screenshots/
-          retention-days: 30
+          retention-days: 15
 
       - name: Upload Cypress Videos
         uses: actions/upload-artifact@v4
@@ -95,45 +85,25 @@ jobs:
         with:
           name: cypress-videos-${{ matrix.node-version }}
           path: frontend/src/tests/cypress/videos/
-          retention-days: 30
+          retention-days: 15
 
-      # 10. Generate Test Report Summary
       - name: Generate Test Report Summary
         if: always()
         run: |
           echo "## 🧪 Automation Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Jest Integration Tests" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status**: Check logs for details" >> $GITHUB_STEP_SUMMARY
-          echo "- **Coverage Report**: Available in artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Cypress E2E Tests" >> $GITHUB_STEP_SUMMARY
-          echo "- **Test File**: login-scenarios.cy.js" >> $GITHUB_STEP_SUMMARY
-          echo "- **Scenarios Tested**: 5 main scenarios + 10 advanced flows" >> $GITHUB_STEP_SUMMARY
-          echo "- **Screenshots/Videos**: Available in artifacts if tests failed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node**: ${{ matrix.node-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Jest**: ${{ steps.run-jest.outcome }}" >> $GITHUB_STEP_SUMMARY 
+          echo "- **Cypress**: Check logs above" >> $GITHUB_STEP_SUMMARY
 
-      # 11. Post Test Results to PR
       - name: Comment PR with Test Results
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
         with:
           script: |
+            const status = '${{ job.status }}';
+            const icon = status === 'success' ? '✅' : '❌';
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## ✅ Automation Tests Completed\n\n- **Node.js Version**: ${{ matrix.node-version }}\n- **Jest Tests**: Integration & Mock tests\n- **Cypress Tests**: E2E Login scenarios\n- **Coverage Reports**: Check artifacts for detailed coverage\n- **Screenshots**: Available if tests failed`
-            })
-        continue-on-error: true
-
-  # Job to check all tests passed
-  test-result:
-    name: Test Results
-    needs: test
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Check test status
-        run: |
-          echo "All automation tests completed!"
-          echo "Check the artifacts for detailed reports."
+              body: `## ${icon} Automation Tests (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\

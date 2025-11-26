@@ -1,3 +1,54 @@
+/**
+ * Product Form Component Tests - CRUD Form Validation & Behavior
+ * 
+ * Test Suite Purpose:
+ * This file tests the product creation and editing form embedded within
+ * the ProductManagement component. Focus is on form rendering, input handling,
+ * validation logic, and submission behavior.
+ * 
+ * Component Architecture:
+ * - ProductForm is integrated within ProductManagement component
+ * - Modal-based form (appears when "Thêm Sản Phẩm" button is clicked)
+ * - Contains: name, price, quantity, category, description fields
+ * 
+ * Testing Strategy:
+ * - Unit/Integration Level: Component form behavior testing
+ * - Focus Areas: Form fields, user input, validation rules, submission flow
+ * - Testing Library: React Testing Library (DOM testing, user events)
+ * - No mocking required: Pure UI/form behavior testing
+ * 
+ * Test Coverage Categories:
+ * 1. Form Rendering (2 điểm) - All form fields render correctly
+ * 2. Form Input Handling - User can type/select values in all fields
+ * 3. Form Validation - Error messages for invalid inputs
+ * 4. Form Submission - Save data with valid inputs, handle errors
+ * 
+ * Validation Rules Tested:
+ * - Product name: Minimum 3 characters
+ * - Price: Must be positive number (no negative values)
+ * - Quantity: Must be positive number (no negative values)
+ * - Category: Must be selected (required field)
+ * - Description: Minimum 10 characters
+ * 
+ * Helper Functions:
+ * - openProductForm(): Clicks header "Thêm Sản Phẩm" button to open modal
+ * - getSubmitButton(): Finds the form submit button (with btn-full class)
+ * 
+ * Test Data Scenarios:
+ * - Valid: Complete product with all fields properly filled
+ * - Invalid: Missing fields, negative numbers, too short text
+ * - Edge cases: Empty form submission, clearing inputs
+ * 
+ * User Interaction Patterns:
+ * - user.type(): Simulate keyboard typing
+ * - user.selectOptions(): Select dropdown values
+ * - user.click(): Click buttons
+ * - user.clear(): Clear input fields
+ * 
+ * @see ../components/ProductManagement.jsx - Parent component containing form
+ * @see ../utils/validateProduct.js - Validation logic being tested
+ */
+
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

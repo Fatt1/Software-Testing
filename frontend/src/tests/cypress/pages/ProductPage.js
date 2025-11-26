@@ -1,9 +1,78 @@
 /**
- * Page Object Model for Product Management Page
- * Encapsulates all selectors and methods for Product Management interactions
+ * ProductPage - Page Object Model for Product Management Page
+ * 
+ * This class encapsulates all selectors and methods for Product Management page
+ * interactions following the Page Object Model (POM) design pattern.
+ * 
+ * Page Sections:
+ * 1. Header & Search - Title, add button, search, filters
+ * 2. Product Table - Table rows, product data display
+ * 3. Action Buttons - View, Edit, Delete for each product
+ * 4. Pagination - Next/Previous page navigation
+ * 5. Modal Forms - Add/Edit product forms
+ * 6. Form Inputs - Name, price, quantity, category, description
+ * 7. Validation Messages - Error messages for each field
+ * 8. Confirmation Dialogs - Delete confirmation
+ * 9. Notifications - Success/Error notifications
+ * 10. Detail View - Product detail display modal
+ * 
+ * Features:
+ * - Complete CRUD operations (Create, Read, Update, Delete)
+ * - Search and filter products
+ * - Form validation
+ * - Pagination support
+ * - Confirmation dialogs
+ * - Success/Error notifications
+ * - Product detail view
+ * - Comprehensive element selectors
+ * - Chainable methods for fluent API
+ * 
+ * Usage Example:
+ * ```javascript
+ * import ProductPage from './pages/ProductPage';
+ * 
+ * describe('Product Management Tests', () => {
+ *   it('should create new product', () => {
+ *     ProductPage
+ *       .navigateToProductPage()
+ *       .createProduct({
+ *         name: 'iPhone 15',
+ *         price: '999.99',
+ *         quantity: '50',
+ *         category: 'Electronics',
+ *         description: 'Latest iPhone model'
+ *       })
+ *       .verifySuccessNotification('Product created successfully')
+ *       .verifyProductExists('iPhone 15');
+ *   });
+ *   
+ *   it('should update product', () => {
+ *     ProductPage
+ *       .updateProduct('iPhone 15', { price: '1099.99' })
+ *       .verifySuccessNotification('Product updated');
+ *   });
+ *   
+ *   it('should delete product', () => {
+ *     ProductPage
+ *       .deleteProduct('iPhone 15')
+ *       .verifyProductNotExists('iPhone 15');
+ *   });
+ * });
+ * ```
+ * 
+ * @class ProductPage
+ * @author Software Testing Team
+ * @version 1.0
+ * @since 2025-11-26
  */
 class ProductPage {
   // ============ HEADER & SEARCH SELECTORS ============
+  // Elements in the page header and search section
+  
+  /**
+   * Get page title element
+   * @returns {Cypress.Chainable} Page title heading
+   */
   get pageTitle() {
     return cy.contains('h1', /quản lý sản phẩm|product management/i);
   }

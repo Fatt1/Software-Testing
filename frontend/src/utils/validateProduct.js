@@ -1,3 +1,65 @@
+/**
+ * Validate product data for create/update operations
+ * 
+ * Performs comprehensive validation of all product fields according to business rules.
+ * Returns detailed error messages for each invalid field.
+ * 
+ * Validation Rules:
+ * - name: 3-100 characters, required
+ * - price: Positive number, 0 < price <= 999,999,999
+ * - quantity: Non-negative integer, 0 <= quantity <= 99,999
+ * - description: 10-500 characters, required
+ * - category: Must be one of valid enum values
+ * 
+ * Valid Categories:
+ * - Electronics
+ * - Clothing
+ * - Food
+ * - Books
+ * - Other
+ * 
+ * @function validateProduct
+ * @param {Object} product - Product data object to validate
+ * @param {string} product.name - Product name
+ * @param {number} product.price - Product price
+ * @param {number} product.quantity - Product quantity
+ * @param {string} product.description - Product description
+ * @param {string} product.category - Product category
+ * @returns {Object} Validation result
+ * @returns {boolean} return.isValid - True if all validations pass
+ * @returns {Object} return.errors - Object containing error messages for each invalid field
+ * 
+ * @example
+ * // Valid product
+ * const result = validateProduct({
+ *   name: 'iPhone 15',
+ *   price: 999.99,
+ *   quantity: 50,
+ *   description: 'Latest iPhone model with advanced features',
+ *   category: 'Electronics'
+ * });
+ * // Returns: { isValid: true, errors: {} }
+ * 
+ * @example
+ * // Invalid product (multiple errors)
+ * const result = validateProduct({
+ *   name: 'ab',  // Too short
+ *   price: -10,  // Negative
+ *   quantity: 1.5,  // Not integer
+ *   description: 'Short',  // Too short
+ *   category: 'InvalidCat'  // Invalid category
+ * });
+ * // Returns: {
+ * //   isValid: false,
+ * //   errors: {
+ * //     name: 'Tên sản phẩm phải có ít nhất 3 ký tự',
+ * //     price: 'Giá sản phẩm không được âm',
+ * //     quantity: 'Số lượng phải là số nguyên',
+ * //     description: 'Mô tả phải có ít nhất 10 ký tự',
+ * //     category: 'Danh mục không hợp lệ'
+ * //   }
+ * // }
+ */
 export const validateProduct = (product) => {
   const errors = {};
 
@@ -10,7 +72,7 @@ export const validateProduct = (product) => {
     errors.name = 'Tên sản phẩm không được vượt quá 100 ký tự';
   }
 
-  // Price validation (boundary tests)
+  // Price validation (boundary tests for positive numbers)
   if (product.price === undefined || product.price === null || product.price === '') {
     errors.price = 'Giá sản phẩm không được để trống';
   } else {
@@ -26,7 +88,7 @@ export const validateProduct = (product) => {
     }
   }
 
-  // Quantity validation
+  // Quantity validation (must be non-negative integer)
   if (product.quantity === undefined || product.quantity === null || product.quantity === '') {
     errors.quantity = 'Số lượng không được để trống';
   } else {
@@ -51,7 +113,7 @@ export const validateProduct = (product) => {
     errors.description = 'Mô tả không được vượt quá 500 ký tự';
   }
 
-  // Category validation
+  // Category validation (must be one of predefined enum values)
   const validCategories = ['Electronics', 'Clothing', 'Food', 'Books', 'Other'];
   if (!product.category || product.category.trim() === '') {
     errors.category = 'Danh mục không được để trống';
@@ -59,6 +121,8 @@ export const validateProduct = (product) => {
     errors.category = 'Danh mục không hợp lệ';
   }
 
+  // Return validation result
+  // isValid is true only if no errors were found
   return {
     isValid: Object.keys(errors).length === 0,
     errors

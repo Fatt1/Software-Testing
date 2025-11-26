@@ -2,25 +2,78 @@ import { useState } from 'react';
 import { login } from '../services/authService';
 import './LoginForm.css';
 
+/**
+ * LoginForm Component - User Authentication Form
+ * 
+ * A fully-featured login form component with validation, loading states,
+ * error handling, and success feedback. Styled with inline CSS for modern UI.
+ * 
+ * @component
+ * @example
+ * // Basic usage
+ * <LoginForm />
+ * 
+ * @features
+ * - Username and password input fields
+ * - Show/hide password toggle
+ * - Client-side validation (username length, required fields)
+ * - Loading state during authentication
+ * - Error message display
+ * - Success message with auto-redirect
+ * - Remember me checkbox
+ * - Forgot password link
+ * - Sign up link
+ * - Animated UI elements
+ * 
+ * @returns {JSX.Element} Rendered login form component
+ */
 export default function LoginForm() {
+  // State Management
+  /** @type {[string, Function]} Username input value */
   const [username, setUsername] = useState('');
+  
+  /** @type {[string, Function]} Password input value */
   const [password, setPassword] = useState('');
+  
+  /** @type {[boolean, Function]} Toggle password visibility */
   const [showPassword, setShowPassword] = useState(false);
+  
+  /** @type {[boolean, Function]} Loading state during API call */
   const [isLoading, setIsLoading] = useState(false);
+  
+  /** @type {[string, Function]} Error message to display */
   const [error, setError] = useState('');
+  
+  /** @type {[boolean, Function]} Success state after login */
   const [success, setSuccess] = useState(false);
 
+  /**
+   * Handle form submission and authentication
+   * 
+   * Validates user input, calls authentication service,
+   * and handles success/error states.
+   * 
+   * Validation Rules:
+   * - Username and password are required
+   * - Username must be at least 3 characters
+   * 
+   * @async
+   * @param {Event} e - Form submit event
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    // Validate required fields
     if (!username || !password) {
       setError('Vui lòng nhập username và mật khẩu');
       setIsLoading(false);
       return;
     }
 
+    // Validate username length
     if (username.length < 3) {
       setError('Username phải có ít nhất 3 ký tự');
       setIsLoading(false);
@@ -28,12 +81,13 @@ export default function LoginForm() {
     }
 
     try {
-      // call auth service (mocked in tests)
+      // Call authentication service (mocked in tests)
       const res = await login(username, password);
       if (res && res.success) {
         setSuccess(true);
         setIsLoading(false);
 
+        // Auto-clear form after 2 seconds
         setTimeout(() => {
           setSuccess(false);
           setUsername('');
@@ -41,7 +95,7 @@ export default function LoginForm() {
         }, 2000);
         return;
       }
-      // fallback
+      // Fallback error
       setError('Có lỗi xảy ra');
       setIsLoading(false);
     } catch (err) {
@@ -53,7 +107,7 @@ export default function LoginForm() {
   return (
     <div style={styles.container}>
       <div style={styles.loginContainer}>
-        {/* Header */}
+        {/* Header Section - Logo, Title, Subtitle */}
         <div style={styles.header}>
           <div style={styles.logoWrapper}>
             <div style={styles.logoCircle}>
@@ -64,16 +118,18 @@ export default function LoginForm() {
           <p style={styles.subtitle}>Chào mừng bạn quay lại</p>
         </div>
 
-        {/* Card */}
+        {/* Main Card Container */}
         <div style={styles.card}>
           {success ? (
+            // Success State - Show success message after login
             <div style={styles.successMessage}>
               <p style={styles.successTitle}>✓ Đăng nhập thành công!</p>
               <p style={styles.successSubtitle}>Chuyển hướng...</p>
             </div>
           ) : (
+            // Login Form - Show form when not in success state
             <div>
-              {/* Username Input */}
+              {/* Username Input Field */}
               <div style={styles.formGroup}>
                 <label style={styles.label}>Username</label>
                 <input
@@ -86,7 +142,7 @@ export default function LoginForm() {
                 />
               </div>
 
-              {/* Password Input */}
+              {/* Password Input Field with Show/Hide Toggle */}
               <div style={styles.formGroup}>
                 <label style={styles.label}>Mật Khẩu</label>
                 <div style={styles.passwordWrapper}>
@@ -98,6 +154,7 @@ export default function LoginForm() {
                     style={styles.input}
                     disabled={isLoading}
                   />
+                  {/* Toggle password visibility button */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -109,7 +166,7 @@ export default function LoginForm() {
                 </div>
               </div>
 
-              {/* Remember & Forgot Password */}
+              {/* Remember Me Checkbox & Forgot Password Link */}
               <div style={styles.optionsRow}>
                 <label style={styles.checkboxLabel}>
                   <input
@@ -122,14 +179,14 @@ export default function LoginForm() {
                 <a href="#" style={styles.forgotLink}>Quên mật khẩu?</a>
               </div>
 
-              {/* Error Message */}
+              {/* Error Message Display - Only shown when error exists */}
               {error && (
                 <div style={styles.errorMessage}>
                   {error}
                 </div>
               )}
 
-              {/* Submit Button */}
+              {/* Submit Button - Shows loading state during authentication */}
               <button
                 onClick={handleSubmit}
                 disabled={isLoading}
@@ -140,11 +197,13 @@ export default function LoginForm() {
                 }}
               >
                 {isLoading ? (
+                  // Loading state - show spinner
                   <>
                     <span style={styles.spinner}>⚙</span>
                     <span>Đang xử lý...</span>
                   </>
                 ) : (
+                  // Normal state - show login text
                   <>
                     <span>→</span>
                     <span>Đăng Nhập</span>
@@ -152,10 +211,10 @@ export default function LoginForm() {
                 )}
               </button>
 
-              {/* Divider */}
+              {/* Visual Divider */}
               <div style={styles.divider}></div>
 
-              {/* Sign Up Link */}
+              {/* Sign Up Link - For new users */}
               <p style={styles.signupText}>
                 Chưa có tài khoản?{' '}
                 <a href="#" style={styles.signupLink}>Đăng ký ngay</a>
@@ -164,7 +223,7 @@ export default function LoginForm() {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer - Copyright text */}
         <p style={styles.footer}>
           © 2025 Your Company. All rights reserved.
         </p>
@@ -173,7 +232,16 @@ export default function LoginForm() {
   );
 }
 
+/**
+ * Inline CSS Styles for LoginForm Component
+ * 
+ * Modern, gradient-based design with animations and responsive layout.
+ * Uses CSS-in-JS pattern for component-scoped styling.
+ * 
+ * @constant {Object} styles - Collection of style objects
+ */
 const styles = {
+  /** Main container - Full viewport with gradient background */
   container: {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
@@ -184,23 +252,27 @@ const styles = {
     fontFamily: 'Arial, sans-serif'
   },
 
+  /** Login container - Max width wrapper for form */
   loginContainer: {
     width: '100%',
     maxWidth: '400px',
     animation: 'slideInUp 0.6s ease-out'
   },
 
+  /** Header section styling */
   header: {
     textAlign: 'center',
     marginBottom: '32px'
   },
 
+  /** Logo wrapper with float animation */
   logoWrapper: {
     display: 'inline-block',
     marginBottom: '16px',
     animation: 'float 3s ease-in-out infinite'
   },
 
+  /** Circular logo container */
   logoCircle: {
     width: '64px',
     height: '64px',
@@ -213,10 +285,12 @@ const styles = {
     margin: '0 auto'
   },
 
+  /** Logo icon size */
   logoIcon: {
     fontSize: '32px'
   },
 
+  /** Main title styling */
   title: {
     fontSize: '36px',
     fontWeight: 'bold',
@@ -224,12 +298,14 @@ const styles = {
     margin: '8px 0'
   },
 
+  /** Subtitle text below title */
   subtitle: {
     fontSize: '14px',
     color: 'rgba(255, 255, 255, 0.7)',
     margin: 0
   },
 
+  /** Main card container for form */
   card: {
     background: 'white',
     borderRadius: '16px',
@@ -238,11 +314,13 @@ const styles = {
     animation: 'slideInUp 0.6s ease-out'
   },
 
+  /** Form group container for each input */
   formGroup: {
     marginBottom: '24px',
     animation: 'slideInUp 0.6s ease-out 0.1s backwards'
   },
 
+  /** Label styling for inputs */
   label: {
     display: 'block',
     fontSize: '14px',
@@ -251,6 +329,7 @@ const styles = {
     marginBottom: '8px'
   },
 
+  /** Input field base styling */
   input: {
     width: '100%',
     padding: '12px 16px',
@@ -264,12 +343,14 @@ const styles = {
     cursor: 'pointer'
   },
 
+  /** Password input wrapper for toggle button positioning */
   passwordWrapper: {
     position: 'relative',
     display: 'flex',
     alignItems: 'center'
   },
 
+  /** Password visibility toggle button */
   toggleBtn: {
     position: 'absolute',
     right: '12px',
@@ -282,6 +363,7 @@ const styles = {
     color: '#6b7280'
   },
 
+  /** Row for remember me and forgot password */
   optionsRow: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -290,6 +372,7 @@ const styles = {
     fontSize: '14px'
   },
 
+  /** Remember me checkbox label */
   checkboxLabel: {
     display: 'flex',
     alignItems: 'center',
@@ -297,11 +380,13 @@ const styles = {
     cursor: 'pointer'
   },
 
+  /** Checkbox input styling */
   checkbox: {
     marginRight: '8px',
     cursor: 'pointer'
   },
 
+  /** Forgot password link styling */
   forgotLink: {
     color: '#3b82f6',
     textDecoration: 'none',
@@ -310,6 +395,7 @@ const styles = {
     transition: 'color 0.2s ease'
   },
 
+  /** Error message box styling */
   errorMessage: {
     background: 'rgba(239, 68, 68, 0.1)',
     borderLeft: '4px solid #ef4444',
@@ -321,6 +407,7 @@ const styles = {
     animation: 'shake 0.5s ease-in-out'
   },
 
+  /** Success message box styling */
   successMessage: {
     background: 'rgba(34, 197, 94, 0.1)',
     borderLeft: '4px solid #22c55e',
@@ -331,18 +418,21 @@ const styles = {
     animation: 'slideInUp 0.4s ease-out'
   },
 
+  /** Success message title */
   successTitle: {
     fontWeight: '600',
     margin: '0 0 4px 0',
     fontSize: '16px'
   },
 
+  /** Success message subtitle */
   successSubtitle: {
     fontSize: '14px',
     margin: '0',
     opacity: 0.8
   },
 
+  /** Submit button styling */
   submitBtn: {
     width: '100%',
     padding: '12px 16px',
@@ -361,11 +451,13 @@ const styles = {
     animation: 'slideInUp 0.6s ease-out 0.3s backwards'
   },
 
+  /** Loading spinner animation */
   spinner: {
     display: 'inline-block',
     animation: 'spin 1s linear infinite'
   },
 
+  /** Visual divider line */
   divider: {
     height: '1px',
     background: 'linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent)',
@@ -373,6 +465,7 @@ const styles = {
     border: 'none'
   },
 
+  /** Sign up text styling */
   signupText: {
     textAlign: 'center',
     color: '#6b7280',
@@ -380,6 +473,7 @@ const styles = {
     margin: 0
   },
 
+  /** Sign up link styling */
   signupLink: {
     color: '#3b82f6',
     textDecoration: 'none',
@@ -387,6 +481,7 @@ const styles = {
     cursor: 'pointer'
   },
 
+  /** Footer copyright text */
   footer: {
     textAlign: 'center',
     color: 'rgba(255, 255, 255, 0.6)',
