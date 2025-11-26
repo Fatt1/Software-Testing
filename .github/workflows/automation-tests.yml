@@ -26,21 +26,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # --- SETUP NODE (KHÔNG DÙNG CACHE ĐỂ TRÁNH LỖI BINARY CŨ) ---
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          # Đã tắt cache tạm thời để fix lỗi "Node 18 vs Node 20"
-          # cache: "npm" 
+          # Tạm thời tắt cache để tránh xung đột file lock cũ
+          # cache: "npm"
           # cache-dependency-path: "frontend/package-lock.json"
 
-      # --- CÀI ĐẶT THƯ VIỆN (CÀI MỚI TINH) ---
+      # --- 👇 ĐOẠN BẠN YÊU CẦU NẰM Ở ĐÂY 👇 ---
       - name: Install dependencies
         working-directory: ./frontend
         run: |
-          rm -rf node_modules
-          npm ci
+          # Xóa file lock cũ và node_modules để tránh xung đột
+          rm -rf node_modules package-lock.json
+          # Dùng npm install (thay vì npm ci) để nó tự tìm gói Linux
+          npm install
 
       # --- JEST TEST ---
       - name: Run Integration Tests (Jest)
