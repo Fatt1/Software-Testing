@@ -11,24 +11,16 @@ on:
     paths:
       - "frontend/**"
   workflow_dispatch:
-    inputs:
-      reason:
-        description: "Lý do deploy"
-        required: false
-        default: "Manual run"
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-    # Timeout để tránh job bị treo quá lâu tốn phút GitHub
-    timeout-minutes: 15
+    timeout-minutes: 15 # Tự hủy nếu treo quá 15p
 
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-      # Fail-fast: true (mặc định) -> Nếu Node 18 lỗi thì hủy luôn Node 20 để tiết kiệm
-      fail-fast: false 
+      fail-fast: false # Node 18 lỗi thì Node 20 vẫn chạy tiếp để check
 
     steps:
       - name: Checkout code
@@ -45,44 +37,43 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      # --- JEST TEST ---
+      # --- FIX 1: Xóa continue-on-error ở Jest ---
       - name: Run Integration Tests (Jest)
         working-directory: ./frontend
-        # Đã xóa continue-on-error để pipeline fail nếu test fail
         run: npm test -- --coverage --testPathPattern="Integration|Mock" --passWithNoTests
+        # Đã xóa continue-on-error: true -> Để nếu lỗi thì báo FAIL ngay
 
       - name: Upload Jest Coverage Reports
         uses: actions/upload-artifact@v4
-        if: always() # Luôn upload dù test fail để xem coverage tới đâu
+        if: always() 
         with:
           name: jest-coverage-${{ matrix.node-version }}
           path: frontend/coverage/
-          retention-days: 15 # Giảm ngày lưu trữ để tiết kiệm dung lượng
+          retention-days: 15
 
-      # --- BUILD & PREPARE E2E ---
       - name: Build frontend
         working-directory: ./frontend
         run: npm run build
 
+      # --- FIX 2: Thay sleep bằng wait-on ---
       - name: Start dev server & Wait
         working-directory: ./frontend
-        # Cài thêm wait-on (npx) để đợi cổng 5173 mở thay vì sleep
         run: |
           npm run dev &
           npx wait-on http://localhost:5173 --timeout 60000
 
-      # --- CYPRESS TEST ---
+      # --- FIX 3: Xóa continue-on-error ở Cypress ---
       - name: Run E2E Tests (Cypress)
         working-directory: ./frontend
-        # Đã xóa continue-on-error
         run: npx cypress run --spec "src/tests/cypress/e2e/login-scenarios.cy.js" --record false
         env:
           CYPRESS_BASE_URL: http://localhost:5173
+        # Đã xóa continue-on-error: true -> Để kích hoạt if: failure() bên dưới
 
-      # --- ARTIFACTS (Chỉ chạy nếu Cypress fail) ---
+      # Các bước Upload này giờ sẽ hoạt động đúng
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
-        if: failure() # Lúc này failure() mới hoạt động đúng
+        if: failure() 
         with:
           name: cypress-screenshots-${{ matrix.node-version }}
           path: frontend/src/tests/cypress/screenshots/
@@ -96,17 +87,13 @@ jobs:
           path: frontend/src/tests/cypress/videos/
           retention-days: 15
 
-      # --- REPORTING ---
-      # Bước này chạy if: always() để tổng kết dù test pass hay fail
       - name: Generate Test Report Summary
         if: always()
         run: |
-          echo "## 🧪 Automation Test Results (${{ matrix.node-version }})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Status Check" >> $GITHUB_STEP_SUMMARY
-          echo "- **Integration Tests**: ${{ steps.run-jest.outcome == 'success' && '✅ PASS' || '❌ FAIL' }}" >> $GITHUB_STEP_SUMMARY 
-          # Lưu ý: Cần thêm id: run-jest vào step Jest để dùng biến này (tùy chọn nâng cao)
-          echo "- **E2E Tests**: Check logs above" >> $GITHUB_STEP_SUMMARY
+          echo "## 🧪 Automation Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node**: ${{ matrix.node-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Jest**: ${{ steps.run-jest.outcome }}" >> $GITHUB_STEP_SUMMARY 
+          echo "- **Cypress**: Check logs above" >> $GITHUB_STEP_SUMMARY
 
       - name: Comment PR with Test Results
         if: github.event_name == 'pull_request' && always()
@@ -115,25 +102,8 @@ jobs:
           script: |
             const status = '${{ job.status }}';
             const icon = status === 'success' ? '✅' : '❌';
-            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## ${icon} Automation Tests Finished (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\n- **Jest Coverage**: Check artifacts\n- **Cypress E2E**: Check artifacts for screenshots (if failed)`
-            })
-
-  # Job chốt kết quả cuối cùng (Optional)
-  final-status:
-    needs: test
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Check overall status
-        run: |
-          if [ "${{ needs.test.result }}" == "success" ]; then
-            echo "All matrix jobs passed!"
-          else
-            echo "Some jobs failed!"
-            exit 1 # Fail pipeline này nếu job test chính bị fail
-          fi
+              body: `## ${icon} Automation Tests (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\
