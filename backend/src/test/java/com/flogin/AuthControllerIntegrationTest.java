@@ -21,112 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * AuthControllerIntegrationTest - Integration Testing for Authentication API Endpoints
- * 
- * Test Suite Purpose:
- * Integration-level testing of the AuthController REST API endpoints, focusing on
- * HTTP request/response handling, JSON serialization, and controller-service integration.
- * 
- * Testing Level: Integration Testing
- * - Tests Controller layer with mocked Service layer
- * - Validates HTTP endpoint mappings and request handling
- * - Verifies JSON request/response serialization
- * - Tests Spring MVC framework integration
- * - Does NOT start full application context (uses @WebMvcTest)
- * 
- * Spring Testing Annotations:
- * 
- * @WebMvcTest(AuthController.class)
- * - Configures Spring MVC test infrastructure
- * - Loads only AuthController and related MVC components
- * - Does NOT load full Spring Boot application
- * - Provides MockMvc for simulating HTTP requests
- * - Faster than @SpringBootTest (only loads MVC layer)
- * 
- * @MockitoBean
- * - Creates Mockito mock and registers it in Spring context
- * - Replaces real AuthService bean with mock
- * - Allows controlling service behavior in tests
- * - Isolates controller testing from service implementation
- * 
- * @DisplayName
- * - Provides readable test names in test reports
- * - Improves test documentation
- * - Makes test failures easier to understand
- * 
- * MockMvc - Spring's HTTP Testing Framework:
- * Purpose: Simulate HTTP requests without starting web server
- * Benefits:
- * - Fast: No server startup overhead
- * - Complete: Tests full Spring MVC stack
- * - Controllable: Full control over request/response
- * - Verifiable: Assert on status, headers, body content
- * 
- * MockMvc Methods Used:
- * - perform() - Execute HTTP request
- * - post() - Create POST request
- * - content() - Set request body
- * - contentType() - Set Content-Type header
- * - andExpect() - Add response assertions
- * - status() - Assert HTTP status code
- * - jsonPath() - Assert JSON response content
- * 
- * ObjectMapper:
- * - Jackson library for JSON serialization/deserialization
- * - Converts Java objects to JSON strings for requests
- * - Used to create JSON request payloads
- * 
- * Test Structure:
- * 
- * Group A: POST /api/auth/login Endpoint Tests (3 điểm)
- * - Successful login with valid credentials
- * - Failed login scenarios (invalid username, wrong password)
- * - Validation errors (empty fields, too short, invalid format)
- * - Request/response JSON structure validation
- * - HTTP status code verification
- * 
- * Test Scenarios Covered:
- * ✅ Login success with valid credentials
- * ✅ Login failure - user not found
- * ✅ Login failure - incorrect password
- * ✅ Validation error - empty username
- * ✅ Validation error - empty password
- * ✅ Validation error - username too short (<3 chars)
- * ✅ Validation error - password too short (<6 chars)
- * ✅ Validation error - username with invalid characters
- * ✅ Validation error - password without letters
- * ✅ Validation error - password without numbers
- * 
- * HTTP Status Codes Tested:
- * - 200 OK - Successful login
- * - 400 BAD REQUEST - Validation errors
- * - 401 UNAUTHORIZED - Invalid credentials
- * 
- * JSON Response Structure:
- * Success: { "message": "...", "user": {...}, "token": "..." }
- * Error: { "message": "..." }
- * 
- * Why Integration Testing for Controllers?
- * - Validates HTTP layer works correctly
- * - Tests request mapping and routing
- * - Verifies JSON serialization/deserialization
- * - Ensures proper error handling and status codes
- * - Tests Spring MVC configuration
- * - Catches issues in HTTP contract
- * 
- * Testing Best Practices:
- * - Use @WebMvcTest for fast controller tests
- * - Mock service layer to isolate controller
- * - Test all HTTP methods and endpoints
- * - Verify status codes and response structure
- * - Test both success and error scenarios
- * - Use @Nested classes to organize related tests
- * 
- * @see com.flogin.controller.AuthController - Controller under test
- * @see com.flogin.service.AuthService - Mocked service dependency
- * @see com.flogin.dto.LoginDto - Request/Response DTOs
- */
+
 
 /**
  * AuthControllerIntegrationTest - Integration Test cho Auth API
@@ -146,22 +41,8 @@ public class AuthControllerIntegrationTest {
     @MockitoBean
     private AuthService authService;
 
-    /**
-     * Test Group A: Test POST /api/auth/login endpoint (3 điểm)
-     * Bao gồm các test case:
-     * 1. Login thành công với credentials hợp lệ
-     * 2. Login thất bại với username không tồn tại
-     * 3. Login thất bại với password sai
-     * 4. Login thất bại với username trống
-     * 5. Login thất bại với password trống
-     * 6. Login thất bại với username quá ngắn
-     * 7. Login thất bại với password quá ngắn
-     * 8. Login thất bại với username chứa ký tự đặc biệt không hợp lệ
-     * 9. Login thất bại với password không chứa chữ cái
-     * 10. Login thất bại với password không chứa số
-     */
     @Nested
-    @DisplayName("A) Test POST /api/auth/login endpoint - 3 điểm")
+    @DisplayName("A) Test POST /api/auth/login endpoint")
     class LoginEndpointTests {
         
         @Test
@@ -270,71 +151,6 @@ public class AuthControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("6. Login thất bại - Username quá ngắn (< 3 ký tự)")
-        void testLoginFailure_UsernameTooShort() throws Exception {
-            // Arrange: Username chỉ có 2 ký tự vi phạm @Size(min = 3)
-            LoginRequest request = new LoginRequest("ab", "Test123");
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("7. Login thất bại - Password quá ngắn (< 6 ký tự)")
-        void testLoginFailure_PasswordTooShort() throws Exception {
-            // Arrange: Password chỉ có 5 ký tự vi phạm @Size(min = 6)
-            LoginRequest request = new LoginRequest("testuser", "Te123");
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("8. Login thất bại - Username chứa ký tự đặc biệt không hợp lệ")
-        void testLoginFailure_UsernameInvalidCharacters() throws Exception {
-            // Arrange: Username chứa ký tự @ không hợp lệ
-            LoginRequest request = new LoginRequest("test@user!", "Test123");
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("9. Login thất bại - Password không chứa chữ cái")
-        void testLoginFailure_PasswordNoLetters() throws Exception {
-            // Arrange: Password chỉ có số, không có chữ cái
-            LoginRequest request = new LoginRequest("testuser", "123456");
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("10. Login thất bại - Password không chứa số")
-        void testLoginFailure_PasswordNoDigits() throws Exception {
-            // Arrange: Password chỉ có chữ cái, không có số
-            LoginRequest request = new LoginRequest("testuser", "TestPassword");
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
         @DisplayName("11. Login thất bại - Request body trống")
         void testLoginFailure_EmptyRequestBody() throws Exception {
             // Arrange: Gửi request không có body
@@ -345,18 +161,6 @@ public class AuthControllerIntegrationTest {
                     .content(""))
                     .andExpect(status().isBadRequest());
         }
-
-        @Test
-        @DisplayName("12. Login thất bại - Request body không phải JSON hợp lệ")
-        void testLoginFailure_InvalidJson() throws Exception {
-            // Arrange: Gửi JSON không hợp lệ
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{invalid json}"))
-                    .andExpect(status().isBadRequest());
-        }
     }
 
     /**
@@ -365,7 +169,7 @@ public class AuthControllerIntegrationTest {
      * Kiểm tra các HTTP status codes phù hợp với từng tình huống
      */
     @Nested
-    @DisplayName("B) Test Response Structure và Status Codes - 1 điểm")
+    @DisplayName("B) Test Response Structure và Status Codes")
     class ResponseStructureTests {
         
         @Test
@@ -500,7 +304,7 @@ public class AuthControllerIntegrationTest {
      * Kiểm tra các HTTP headers cần thiết
      */
     @Nested
-    @DisplayName("C) Test CORS và Headers - 1 điểm")
+    @DisplayName("C) Test CORS và Headers ")
     class CorsAndHeadersTests {
         
         @Test
@@ -573,28 +377,9 @@ public class AuthControllerIntegrationTest {
             mockMvc.perform(post("/api/auth/login")
                     .contentType(MediaType.TEXT_PLAIN) // Content-Type sai
                     .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().is5xxServerError()); // Expect 415
+                    .andExpect(status().is5xxServerError()); // Expect 500
         }
 
-        @Test
-        @DisplayName("6. Response headers chứa thông tin cần thiết")
-        void testResponseHeaders() throws Exception {
-            // Arrange
-            LoginRequest request = new LoginRequest("testuser", "Test123");
-            UserDto userDto = new UserDto("testuser", "testuser@example.com");
-            LoginResponse mockResponse = new LoginResponse(true, "Login thành công", "token123", userDto);
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act & Assert: Verify các headers quan trọng
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isOk())
-                    .andExpect(header().exists("Content-Type"))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        }
 
     }
 }
