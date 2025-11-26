@@ -1,5 +1,5 @@
 name: Automation Tests - Login E2E & Integration
-
+# ...
 on:
   push:
     branches: [main, develop]
