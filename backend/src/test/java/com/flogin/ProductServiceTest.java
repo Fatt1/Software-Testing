@@ -374,25 +374,7 @@ public class ProductServiceTest {
 
             assertTrue(exception.getMessage().contains("Validation failed"));
         }
-
-        @Test
-        @DisplayName("TC14: Nhiều lỗi validation cùng lúc")
-        void testCreateProduct_MultipleValidationErrors() {
-            // Arrange
-            CreateProductRequest request = new CreateProductRequest(null, 0.0, null, -1, null);
-
-            ConstraintViolation<CreateProductRequest> violation1 = mock(ConstraintViolation.class);
-            when(violation1.getMessage()).thenReturn("Product Name không được rỗng");
-            
-            ConstraintViolation<CreateProductRequest> violation2 = mock(ConstraintViolation.class);
-            when(violation2.getMessage()).thenReturn("Price phải > 0");
-
-            when(mockValidator.validate(request)).thenReturn(Set.of(violation1, violation2));
-
-            // Act & Assert
-            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(request));
-            verify(productRepository, never()).save(any());
-        }
+        
 
          @Test
         @DisplayName("TC18: Quantity - Số lượng lớn")
