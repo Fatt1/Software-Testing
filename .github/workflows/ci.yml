@@ -134,6 +134,7 @@ jobs:
       - name: 📤 Upload Backend Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./backend/target/site/jacoco/jacoco.xml
           flags: backend
           name: backend-coverage
@@ -196,6 +197,7 @@ jobs:
       - name: 📤 Upload Frontend Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./frontend/coverage/lcov.info
           flags: frontend
           name: frontend-coverage
