@@ -80,7 +80,7 @@ public class ProductServiceTest {
         // ========== BOUNDARY TESTS ==========
 
         @Test
-        @DisplayName("TC4: Product Name - Below min boundary (2 ký tự)")
+        @DisplayName("TC2: Product Name - Below min boundary (2 ký tự)")
         void testCreateProduct_ProductName_BelowMinBoundary() {
             // Arrange
             CreateProductRequest request = new CreateProductRequest("AB", 15000.0, "Description", 10, "Electronics");
@@ -100,7 +100,7 @@ public class ProductServiceTest {
 
 
         @Test
-        @DisplayName("TC6: Product Name - Above max boundary (101 ký tự)")
+        @DisplayName("TC3: Product Name - Above max boundary (101 ký tự)")
         void testCreateProduct_ProductName_AboveMaxBoundary() {
             // Arrange
             String productName = "A".repeat(101); // 101 ký tự
@@ -118,7 +118,7 @@ public class ProductServiceTest {
 
 
         @Test
-        @DisplayName("TC10: Quantity - Invalid (-1)")
+        @DisplayName("TC7: Quantity - Invalid (-1)")
         void testCreateProduct_Quantity_Negative() {
             // Arrange
             CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", -1, "Electronics");
@@ -134,7 +134,7 @@ public class ProductServiceTest {
         // ========== NEGATIVE TESTS ==========
 
         @Test
-        @DisplayName("TC11: Product Name null hoặc rỗng")
+        @DisplayName("TC8: Product Name null hoặc rỗng")
         void testCreateProduct_ProductName_NullOrEmpty() {
             // Arrange
             CreateProductRequest request = new CreateProductRequest(null, 15000.0, "Description", 10, "Electronics");
@@ -149,7 +149,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC12: Category không hợp lệ")
+        @DisplayName("TC9: Category không hợp lệ")
         void testCreateProduct_Category_Invalid() {
             // Arrange
             CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", 10, "InvalidCategory");
@@ -167,7 +167,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC14: Category null - Validation fail trước")
+        @DisplayName("TC10: Category null - Validation fail trước")
         void testCreateProduct_Category_Null() {
             CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", 10, null);
 
@@ -186,7 +186,7 @@ public class ProductServiceTest {
 
 
          @Test
-        @DisplayName("TC18: Quantity - Số lượng lớn")
+        @DisplayName("TC11: Quantity - Số lượng lớn")
         void testCreateProduct_Quantity_LargeNumber() {
             CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", Integer.MAX_VALUE, "Electronics");
             Product savedProduct = new Product(1L, "Electronics", "Description", Integer.MAX_VALUE, "Laptop", 15000.0);
@@ -200,7 +200,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC21: Tạo sản phẩm thất bại - Tên sản phẩm đã tồn tại")
+        @DisplayName("TC12: Tạo sản phẩm thất bại - Tên sản phẩm đã tồn tại")
         void testCreateProduct_DuplicateProductName() {
             // Arrange
             CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Gaming laptop", 10, "Electronics");
@@ -220,7 +220,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC22: Tạo sản phẩm thành công - Tên sản phẩm chưa tồn tại")
+        @DisplayName("TC13: Tạo sản phẩm thành công - Tên sản phẩm chưa tồn tại")
         void testCreateProduct_UniqueProductName() {
             // Arrange
             CreateProductRequest request = new CreateProductRequest("New Laptop", 15000.0, "Gaming laptop", 10, "Electronics");
@@ -251,7 +251,7 @@ public class ProductServiceTest {
     class GetProductTests {
 
         @Test
-        @DisplayName("TC35: Lấy sản phẩm thành công theo ID")
+        @DisplayName("TC14: Lấy sản phẩm thành công theo ID")
         void testGetProductById_Success() {
             Product product = new Product(1L, "Electronics", "Gaming laptop", 10, "Laptop", 15000.0);
             when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -265,7 +265,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC36: Lấy sản phẩm thất bại - ID không tồn tại")
+        @DisplayName("TC15: Lấy sản phẩm thất bại - ID không tồn tại")
         void testGetProductById_NotFound() {
             when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -288,7 +288,7 @@ public class ProductServiceTest {
     class UpdateProductTests {
 
         @Test
-        @DisplayName("TC37: Cập nhật sản phẩm thành công")
+        @DisplayName("TC16: Cập nhật sản phẩm thành công")
         void testUpdateProduct_Success() {
             UpdateProductRequest request = new UpdateProductRequest("Updated Laptop", 20000.0, "Updated description", 15, "Electronics");
             Product existingProduct = new Product(1L, "Electronics", "Old description", 10, "Laptop", 15000.0);
@@ -306,7 +306,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC39: Update - Validation fail với nhiều lỗi")
+        @DisplayName("TC17: Update - Validation fail với nhiều lỗi")
         void testUpdateProduct_MultipleValidationErrors() {
             // Arrange
             UpdateProductRequest request = new UpdateProductRequest(null, 0.0, null, -1, null);
@@ -326,7 +326,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC40: Update - Category không hợp lệ")
+        @DisplayName("TC18: Update - Category không hợp lệ")
         void testUpdateProduct_InvalidCategory() {
             // Arrange
             UpdateProductRequest request = new UpdateProductRequest("Laptop", 15000.0, "Description", 10, "InvalidCategory");
@@ -347,7 +347,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC38: Cập nhật sản phẩm thất bại - ID không tồn tại")
+        @DisplayName("TC19: Cập nhật sản phẩm thất bại - ID không tồn tại")
         void testUpdateProduct_NotFound() {
             UpdateProductRequest request = new UpdateProductRequest("Updated Laptop", 20000.0, "Description", 15, "Electronics");
             
@@ -372,7 +372,7 @@ public class ProductServiceTest {
     class DeleteProductTests {
 
         @Test
-        @DisplayName("TC39: Xóa sản phẩm thành công")
+        @DisplayName("TC20: Xóa sản phẩm thành công")
         void testDeleteProduct_Success() {
             Product product = new Product(1L, "Electronics", "Gaming laptop", 10, "Laptop", 15000.0);
             when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -385,7 +385,7 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC40: Xóa sản phẩm thất bại - ID không tồn tại")
+        @DisplayName("TC21: Xóa sản phẩm thất bại - ID không tồn tại")
         void testDeleteProduct_NotFound() {
             when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -403,7 +403,7 @@ public class ProductServiceTest {
     // ========================================================================================
 
         @Test
-        @DisplayName("TC41: Lấy danh sách sản phẩm với pagination")
+        @DisplayName("TC22: Lấy danh sách sản phẩm với pagination")
         void testGetAll_Success() {
             Pageable pageable = PageRequest.of(0, 10);
             List<Product> products = Arrays.asList(
