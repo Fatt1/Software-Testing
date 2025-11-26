@@ -2,7 +2,7 @@ package com.flogin;
 
 import com.flogin.dto.LoginDto.LoginRequest;
 import com.flogin.dto.LoginDto.LoginResponse;
-import com.flogin.dto.UserDtos.UserDto;
+
 import com.flogin.entity.User;
 import com.flogin.repository.interfaces.UserRepository;
 import com.flogin.service.AuthService;
@@ -14,9 +14,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.mockito.Mock;
