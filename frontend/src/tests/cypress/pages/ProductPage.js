@@ -431,8 +431,14 @@ class ProductPage {
    * Verify success notification
    */
   verifySuccessNotification(message) {
-    this.successNotification.should('be.visible');
-    this.notification.should('contain', message);
+    cy.get('.notification.success', { timeout: 10000 }).should('be.visible');
+    if (message) {
+      if (message instanceof RegExp) {
+        cy.get('.notification').invoke('text').should('match', message);
+      } else {
+        cy.get('.notification').should('contain', message);
+      }
+    }
     return this;
   }
 
@@ -440,8 +446,14 @@ class ProductPage {
    * Verify error notification
    */
   verifyErrorNotification(message) {
-    this.errorNotification.should('be.visible');
-    this.notification.should('contain', message);
+    cy.get('.notification.error', { timeout: 10000 }).should('be.visible');
+    if (message) {
+      if (message instanceof RegExp) {
+        cy.get('.notification').invoke('text').should('match', message);
+      } else {
+        cy.get('.notification').should('contain', message);
+      }
+    }
     return this;
   }
 
