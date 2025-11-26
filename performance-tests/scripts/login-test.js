@@ -14,22 +14,22 @@ const failedLogins = new Counter("failed_logins");
 // Chọn test scenario (uncomment để chọn)
 export const options = {
   // LOAD TEST: 100 concurrent users
-  // scenarios: {
-  //   load_100: {
-  //     executor: "constant-vus",
-  //     vus: 100,
-  //     duration: "1m",
-  //   },
-  // },
-
-  // LOAD TEST: 500 concurrent users
   scenarios: {
-    load_500: {
+    load_100: {
       executor: "constant-vus",
-      vus: 500,
+      vus: 100,
       duration: "1m",
     },
   },
+
+  // LOAD TEST: 500 concurrent users
+  // scenarios: {
+  //   load_500: {
+  //     executor: "constant-vus",
+  //     vus: 500,
+  //     duration: "1m",
+  //   },
+  // },
 
   // // LOAD TEST: 1000 concurrent users
   // scenarios: {
