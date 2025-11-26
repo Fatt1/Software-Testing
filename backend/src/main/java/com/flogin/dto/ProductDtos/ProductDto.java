@@ -48,13 +48,7 @@ public class ProductDto {
         this.quantity = quantity;
     }
 
-    public ProductDto(String productName, Double price, String description, Integer quantity, String category) {
-        this.category = category;
-        this.price = price;
-        this.productName = productName;
-        this.description = description;
-        this.quantity = quantity;
-    }
+
 
     public long getId() {
         return id;
