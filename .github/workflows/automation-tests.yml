@@ -1,5 +1,5 @@
 name: Automation Tests - Login E2E & Integration
-# ...
+
 on:
   push:
     branches: [main, develop]
@@ -19,8 +19,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
-      fail-fast: false # Node 18 lỗi thì Node 20 vẫn chạy tiếp để check
+        node-version: [20.x] # Bắt buộc dùng Node 20 cho Vite mới
+      fail-fast: false
 
     steps:
       - name: Checkout code
@@ -30,18 +30,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: "frontend/package-lock.json"
+          # Tạm thời tắt cache để tránh xung đột file lock cũ
+          # cache: "npm"
+          # cache-dependency-path: "frontend/package-lock.json"
 
+      # --- 👇 ĐOẠN BẠN YÊU CẦU NẰM Ở ĐÂY 👇 ---
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: |
+          # Xóa file lock cũ và node_modules để tránh xung đột
+          rm -rf node_modules package-lock.json
+          # Dùng npm install (thay vì npm ci) để nó tự tìm gói Linux
+          npm install
 
-      # --- FIX 1: Xóa continue-on-error ở Jest ---
+      # --- JEST TEST ---
       - name: Run Integration Tests (Jest)
+        id: run-jest  # Đã thêm ID để dùng cho báo cáo
         working-directory: ./frontend
         run: npm test -- --coverage --testPathPattern="Integration|Mock" --passWithNoTests
-        # Đã xóa continue-on-error: true -> Để nếu lỗi thì báo FAIL ngay
 
       - name: Upload Jest Coverage Reports
         uses: actions/upload-artifact@v4
@@ -51,26 +57,25 @@ jobs:
           path: frontend/coverage/
           retention-days: 15
 
+      # --- BUILD & E2E ---
       - name: Build frontend
         working-directory: ./frontend
         run: npm run build
 
-      # --- FIX 2: Thay sleep bằng wait-on ---
       - name: Start dev server & Wait
         working-directory: ./frontend
         run: |
           npm run dev &
           npx wait-on http://localhost:5173 --timeout 60000
 
-      # --- FIX 3: Xóa continue-on-error ở Cypress ---
+      # --- CYPRESS TEST ---
       - name: Run E2E Tests (Cypress)
         working-directory: ./frontend
         run: npx cypress run --spec "src/tests/cypress/e2e/login-scenarios.cy.js" --record false
         env:
           CYPRESS_BASE_URL: http://localhost:5173
-        # Đã xóa continue-on-error: true -> Để kích hoạt if: failure() bên dưới
 
-      # Các bước Upload này giờ sẽ hoạt động đúng
+      # --- UPLOAD ARTIFACTS (KHI LỖI) ---
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
         if: failure() 
@@ -87,6 +92,7 @@ jobs:
           path: frontend/src/tests/cypress/videos/
           retention-days: 15
 
+      # --- REPORTING ---
       - name: Generate Test Report Summary
         if: always()
         run: |
@@ -106,4 +112,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## ${icon} Automation Tests (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\
+              body: `## ${icon} Automation Tests (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\n- **Jest**: ${{ steps.run-jest.outcome }}\n- **Artifacts**: Check Summary for details.`
+            })
