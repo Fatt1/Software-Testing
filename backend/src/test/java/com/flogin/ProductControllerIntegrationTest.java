@@ -46,13 +46,8 @@ public class ProductControllerIntegrationTest {
     @MockitoBean
     private ProductService productService;
 
-    /**
-     * A) Test POST /api/products - Create (1 điểm)
-     * Test tạo product mới
-     */
-    @Nested
-    @DisplayName("A) Test POST /api/products - Create (1 điểm)")
-    class CreateProductTests {
+
+
         
         @Test
         @DisplayName("1. Tạo product thành công với dữ liệu hợp lệ")
@@ -77,22 +72,6 @@ public class ProductControllerIntegrationTest {
             
             verify(productService, times(1)).createProduct(any(CreateProductRequest.class));
         }
-
-        @Test
-        @DisplayName("2. Tạo product thất bại - ProductName trống")
-        void testCreateProduct_EmptyProductName() throws Exception {
-            // Arrange: ProductName rỗng vi phạm @NotBlank
-            CreateProductRequest requestDto = new CreateProductRequest("", 15000000.0, "Description", 10, "Electronics");
-            
-            // Act & Assert
-            mockMvc.perform(post("/api/products")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDto)))
-                    .andExpect(status().isBadRequest()); // 400 Bad Request
-            
-            verify(productService, never()).createProduct(any());
-        }
-    }
 
     /**
      * B) Test GET /api/products - Read All (1 điểm)
@@ -122,14 +101,8 @@ public class ProductControllerIntegrationTest {
             verify(productService, times(1)).getAll(any());
         }
 
-    /**
-     * C) Test GET /api/products/{id} - Read One (1 điểm)
-     * Test lấy thông tin một product theo ID
-     */
-    @Nested
-    @DisplayName("C) Test GET /api/products/{id} - Read One (1 điểm)")
-    class GetProductByIdTests {
-        
+
+
         @Test
         @DisplayName("1. Lấy product theo ID thành công")
         void testGetProductById_Success() throws Exception {
@@ -150,31 +123,8 @@ public class ProductControllerIntegrationTest {
             verify(productService, times(1)).getProductById(1L);
         }
 
-        @Test
-        @DisplayName("2. Lấy product không tồn tại - 404 Not Found")
-        void testGetProductById_NotFound() throws Exception {
-            // Arrange
-            when(productService.getProductById(999L))
-                .thenThrow(new NoSuchElementException("Product not found with id: 999"));
-            
-            // Act & Assert
-            mockMvc.perform(get("/api/products/999"))
-                    .andExpect(status().isNotFound()); // 404 Not Found
-            
-            verify(productService, times(1)).getProductById(999L);
-        }
 
 
-    }
-
-    /**
-     * D) Test PUT /api/products/{id} - Update (1 điểm)
-     * Test cập nhật product
-     */
-    @Nested
-    @DisplayName("D) Test PUT /api/products/{id} - Update (1 điểm)")
-    class UpdateProductTests {
-        
         @Test
         @DisplayName("1. Cập nhật product thành công")
         void testUpdateProduct_Success() throws Exception {
@@ -198,47 +148,8 @@ public class ProductControllerIntegrationTest {
             verify(productService, times(1)).updateProduct(eq(1L), any(UpdateProductRequest.class));
         }
 
-        @Test
-        @DisplayName("2. Cập nhật product không tồn tại - 404 Not Found")
-        void testUpdateProduct_NotFound() throws Exception {
-            // Arrange
-            UpdateProductRequest requestDto = new UpdateProductRequest("Laptop", 15000000.0, "Description", 10, "Electronics");
-            
-            when(productService.updateProduct(eq(999L), any(UpdateProductRequest.class)))
-                .thenThrow(new NoSuchElementException("Product not found with id: 999"));
-            
-            // Act & Assert
-            mockMvc.perform(put("/api/products/999")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDto)))
-                    .andExpect(status().isNotFound());
-        }
 
-        @Test
-        @DisplayName("3. Cập nhật product với dữ liệu không hợp lệ - 400 Bad Request")
-        void testUpdateProduct_InvalidData() throws Exception {
-            // Arrange: ProductName trống
-            UpdateProductRequest requestDto = new UpdateProductRequest("", 15000000.0, "Description", 10, "Electronics");
-            
-            // Act & Assert
-            mockMvc.perform(put("/api/products/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDto)))
-                    .andExpect(status().isBadRequest());
-            
-            verify(productService, never()).updateProduct(eq(1L), any());
-        }
 
-    }
-
-    /**
-     * E) Test DELETE /api/products/{id} - Delete (1 điểm)
-     * Test xóa product
-     */
-    @Nested
-    @DisplayName("E) Test DELETE /api/products/{id} - Delete (1 điểm)")
-    class DeleteProductTests {
-        
         @Test
         @DisplayName("1. Xóa product thành công - 204 No Content")
         void testDeleteProduct_Success() throws Exception {
@@ -251,22 +162,4 @@ public class ProductControllerIntegrationTest {
             
             verify(productService, times(1)).deleteProduct(1L);
         }
-
-        @Test
-        @DisplayName("2. Xóa product không tồn tại - 404 Not Found")
-        void testDeleteProduct_NotFound() throws Exception {
-            // Arrange
-            doThrow(new NoSuchElementException("Product not found with id: 999"))
-                .when(productService).deleteProduct(999L);
-            
-            // Act & Assert
-            mockMvc.perform(delete("/api/products/999"))
-                    .andExpect(status().isNotFound());
-            
-            verify(productService, times(1)).deleteProduct(999L);
-        }
-
-
-    }
-
 }

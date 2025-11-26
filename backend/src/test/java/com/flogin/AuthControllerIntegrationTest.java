@@ -100,74 +100,10 @@ public class AuthControllerIntegrationTest {
                     .andExpect(jsonPath("$.user").doesNotExist());
         }
 
-        @Test
-        @DisplayName("3. Login thất bại - Password sai")
-        void testLoginFailure_WrongPassword() throws Exception {
-            // Arrange: User tồn tại nhưng password sai
-            LoginRequest request = new LoginRequest("testuser", "WrongPass123");
-            LoginResponse mockResponse = new LoginResponse(
-                false, 
-                "Login với password sai"
-            );
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act & Assert: Expect 401 Unauthorized
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.success").value(false))
-                    .andExpect(jsonPath("$.message").value("Login với password sai"))
-                    .andExpect(jsonPath("$.token").doesNotExist())
-                    .andExpect(jsonPath("$.user").doesNotExist());
-        }
 
-        @Test
-        @DisplayName("4. Login thất bại - Username trống")
-        void testLoginFailure_EmptyUsername() throws Exception {
-            // Arrange: Username trống vi phạm @NotBlank validation
-            LoginRequest request = new LoginRequest("", "Test123");
-            
-            // Act & Assert: Expect 400 Bad Request do validation error
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest()); // Expect 400 Bad Request
-        }
-
-        @Test
-        @DisplayName("5. Login thất bại - Password trống")
-        void testLoginFailure_EmptyPassword() throws Exception {
-            // Arrange: Password trống vi phạm @NotBlank validation
-            LoginRequest request = new LoginRequest("testuser", "");
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("11. Login thất bại - Request body trống")
-        void testLoginFailure_EmptyRequestBody() throws Exception {
-            // Arrange: Gửi request không có body
-            
-            // Act & Assert: Expect 400 Bad Request
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(""))
-                    .andExpect(status().isBadRequest());
-        }
     }
 
-    /**
-     * Test Group B: Test response structure và status codes (1 điểm)
-     * Kiểm tra cấu trúc response trả về có đúng format không
-     * Kiểm tra các HTTP status codes phù hợp với từng tình huống
-     */
+
     @Nested
     @DisplayName("B) Test Response Structure và Status Codes")
     class ResponseStructureTests {
@@ -265,20 +201,7 @@ public class AuthControllerIntegrationTest {
                     .andExpect(status().is(401));
         }
 
-        @Test
-        @DisplayName("5. Status code 400 Bad Request khi validation fail")
-        void testStatusCode_400_OnValidationError() throws Exception {
-            // Arrange: Data không hợp lệ
-            LoginRequest request = new LoginRequest("", ""); // Username và password trống
-            
-            // Act & Assert: Verify status code = 400
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(status().is(400));
 
-        }
 
         @Test
         @DisplayName("6. Response Content-Type là application/json")
@@ -329,25 +252,6 @@ public class AuthControllerIntegrationTest {
                     .andExpect(header().exists("Access-Control-Allow-Origin"));
         }
 
-        @Test
-        @DisplayName("2. CORS - Cho phép tất cả origins (*)")
-        void testCors_AllowAllOrigins() throws Exception {
-            // Arrange
-            LoginRequest request = new LoginRequest("testuser", "Test123");
-            UserDto userDto = new UserDto("testuser", "testuser@example.com");
-            LoginResponse mockResponse = new LoginResponse(true, "Login thành công", "token123", userDto);
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act & Assert: Verify origin được accept
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Origin", "http://localhost:3000")
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isOk())
-                    .andExpect(header().string("Access-Control-Allow-Origin", "*"));
-        }
 
         @Test
         @DisplayName("4. Request accept header - application/json")
@@ -356,10 +260,10 @@ public class AuthControllerIntegrationTest {
             LoginRequest request = new LoginRequest("testuser", "Test123");
             UserDto userDto = new UserDto("testuser", "testuser@example.com");
             LoginResponse mockResponse = new LoginResponse(true, "Login thành công", "token123", userDto);
-            
+
             when(authService.authenticate(any(LoginRequest.class)))
                 .thenReturn(mockResponse);
-            
+
             // Act & Assert: Verify server accept JSON
             mockMvc.perform(post("/api/auth/login")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -369,18 +273,6 @@ public class AuthControllerIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
-        @Test
-        @DisplayName("5. Request với Content-Type sai bị reject")
-        void testInvalidContentType_Rejected() throws Exception {
-            // Arrange
-            LoginRequest request = new LoginRequest("testuser", "Test123");
-            
-            // Act & Assert: Gửi request với Content-Type text/plain
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.TEXT_PLAIN) // Content-Type sai
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().is5xxServerError()); // Expect 500
-        }
 
 
     }

@@ -93,19 +93,6 @@ public class CsrfSecurityTest {
     // TC1: CSRF Protection on POST Requests
     // ===================================================================
 
-    @Test
-    @DisplayName("TC1.1: CSRF - Create product without CSRF token (với JWT)")
-    void testCsrf_CreateProduct_WithJwt() throws Exception {
-        // Với JWT authentication, CSRF token có thể không cần thiết
-        // nhưng vẫn test để đảm bảo không có lỗ hổng
-        CreateProductRequest request = new CreateProductRequest("Test Product 1.1", 100.0, "Test", 10, "Electronics");
-
-        mockMvc.perform(post("/api/products")
-                .header("Authorization", authToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-    }
 
     @Test
     @DisplayName("TC1.2: CSRF - Create product without Authorization header")

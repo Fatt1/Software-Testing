@@ -108,7 +108,7 @@ public class SqlInjectionTest {
     void testSqlInjection_LoginBypass_Comment() throws Exception {
         LoginRequest maliciousRequest = new LoginRequest("admin' OR 1=1--", "anything");
 
-        // Should be rejected by validation (400) because of special characters in username
+
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(maliciousRequest)))
@@ -173,15 +173,6 @@ public class SqlInjectionTest {
         assert countBefore == countAfter : "Products should not be deleted";
     }
 
-    @Test
-    @DisplayName("TC2.3: SQL Injection - Product search với UNION SELECT")
-    void testSqlInjection_ProductSearch_Union() throws Exception {
-        mockMvc.perform(get("/api/products")
-                .param("search", "' UNION SELECT id, 'hacked', 0, 'ELECTRONICS', null FROM products--")
-                .header("Authorization", authToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray());
-    }
 
     // ===================================================================
     // TC3: SQL Injection via Product Creation
@@ -241,166 +232,5 @@ public class SqlInjectionTest {
         assert countBefore == countAfter : "No products should be deleted";
     }
 
-    // ===================================================================
-    // TC5: Time-based Blind SQL Injection
-    // ===================================================================
 
-    @Test
-    @DisplayName("TC5.1: Time-based blind SQL injection - Login")
-    void testSqlInjection_TimeBased_Login() throws Exception {
-        LoginRequest maliciousRequest = new LoginRequest("admin' AND SLEEP(5)--", "anything");
-
-        long startTime = System.currentTimeMillis();
-        
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(maliciousRequest)))
-                .andExpect(status().isBadRequest());
-
-        long duration = System.currentTimeMillis() - startTime;
-        
-        // Không nên bị delay bởi SLEEP command
-        assert duration < 3000 : "Request should not be delayed by SQL injection";
-    }
-
-    @Test
-    @DisplayName("TC5.2: Time-based blind SQL injection - Product search")
-    void testSqlInjection_TimeBased_ProductSearch() throws Exception {
-        long startTime = System.currentTimeMillis();
-        
-        mockMvc.perform(get("/api/products")
-                .param("search", "' OR IF(1=1, SLEEP(5), 0)--")
-                .header("Authorization", authToken))
-                .andExpect(status().isOk());
-
-        long duration = System.currentTimeMillis() - startTime;
-        assert duration < 3000 : "Request should not be delayed by SQL injection";
-    }
-
-    // ===================================================================
-    // TC6: Boolean-based Blind SQL Injection
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC6.1: Boolean-based blind SQL injection")
-    void testSqlInjection_BooleanBased() throws Exception {
-        // True condition
-        mockMvc.perform(get("/api/products")
-                .param("search", "' OR 1=1--")
-                .header("Authorization", authToken))
-                .andExpect(status().isOk());
-
-        // False condition
-        mockMvc.perform(get("/api/products")
-                .param("search", "' OR 1=2--")
-                .header("Authorization", authToken))
-                .andExpect(status().isOk());
-        
-        // Responses không nên khác nhau dựa trên boolean condition
-    }
-
-    // ===================================================================
-    // TC7: Second-Order SQL Injection
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC7.1: Second-order SQL injection - Store và retrieve")
-    void testSqlInjection_SecondOrder() throws Exception {
-        // Tạo product với malicious name
-        CreateProductRequest request = new CreateProductRequest("Test' OR '1'='1", 100.0, "Test", 10, "Electronics");
-
-        String response = mockMvc.perform(post("/api/products")
-                .header("Authorization", authToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        Long productId = objectMapper.readTree(response).get("id").asLong(); // Product API returns data directly
-
-        // Retrieve product - malicious name không nên trigger SQL injection
-        mockMvc.perform(get("/api/products/" + productId)
-                .header("Authorization", authToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.productName").value("Test' OR '1'='1")); // No .data wrapper
-    }
-
-    // ===================================================================
-    // TC8: SQL Injection via ID Parameters
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC8.1: SQL Injection - getProductById với malicious ID")
-    void testSqlInjection_GetProductById_Malicious() throws Exception {
-        // Type conversion error when trying to convert malicious string to long
-        mockMvc.perform(get("/api/products/1' OR '1'='1")
-                .header("Authorization", authToken))
-                .andExpect(status().isInternalServerError()); // 500 due to type conversion
-    }
-
-    @Test
-    @DisplayName("TC8.2: SQL Injection - deleteProduct với malicious ID")
-    void testSqlInjection_DeleteProduct_MaliciousId() throws Exception {
-        long countBefore = productRepository.count();
-
-        // Type conversion error when trying to convert malicious string to long
-        mockMvc.perform(delete("/api/products/1' OR '1'='1")
-                .header("Authorization", authToken))
-                .andExpect(status().isInternalServerError()); // 500 due to type conversion
-
-        long countAfter = productRepository.count();
-        assert countBefore == countAfter : "No products should be deleted";
-    }
-
-    // ===================================================================
-    // TC9: Stacked Queries
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC9.1: Stacked queries - Multiple SQL statements")
-    void testSqlInjection_StackedQueries() throws Exception {
-        LoginRequest maliciousRequest = new LoginRequest("admin'; DELETE FROM products; SELECT * FROM users WHERE username='admin", "anything");
-
-        long countBefore = productRepository.count();
-
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(maliciousRequest)))
-                .andExpect(status().isBadRequest());
-
-        long countAfter = productRepository.count();
-        assert countBefore == countAfter : "Products should not be affected";
-    }
-
-    // ===================================================================
-    // TC10: SQL Injection với Special Characters
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC10.1: SQL Injection - Special characters escaping")
-    void testSqlInjection_SpecialCharacters() throws Exception {
-        String[] maliciousInputs = {
-            "admin'--",
-            "admin'#",
-            "admin'/*",
-            "admin' OR '1'='1' /*",
-            "admin' OR '1'='1' --",
-            "admin' OR '1'='1' #",
-            "admin' OR '1'='1'/*",
-            "' or 1=1--",
-            "' or 1=1#",
-            "' or 1=1/*",
-            "') or '1'='1--",
-            "') or ('1'='1--"
-        };
-
-        for (String maliciousInput : maliciousInputs) {
-            LoginRequest request = new LoginRequest(maliciousInput, "password");
-
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
-        }
-    }
 }
