@@ -15,14 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * AuthService - Service Layer for Authentication Business Logic
- * @author Software Testing Team
- * @version 1.0
- * @since 2025-11-26
- * @see JwtService
- * @see UserRepository
- */
+
 @Service
 public class AuthService {
     
