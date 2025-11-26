@@ -1,9 +1,54 @@
 /**
- * Page Object Model for Login Page
- * Encapsulates all selectors and methods for Login page interactions
+ * LoginPage - Page Object Model for Login Page
+ * 
+ * This class encapsulates all selectors and methods for Login page interactions
+ * following the Page Object Model (POM) design pattern for better test maintainability.
+ * 
+ * Benefits of Page Object Model:
+ * - Centralized selectors: All element locators in one place
+ * - Reusable methods: Common actions can be reused across tests
+ * - Easy maintenance: Update selectors in one place when UI changes
+ * - Better readability: Test code is more readable with meaningful method names
+ * - Type safety: Can add TypeScript types for better IDE support
+ * 
+ * Features:
+ * - Username and password input management
+ * - Login button interactions
+ * - Remember me checkbox
+ * - Forgot password link
+ * - Sign up link
+ * - Password visibility toggle
+ * - Error and success message verification
+ * - Loading state verification
+ * - Form validation support
+ * 
+ * Usage Example:
+ * ```javascript
+ * import LoginPage from './pages/LoginPage';
+ * 
+ * describe('Login Tests', () => {
+ *   it('should login successfully', () => {
+ *     LoginPage
+ *       .navigateToLoginPage()
+ *       .login('admin', 'admin123')
+ *       .verifySuccessMessage();
+ *   });
+ * });
+ * ```
+ * 
+ * @class LoginPage
+ * @author Software Testing Team
+ * @version 1.0
+ * @since 2025-11-26
  */
 class LoginPage {
-  // Selectors
+  // ============ SELECTORS ============
+  // All element getters return Cypress chainable elements
+  
+  /**
+   * Get username input field
+   * @returns {Cypress.Chainable} Username input element
+   */
   get usernameInput() {
     return cy.get('input[type="text"]').first();
   }
