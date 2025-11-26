@@ -3,8 +3,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'], // Đảm bảo file này có tồn tại, nếu không thì xóa dòng này đi
   
   moduleNameMapper: {
-      // Thay dòng cũ bằng dòng này.
-      // Nó sẽ tự động biến mọi class CSS thành string để test không bị lỗi.
       '\\.(css|less|scss|sass)$': '<rootDir>/src/styleMock.js',
     },
 

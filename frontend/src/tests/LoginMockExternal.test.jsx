@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '../components/LoginForm';
@@ -37,7 +38,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true, user: { username: 'testuser' } });
       
-      render(<LoginForm />);
+      render(
+      <MemoryRouter>
+          <LoginForm />
+      </MemoryRouter>
+      );
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -57,7 +62,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockRejectedValue(new Error('Login failed'));
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -82,7 +91,11 @@ describe('Login - Mock External Dependencies', () => {
         return Promise.reject(new Error('Invalid credentials'));
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -105,7 +118,11 @@ describe('Login - Mock External Dependencies', () => {
         )
       );
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -128,7 +145,11 @@ describe('Login - Mock External Dependencies', () => {
         )
       );
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -161,7 +182,11 @@ describe('Login - Mock External Dependencies', () => {
         }
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -182,7 +207,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockRejectedValue(new Error('Invalid credentials'));
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -203,7 +232,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockRejectedValue(new Error('Network error'));
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -224,7 +257,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockRejectedValue(new Error('Server error'));
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -254,7 +291,11 @@ describe('Login - Mock External Dependencies', () => {
       };
       authService.login.mockResolvedValue(mockUserData);
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -277,7 +318,11 @@ describe('Login - Mock External Dependencies', () => {
         user: null 
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -303,7 +348,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -323,7 +372,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -343,7 +396,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
@@ -358,7 +415,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -378,7 +439,11 @@ describe('Login - Mock External Dependencies', () => {
       const user = userEvent.setup();
       authService.login.mockResolvedValue({ success: true });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -401,7 +466,11 @@ describe('Login - Mock External Dependencies', () => {
       const mockResponse = { success: true, user: { id: '123' } };
       authService.login.mockResolvedValue(mockResponse);
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);

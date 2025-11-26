@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 
 /**
@@ -28,7 +29,7 @@ export default function LoginForm() {
 
   /** @type {[boolean, Function]} Success state after login */
   const [success, setSuccess] = useState(false);
-
+  const navigate = useNavigate();
   /**
    * @async
    * @param {Event} e - Form submit event
@@ -65,6 +66,8 @@ export default function LoginForm() {
           setSuccess(false);
           setUsername("");
           setPassword("");
+
+          navigate("/products");
         }, 2000);
         return;
       }

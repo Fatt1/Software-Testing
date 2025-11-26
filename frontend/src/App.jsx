@@ -1,23 +1,23 @@
-/**
- * @component
- * @example
- * // Rendered by main.jsx:
- * // <App />
- *
- * @see ProductManagement - Main feature component
- * @see LoginForm - Authentication component (commented out)
- * @see main.jsx - Application entry point that renders App
- */
-
 import "./App.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 import ProductManagement from "./components/ProductManagement";
 
 function App() {
   return (
-    <>
-      <LoginForm />
-    </>
+    // Bọc ứng dụng trong BrowserRouter
+    <BrowserRouter>
+      <Routes>
+        {/* Đường dẫn mặc định "/" sẽ chuyển hướng về "/login" */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        
+        {/* Khi URL là /login thì hiện LoginForm */}
+        <Route path="/login" element={<LoginForm />} />
+        
+        {/* Khi URL là /products thì hiện ProductManagement */}
+        <Route path="/products" element={<ProductManagement />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

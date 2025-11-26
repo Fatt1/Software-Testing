@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '../components/LoginForm';
@@ -29,7 +30,11 @@ describe('Login - Integration Testing', () => {
   describe('Test 1: Rendering và User Interactions', () => {
     
     test('nên render login form component thành công', () => {
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       // Query cụ thể hơn để tránh matching multiple elements
       const heading = screen.getByRole('heading', { level: 1 });
@@ -38,7 +43,11 @@ describe('Login - Integration Testing', () => {
     });
 
     test('nên có username input field', () => {
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       expect(usernameInput).toBeInTheDocument();
@@ -46,7 +55,11 @@ describe('Login - Integration Testing', () => {
     });
 
     test('nên có password input field', () => {
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       expect(passwordInput).toBeInTheDocument();
@@ -54,7 +67,11 @@ describe('Login - Integration Testing', () => {
     });
 
     test('nên có submit button "Đăng Nhập"', () => {
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       expect(submitButton).toBeInTheDocument();
@@ -62,7 +79,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên có thể nhập username vào input', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       await user.type(usernameInput, 'testuser');
@@ -72,7 +93,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên có thể nhập password vào input', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       await user.type(passwordInput, 'password123');
@@ -82,7 +107,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên có toggle để hiển thị/ẩn password', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       expect(passwordInput).toHaveAttribute('type', 'password');
@@ -103,7 +132,11 @@ describe('Login - Integration Testing', () => {
     test('nên disable button khi loading', async () => {
       const user = userEvent.setup();
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -120,7 +153,11 @@ describe('Login - Integration Testing', () => {
     test('nên có thể nhấn Enter để submit form', async () => {
       const user = userEvent.setup();
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -135,7 +172,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên highlight error input khi validation fail', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
@@ -164,7 +205,11 @@ describe('Login - Integration Testing', () => {
         user: { userName: 'admin', email: 'admin@example.com' }
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -188,7 +233,11 @@ describe('Login - Integration Testing', () => {
         user: { userName: 'user01', email: 'user01@example.com' }
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -206,7 +255,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên không gọi API nếu username không hợp lệ', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -225,7 +278,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên không gọi API nếu password trống', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
@@ -242,7 +299,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên không gọi API nếu username trống', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
@@ -265,7 +326,11 @@ describe('Login - Integration Testing', () => {
         user: { userName: 'testuser', email: 'testuser@example.com' }
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -289,7 +354,11 @@ describe('Login - Integration Testing', () => {
     
     test('nên hiển thị error khi username trống', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       await user.click(submitButton);
@@ -302,7 +371,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên hiển thị error khi username không hợp lệ', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -322,7 +395,11 @@ describe('Login - Integration Testing', () => {
       const user = userEvent.setup();
       authService.login.mockRejectedValue(new Error('Invalid credentials'));
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -341,7 +418,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên clear error khi user chỉnh sửa input', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       await user.click(submitButton);
@@ -361,7 +442,11 @@ describe('Login - Integration Testing', () => {
 
     test('nên hiển thị error message với styling khác biệt', async () => {
       const user = userEvent.setup();
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       await user.click(submitButton);
@@ -382,7 +467,11 @@ describe('Login - Integration Testing', () => {
         user: { userName: 'admin', email: 'admin@example.com' }
       });
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -402,7 +491,11 @@ describe('Login - Integration Testing', () => {
       const user = userEvent.setup();
       authService.login.mockRejectedValue(new Error('Network error'));
       
-      render(<LoginForm />);
+   render(
+  <MemoryRouter>
+    <LoginForm />
+  </MemoryRouter>
+);
       
       const usernameInput = screen.getByPlaceholderText(/your_username/i);
       const passwordInput = screen.getByPlaceholderText(/••••••••/i);
