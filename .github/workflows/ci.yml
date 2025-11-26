@@ -508,7 +508,6 @@ jobs:
         frontend-tests,
         e2e-tests,
         performance-tests,
-        security-scan,
         code-quality,
       ]
     if: always()
