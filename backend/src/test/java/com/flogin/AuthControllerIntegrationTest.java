@@ -179,15 +179,15 @@ public class AuthControllerIntegrationTest {
             LoginRequest request = new LoginRequest("testuser", "Test123");
             UserDto userDto = new UserDto("testuser", "testuser@example.com");
             LoginResponse mockResponse = new LoginResponse(
-                true, 
-                "Login thành công", 
+                true,
+                "Login thành công",
                 "token.jwt.here",
                 userDto
             );
-            
+
             when(authService.authenticate(any(LoginRequest.class)))
                 .thenReturn(mockResponse);
-            
+
             // Act & Assert: Verify response có đầy đủ field
             mockMvc.perform(post("/api/auth/login")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -204,6 +204,12 @@ public class AuthControllerIntegrationTest {
                     .andExpect(jsonPath("$.user.email").exists());
         }
 
+//        @Test
+//        @DisplayName("1. Response structure có đầy đủ các field khi login thành công")
+//        void testSuccessResponseStructure() throws Exception {
+//            //Arrange
+////            LoginRequest request = new LoginRequest(())
+//        }
         @Test
         @DisplayName("2. Response structure khi login thất bại (không có token)")
         void testFailureResponseStructure() throws Exception {
