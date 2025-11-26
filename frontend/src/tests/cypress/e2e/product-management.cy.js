@@ -1,4 +1,116 @@
 /**
+ * E2E Test: Product Management - Basic CRUD Operations
+ * 
+ * Test Suite Purpose:
+ * End-to-end testing of core product management functionality, covering
+ * all basic CRUD (Create, Read, Update, Delete) operations in a real
+ * browser environment with actual backend integration.
+ * 
+ * Testing Level: E2E (End-to-End)
+ * - Full stack testing: React frontend + Spring Boot backend + Database
+ * - Real HTTP API calls to backend
+ * - Actual database operations
+ * - Complete user workflows
+ * - Browser-based testing with Cypress
+ * 
+ * Page Object Model Architecture:
+ * This test suite leverages ProductPage object for:
+ * - Encapsulating all product page interactions
+ * - Providing reusable methods for common actions
+ * - Separating test logic from implementation
+ * - Making tests maintainable and readable
+ * - Simplifying UI change updates
+ * 
+ * Test Scenarios Coverage:
+ * 
+ * Scenario 1: Page Load and UI Elements
+ * - Product management page loads successfully
+ * - All UI controls are visible (search, filter, buttons)
+ * - Product table displays correctly
+ * - Table headers are present
+ * - Action buttons exist for each product
+ * 
+ * Scenario 2: Create Product
+ * - Add Product button opens form modal
+ * - All form fields are visible and functional
+ * - Form validation works correctly
+ * - Valid product can be created
+ * - New product appears in table
+ * 
+ * Scenario 3: Read/View Products
+ * - Product list displays all products
+ * - Product details are correct
+ * - Pagination works (if applicable)
+ * - Product count is accurate
+ * 
+ * Scenario 4: Update Product
+ * - Edit button opens edit form
+ * - Form pre-fills with existing data
+ * - Product data can be modified
+ * - Changes are saved and reflected
+ * - Updated product shows in table
+ * 
+ * Scenario 5: Delete Product
+ * - Delete button triggers confirmation
+ * - Product is removed from list
+ * - Product count decreases
+ * - Deletion is persisted
+ * 
+ * Scenario 6: Search and Filter
+ * - Search by product name works
+ * - Filter by category works
+ * - Combined search and filter works
+ * - Results update in real-time
+ * - Empty results handled gracefully
+ * 
+ * ProductPage Object Methods:
+ * - navigateToProductPage() - Go to product management
+ * - clickAddProduct() - Open create product form
+ * - fillProductForm(data) - Fill all product fields
+ * - submitProductForm() - Save product
+ * - searchProduct(name) - Search by name
+ * - filterByCategory(category) - Filter products
+ * - clickEditProduct(index) - Edit specific product
+ * - clickDeleteProduct(index) - Delete specific product
+ * - verifyProductInTable(name) - Check product exists
+ * 
+ * Element Selectors:
+ * - pageTitle - "Quản Lý Sản Phẩm" heading
+ * - addProductButton - Add new product button
+ * - searchInput - Product search field
+ * - categoryFilter - Category dropdown
+ * - productTable - Main product data table
+ * - tableRows - Individual product rows
+ * - modal - Product form modal
+ * - productNameInput - Product name field
+ * - priceInput - Price field
+ * - quantityInput - Quantity field
+ * - categorySelect - Category selector
+ * - descriptionInput - Description textarea
+ * 
+ * Cypress Features Used:
+ * - cy.visit() - Navigate to pages
+ * - cy.get() - Query DOM elements
+ * - cy.contains() - Find by text content
+ * - cy.type() - Simulate typing
+ * - cy.click() - Simulate clicks
+ * - cy.select() - Select dropdown options
+ * - cy.within() - Scope queries to element
+ * - should() - Assertions
+ * - each() - Iterate over elements
+ * 
+ * Why E2E for Product Management?
+ * - Validates complete CRUD workflows
+ * - Tests real database operations
+ * - Ensures frontend-backend integration
+ * - Catches issues in production-like environment
+ * - Provides confidence for releases
+ * 
+ * @see ../pages/ProductPage.js - Page Object Model
+ * @see ../../components/ProductManagement.jsx - Component under test
+ */
+
+/**
  * E2E Test: Product Management - Basic Operations
  * Using Page Object Model pattern
  */

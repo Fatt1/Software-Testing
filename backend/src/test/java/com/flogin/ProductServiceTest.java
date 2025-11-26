@@ -27,6 +27,152 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
+ * ProductServiceTest - Comprehensive Unit Testing with Boundary, Edge Cases, and Negative Testing
+ * 
+ * Test Suite Purpose:
+ * Exhaustive unit testing of ProductService business logic, covering all CRUD operations
+ * with special focus on boundary conditions, edge cases, and negative test scenarios.
+ * This represents best practices in thorough service layer testing.
+ * 
+ * Testing Philosophy:
+ * - Boundary Testing: Test limits and boundaries of input values
+ * - Edge Case Testing: Test unusual but valid scenarios
+ * - Negative Testing: Test invalid inputs and error conditions
+ * - Positive Testing: Test normal, expected scenarios
+ * - Equivalence Partitioning: Group similar test cases
+ * 
+ * Test Coverage Goals:
+ * - All CRUD operations: Create, Read, Update, Delete
+ * - All validation rules and business constraints
+ * - All error paths and exception scenarios
+ * - Boundary values for all numeric and string fields
+ * - Edge cases (empty lists, null values, special characters)
+ * 
+ * ProductService Methods Tested:
+ * 
+ * 1. createProduct(CreateProductRequest)
+ *    - Validates product data
+ *    - Checks category validity
+ *    - Saves to database via repository
+ *    - Returns ProductDto
+ * 
+ * 2. getAllProducts(Pageable, String category, String search)
+ *    - Retrieves paginated product list
+ *    - Filters by category (optional)
+ *    - Searches by name (optional)
+ *    - Returns Page<ProductDto>
+ * 
+ * 3. getProductById(String id)
+ *    - Finds product by ID
+ *    - Throws NoSuchElementException if not found
+ *    - Returns ProductDto
+ * 
+ * 4. updateProduct(String id, UpdateProductRequest)
+ *    - Validates update data
+ *    - Updates existing product
+ *    - Throws exception if product not found
+ *    - Returns updated ProductDto
+ * 
+ * 5. deleteProduct(String id)
+ *    - Deletes product by ID
+ *    - Throws exception if product not found
+ *    - Returns void
+ * 
+ * Boundary Testing Examples:
+ * 
+ * Product Name:
+ * - Minimum length: 3 characters (boundary)
+ * - Below minimum: 2 characters (invalid)
+ * - Maximum length: 100 characters (boundary)
+ * - Above maximum: 101 characters (invalid)
+ * - Empty string (invalid)
+ * - Null value (invalid)
+ * 
+ * Price:
+ * - Zero: 0 (invalid - must be positive)
+ * - Minimum valid: 0.01 (boundary)
+ * - Negative: -100 (invalid)
+ * - Very large: 999999999.99 (valid)
+ * - Null (invalid)
+ * 
+ * Quantity:
+ * - Zero: 0 (valid - out of stock)
+ * - Negative: -1 (invalid)
+ * - Minimum valid: 1 (boundary)
+ * - Very large: Integer.MAX_VALUE (valid)
+ * 
+ * Edge Cases Tested:
+ * - Empty product list (getAllProducts returns empty page)
+ * - Product with minimum/maximum field lengths
+ * - Products with special characters in name/description
+ * - Unicode characters in Vietnamese product names
+ * - Very long descriptions (500 characters)
+ * - Pagination with 0 results
+ * - Pagination edge cases (last page, single item)
+ * 
+ * Negative Test Scenarios:
+ * - Create product with missing required fields
+ * - Create product with invalid category
+ * - Update non-existent product
+ * - Delete non-existent product
+ * - Invalid price (negative, zero, null)
+ * - Invalid quantity (negative, null)
+ * - Name too short or too long
+ * - Description too short or too long
+ * - Empty or null request objects
+ * 
+ * Test Organization:
+ * Tests are grouped by method using @Nested classes:
+ * - CreateProductTests - All create scenarios
+ * - GetAllProductsTests - List and search scenarios
+ * - GetProductByIdTests - Find by ID scenarios
+ * - UpdateProductTests - Update scenarios
+ * - DeleteProductTests - Delete scenarios
+ * 
+ * Mock Configurations:
+ * 
+ * Success scenario:
+ * when(productRepository.save(any(Product.class)))
+ *     .thenReturn(savedProduct);
+ * 
+ * Not found scenario:
+ * when(productRepository.findById("invalid-id"))
+ *     .thenReturn(Optional.empty());
+ * 
+ * Validation error:
+ * when(validator.validate(any()))
+ *     .thenReturn(Set.of(constraintViolation));
+ * 
+ * Test Method Naming Convention:
+ * testMethodName_Scenario_ExpectedResult()
+ * 
+ * Examples:
+ * - testCreateProduct_Success() - Happy path
+ * - testCreateProduct_InvalidPrice_ThrowsException() - Negative test
+ * - testCreateProduct_NameTooShort_ValidationError() - Boundary test
+ * - testGetAllProducts_EmptyResult_ReturnsEmptyPage() - Edge case
+ * 
+ * Assertions Used:
+ * - assertNotNull() - Verify object exists
+ * - assertEquals() - Compare expected vs actual values
+ * - assertTrue() / assertFalse() - Boolean conditions
+ * - assertThrows() - Verify exceptions thrown
+ * - assertAll() - Group multiple assertions
+ * 
+ * Why Comprehensive Testing Matters:
+ * - Catches bugs early in development
+ * - Documents expected behavior thoroughly
+ * - Prevents regressions when code changes
+ * - Ensures business rules are enforced
+ * - Provides confidence in service reliability
+ * - Makes refactoring safer
+ * 
+ * @see com.flogin.service.ProductService - Service under test
+ * @see com.flogin.dto.ProductDtos - Request/Response DTOs
+ * @see com.flogin.entity.Product - Domain entity
+ */
+
+/**
  * ProductService Unit Test - Với Boundary, Edge Cases và Negative Tests
  */
 @DisplayName("ProductService Unit Test")
