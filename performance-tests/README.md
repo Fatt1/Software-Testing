@@ -478,3 +478,508 @@ _(Điền số liệu thật sau khi chạy tests)_
 - k6 Documentation: https://k6.io/docs/
 - Performance Testing Best Practices: https://k6.io/docs/testing-guides/
 - Spring Boot Performance Tuning: https://spring.io/guides/
+
+---
+
+## 🔍 Advanced Performance Analysis
+
+### Understanding Performance Metrics in Depth
+
+#### 1. Response Time Percentiles Explained
+
+**What are Percentiles?**
+- **p50 (Median)**: 50% of requests are faster than this value
+- **p95**: 95% of requests are faster (only 5% slower)
+- **p99**: 99% of requests are faster (only 1% slower)
+- **p99.9**: 99.9% of requests are faster (only 0.1% slower)
+
+**Why Percentiles Matter:**
+```
+Scenario: 1000 requests to Login API
+
+Average: 500ms
+p50: 400ms
+p95: 1200ms
+p99: 3000ms
+
+Interpretation:
+- Typical user experiences 400ms response
+- 95% of users get response under 1.2 seconds
+- 5% of users (50 people) wait 1.2-3 seconds
+- Worst 1% (10 people) wait over 3 seconds
+
+⚠️ Average can be misleading! A few slow requests inflate the average.
+Percentiles show the real user experience distribution.
+```
+
+**Setting Thresholds:**
+```javascript
+export const options = {
+  thresholds: {
+    // 95% of requests should be under 2 seconds
+    'http_req_duration': ['p(95)<2000'],
+    
+    // 99% of requests should be under 5 seconds
+    'http_req_duration': ['p(99)<5000'],
+    
+    // Less than 1% errors
+    'http_req_failed': ['rate<0.01'],
+    
+    // At least 100 requests per second
+    'http_reqs': ['rate>100'],
+  }
+};
+```
+
+#### 2. Load Profile Patterns
+
+**Constant Load:**
+```javascript
+export const options = {
+  vus: 100,
+  duration: '5m',
+};
+// Maintains 100 concurrent users for 5 minutes
+// Use for: Sustained load testing, stability testing
+```
+
+**Ramping Load (Stress Test):**
+```javascript
+export const options = {
+  stages: [
+    { duration: '2m', target: 100 },   // Ramp up to 100 users
+    { duration: '5m', target: 100 },   // Stay at 100
+    { duration: '2m', target: 500 },   // Ramp up to 500
+    { duration: '5m', target: 500 },   // Stay at 500
+    { duration: '2m', target: 0 },     // Ramp down
+  ],
+};
+// Use for: Finding breaking points, capacity planning
+```
+
+**Spike Test:**
+```javascript
+export const options = {
+  stages: [
+    { duration: '30s', target: 100 },   // Normal load
+    { duration: '1m', target: 2000 },   // Sudden spike!
+    { duration: '30s', target: 100 },   // Back to normal
+  ],
+};
+// Use for: Testing recovery, cache effectiveness, auto-scaling
+```
+
+**Soak Test (Endurance):**
+```javascript
+export const options = {
+  vus: 200,
+  duration: '2h',  // Long duration
+};
+// Use for: Memory leaks, resource exhaustion, stability
+```
+
+#### 3. Custom Metrics
+
+```javascript
+import { Trend, Counter, Rate, Gauge } from 'k6/metrics';
+
+// Custom trends (timing distributions)
+const loginDuration = new Trend('custom_login_duration');
+const dbQueryTime = new Trend('custom_db_query_time');
+
+// Counters (cumulative values)
+const successfulLogins = new Counter('successful_logins');
+const failedLogins = new Counter('failed_logins');
+
+// Rates (percentage over time)
+const errorRate = new Rate('custom_error_rate');
+
+// Gauges (point-in-time values)
+const activeUsers = new Gauge('active_users');
+
+export default function() {
+  const start = Date.now();
+  
+  const response = http.post(BASE_URL + '/api/auth/login', payload);
+  
+  const duration = Date.now() - start;
+  loginDuration.add(duration);
+  
+  if (response.status === 200) {
+    successfulLogins.add(1);
+    errorRate.add(false);
+  } else {
+    failedLogins.add(1);
+    errorRate.add(true);
+  }
+  
+  activeUsers.add(__VU);  // Current virtual user count
+}
+```
+
+---
+
+## 🛠️ Performance Optimization Strategies
+
+### Backend Optimizations
+
+#### 1. Database Query Optimization
+
+**Problem**: N+1 Query Problem
+```java
+// ❌ Bad - N+1 queries
+public List<ProductDto> getAllProducts() {
+    List<Product> products = productRepository.findAll();
+    return products.stream()
+        .map(product -> {
+            // Each product fetches category separately!
+            Category category = categoryRepository.findById(product.getCategoryId());
+            return new ProductDto(product, category);
+        })
+        .collect(Collectors.toList());
+}
+
+// ✅ Good - Single query with JOIN
+public List<ProductDto> getAllProducts() {
+    return productRepository.findAllWithCategory();  // JOIN FETCH
+}
+```
+
+**Add Indexes:**
+```sql
+-- Frequently queried columns
+CREATE INDEX idx_product_name ON products(product_name);
+CREATE INDEX idx_product_category ON products(category);
+CREATE INDEX idx_product_price ON products(price);
+
+-- Composite index for common query
+CREATE INDEX idx_category_price ON products(category, price);
+```
+
+**Query Analysis:**
+```sql
+-- Explain query execution plan
+EXPLAIN SELECT * FROM products WHERE category = 'Điện tử' AND price > 1000000;
+
+-- Check for full table scans (bad!)
+-- Look for "Index Scan" or "Index Seek" (good!)
+```
+
+#### 2. Connection Pool Tuning
+
+```properties
+# application.properties
+
+# Match your expected concurrent users
+spring.datasource.hikari.maximum-pool-size=50
+
+# Keep some connections ready
+spring.datasource.hikari.minimum-idle=10
+
+# Connection timeout (ms)
+spring.datasource.hikari.connection-timeout=30000
+
+# Max lifetime (30 min)
+spring.datasource.hikari.max-lifetime=1800000
+
+# Idle timeout (10 min)
+spring.datasource.hikari.idle-timeout=600000
+
+# Validation query
+spring.datasource.hikari.connection-test-query=SELECT 1
+```
+
+**Monitoring Connection Pool:**
+```java
+@Component
+public class HikariMetrics {
+    @Autowired
+    private HikariDataSource dataSource;
+    
+    @Scheduled(fixedRate = 60000)  // Every minute
+    public void logPoolStats() {
+        HikariPoolMXBean poolMXBean = dataSource.getHikariPoolMXBean();
+        log.info("Active connections: {}", poolMXBean.getActiveConnections());
+        log.info("Idle connections: {}", poolMXBean.getIdleConnections());
+        log.info("Total connections: {}", poolMXBean.getTotalConnections());
+        log.info("Threads awaiting connection: {}", poolMXBean.getThreadsAwaitingConnection());
+    }
+}
+```
+
+#### 3. Caching Strategy
+
+**Spring Cache Configuration:**
+```java
+@Configuration
+@EnableCaching
+public class CacheConfig {
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+            .maximumSize(1000)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .recordStats());
+        return cacheManager;
+    }
+}
+
+@Service
+public class ProductService {
+    @Cacheable(value = "products", key = "#id")
+    public ProductDto getProductById(Long id) {
+        // This will only hit DB once per product
+        // Subsequent calls served from cache
+        return productRepository.findById(id)
+            .map(this::convertToDto)
+            .orElseThrow();
+    }
+    
+    @CacheEvict(value = "products", key = "#id")
+    public void updateProduct(Long id, UpdateProductRequest request) {
+        // Evicts cache entry when product updated
+        // ...
+    }
+    
+    @CacheEvict(value = "products", allEntries = true)
+    public void deleteProduct(Long id) {
+        // Clears entire cache
+        // ...
+    }
+}
+```
+
+#### 4. Async Processing
+
+```java
+@Configuration
+@EnableAsync
+public class AsyncConfig {
+    @Bean(name = "taskExecutor")
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("async-");
+        executor.initialize();
+        return executor;
+    }
+}
+
+@Service
+public class NotificationService {
+    @Async("taskExecutor")
+    public CompletableFuture<Void> sendEmailNotification(String email, String message) {
+        // Non-blocking email sending
+        // Don't wait for email to send before responding to user
+        emailClient.send(email, message);
+        return CompletableFuture.completedFuture(null);
+    }
+}
+```
+
+### Frontend Optimizations
+
+#### 1. Lazy Loading
+
+```javascript
+import { lazy, Suspense } from 'react';
+
+// Lazy load heavy components
+const ProductManagement = lazy(() => import('./components/ProductManagement'));
+const Analytics = lazy(() => import('./components/Analytics'));
+
+function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductManagement />
+    </Suspense>
+  );
+}
+```
+
+#### 2. Request Debouncing
+
+```javascript
+import { debounce } from 'lodash';
+
+const searchProducts = debounce(async (query) => {
+  const response = await axios.get(`/api/products/search?q=${query}`);
+  setProducts(response.data);
+}, 300);  // Wait 300ms after user stops typing
+
+// Usage
+<input onChange={(e) => searchProducts(e.target.value)} />
+```
+
+#### 3. Virtual Scrolling
+
+```javascript
+import { FixedSizeList } from 'react-window';
+
+function ProductList({ products }) {
+  const Row = ({ index, style }) => (
+    <div style={style}>
+      {products[index].name}
+    </div>
+  );
+  
+  return (
+    <FixedSizeList
+      height={600}
+      itemCount={products.length}
+      itemSize={50}
+      width="100%"
+    >
+      {Row}
+    </FixedSizeList>
+  );
+}
+```
+
+---
+
+## 📊 Monitoring and Observability
+
+### Application Performance Monitoring (APM)
+
+**Spring Boot Actuator:**
+```properties
+# application.properties
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
+management.metrics.export.prometheus.enabled=true
+```
+
+**Prometheus Metrics:**
+```yaml
+# prometheus.yml
+scrape_configs:
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['localhost:8080']
+```
+
+**Grafana Dashboard Queries:**
+```promql
+# Request rate
+rate(http_server_requests_seconds_count[5m])
+
+# Average response time
+rate(http_server_requests_seconds_sum[5m]) / rate(http_server_requests_seconds_count[5m])
+
+# Error rate
+rate(http_server_requests_seconds_count{status="500"}[5m]) / rate(http_server_requests_seconds_count[5m])
+
+# CPU usage
+process_cpu_usage
+
+# Memory usage
+jvm_memory_used_bytes / jvm_memory_max_bytes
+```
+
+### Custom Health Checks
+
+```java
+@Component
+public class DatabaseHealthIndicator implements HealthIndicator {
+    @Autowired
+    private DataSource dataSource;
+    
+    @Override
+    public Health health() {
+        try (Connection conn = dataSource.getConnection()) {
+            if (conn.isValid(2)) {  // 2 second timeout
+                return Health.up()
+                    .withDetail("database", "Available")
+                    .build();
+            }
+        } catch (SQLException e) {
+            return Health.down()
+                .withDetail("error", e.getMessage())
+                .build();
+        }
+        return Health.down().build();
+    }
+}
+```
+
+---
+
+## 📝 Performance Testing Report Template
+
+### Executive Summary
+
+**Test Date**: [Date]
+**System Under Test**: Login API & Product API
+**Load Levels Tested**: 100, 500, 1000 concurrent users
+**Test Duration**: 5 minutes per test + 8 minute stress test
+
+### Test Results Summary
+
+| Test Scenario | Success Rate | Avg Response | p95 Response | p99 Response | Throughput |
+|--------------|--------------|--------------|--------------|--------------|------------|
+| Login - 100u | XX.X% | XXXms | XXXms | XXXms | XXX req/s |
+| Login - 500u | XX.X% | XXXms | XXXms | XXXms | XXX req/s |
+| Login - 1000u | XX.X% | XXXms | XXXms | XXXms | XXX req/s |
+| Product - 100u | XX.X% | XXXms | XXXms | XXXms | XXX req/s |
+| Product - 500u | XX.X% | XXXms | XXXms | XXXms | XXX req/s |
+| Product - 1000u | XX.X% | XXXms | XXXms | XXXms | XXX req/s |
+
+### Key Findings
+
+**✅ Strengths:**
+1. System handles 100 concurrent users with excellent performance
+2. Login API response time averages under 500ms at normal load
+3. Error rate remains below 1% under expected load
+
+**⚠️ Concerns:**
+1. Response time degrades significantly above 500 concurrent users
+2. Error rate increases to X% at 1000 concurrent users
+3. Database connection pool exhaustion observed at peak load
+
+**❌ Critical Issues:**
+1. System becomes unresponsive at 2000+ concurrent users
+2. Memory usage increases linearly without garbage collection
+3. No graceful degradation under extreme load
+
+### Recommendations
+
+**Priority 1 (Critical):**
+1. Increase database connection pool size to 50
+2. Add response caching for frequently accessed products
+3. Implement request rate limiting to prevent overload
+
+**Priority 2 (High):**
+1. Optimize database queries with proper indexes
+2. Enable HTTP/2 for multiplexed connections
+3. Add Redis cache for session management
+
+**Priority 3 (Medium):**
+1. Implement horizontal scaling with load balancer
+2. Add CDN for static assets
+3. Enable response compression
+
+### Infrastructure Requirements
+
+**For 500 concurrent users:**
+- CPU: 4 cores
+- RAM: 8 GB
+- Database connections: 30
+- Network bandwidth: 50 Mbps
+
+**For 1000 concurrent users:**
+- CPU: 8 cores
+- RAM: 16 GB
+- Database connections: 50
+- Network bandwidth: 100 Mbps
+
+### Next Steps
+
+1. Implement Priority 1 recommendations
+2. Re-run performance tests to measure improvements
+3. Set up continuous performance monitoring
+4. Schedule monthly performance regression tests
