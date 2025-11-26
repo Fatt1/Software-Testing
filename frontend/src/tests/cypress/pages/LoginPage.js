@@ -1,16 +1,5 @@
 /**
  * LoginPage - Page Object Model for Login Page
- * 
- * This class encapsulates all selectors and methods for Login page interactions
- * following the Page Object Model (POM) design pattern for better test maintainability.
- * 
- * Benefits of Page Object Model:
- * - Centralized selectors: All element locators in one place
- * - Reusable methods: Common actions can be reused across tests
- * - Easy maintenance: Update selectors in one place when UI changes
- * - Better readability: Test code is more readable with meaningful method names
- * - Type safety: Can add TypeScript types for better IDE support
- * 
  * Features:
  * - Username and password input management
  * - Login button interactions
@@ -21,30 +10,14 @@
  * - Error and success message verification
  * - Loading state verification
  * - Form validation support
- * 
- * Usage Example:
- * ```javascript
- * import LoginPage from './pages/LoginPage';
- * 
- * describe('Login Tests', () => {
- *   it('should login successfully', () => {
- *     LoginPage
- *       .navigateToLoginPage()
- *       .login('admin', 'admin123')
- *       .verifySuccessMessage();
- *   });
- * });
- * ```
- * 
  * @class LoginPage
  * @author Software Testing Team
  * @version 1.0
  * @since 2025-11-26
  */
 class LoginPage {
-  // ============ SELECTORS ============
   // All element getters return Cypress chainable elements
-  
+
   /**
    * Get username input field
    * @returns {Cypress.Chainable} Username input element
@@ -58,7 +31,7 @@ class LoginPage {
   }
 
   get loginButton() {
-    return cy.get('button').contains(/login|đăng nhập/i);
+    return cy.get("button").contains(/login|đăng nhập/i);
   }
 
   get rememberMeCheckbox() {
@@ -66,7 +39,7 @@ class LoginPage {
   }
 
   get forgotPasswordLink() {
-    return cy.get('a').contains(/quên|forgot/i);
+    return cy.get("a").contains(/quên|forgot/i);
   }
 
   get emailInput() {
@@ -74,7 +47,7 @@ class LoginPage {
   }
 
   get signupLink() {
-    return cy.get('a').contains(/đăng ký|sign up|register/i);
+    return cy.get("a").contains(/đăng ký|sign up|register/i);
   }
 
   get errorMessage() {
@@ -90,11 +63,11 @@ class LoginPage {
   }
 
   get pageTitle() {
-    return cy.contains('h1', /login|đăng nhập/i);
+    return cy.contains("h1", /login|đăng nhập/i);
   }
 
   get passwordVisibilityToggle() {
-    return cy.get('button[type="button"]').contains('👁️');
+    return cy.get('button[type="button"]').contains("👁️");
   }
 
   // Methods
@@ -102,8 +75,8 @@ class LoginPage {
    * Navigate to login page
    */
   navigateToLoginPage() {
-    cy.visit('/');
-    this.pageTitle.should('be.visible');
+    cy.visit("/");
+    this.pageTitle.should("be.visible");
     return this;
   }
 
@@ -185,7 +158,7 @@ class LoginPage {
    * Verify error message exists
    */
   verifyErrorMessage() {
-    this.errorMessage.should('be.visible');
+    this.errorMessage.should("be.visible");
     return this;
   }
 
@@ -193,7 +166,7 @@ class LoginPage {
    * Verify error message with specific text
    */
   verifyErrorMessageText(text) {
-    this.errorMessage.should('contain', text);
+    this.errorMessage.should("contain", text);
     return this;
   }
 
@@ -201,7 +174,7 @@ class LoginPage {
    * Verify success message exists
    */
   verifySuccessMessage() {
-    this.successMessage.should('be.visible');
+    this.successMessage.should("be.visible");
     return this;
   }
 
@@ -209,7 +182,7 @@ class LoginPage {
    * Verify login button is enabled
    */
   verifyLoginButtonEnabled() {
-    this.loginButton.should('not.be.disabled');
+    this.loginButton.should("not.be.disabled");
     return this;
   }
 
@@ -217,7 +190,7 @@ class LoginPage {
    * Verify login button is disabled
    */
   verifyLoginButtonDisabled() {
-    this.loginButton.should('be.disabled');
+    this.loginButton.should("be.disabled");
     return this;
   }
 
@@ -225,7 +198,7 @@ class LoginPage {
    * Verify loading spinner is visible
    */
   verifyLoadingSpinner() {
-    this.loadingSpinner.should('be.visible');
+    this.loadingSpinner.should("be.visible");
     return this;
   }
 
@@ -233,7 +206,7 @@ class LoginPage {
    * Verify username input has value
    */
   verifyUsernameValue(value) {
-    this.usernameInput.should('have.value', value);
+    this.usernameInput.should("have.value", value);
     return this;
   }
 
@@ -241,7 +214,7 @@ class LoginPage {
    * Verify password input is empty
    */
   verifyPasswordEmpty() {
-    this.passwordInput.should('have.value', '');
+    this.passwordInput.should("have.value", "");
     return this;
   }
 
@@ -249,7 +222,7 @@ class LoginPage {
    * Verify page title is visible
    */
   verifyPageTitle() {
-    this.pageTitle.should('be.visible');
+    this.pageTitle.should("be.visible");
     return this;
   }
 
@@ -282,21 +255,21 @@ class LoginPage {
    * Get username input value
    */
   getUsernameValue() {
-    return this.usernameInput.invoke('val');
+    return this.usernameInput.invoke("val");
   }
 
   /**
    * Get password input type
    */
   getPasswordInputType() {
-    return this.passwordInput.invoke('attr', 'type');
+    return this.passwordInput.invoke("attr", "type");
   }
 
   /**
    * Verify username input is visible
    */
   verifyUsernameInputVisible() {
-    this.usernameInput.should('be.visible');
+    this.usernameInput.should("be.visible");
     return this;
   }
 
@@ -304,7 +277,7 @@ class LoginPage {
    * Verify password input is visible
    */
   verifyPasswordInputVisible() {
-    this.passwordInput.should('be.visible');
+    this.passwordInput.should("be.visible");
     return this;
   }
 
@@ -313,9 +286,9 @@ class LoginPage {
    */
   verifyFormElementsVisible() {
     this.verifyPageTitle();
-    this.usernameInput.should('be.visible');
-    this.passwordInput.should('be.visible');
-    this.loginButton.should('be.visible');
+    this.usernameInput.should("be.visible");
+    this.passwordInput.should("be.visible");
+    this.loginButton.should("be.visible");
     return this;
   }
 
@@ -323,7 +296,7 @@ class LoginPage {
    * Verify username input is empty
    */
   verifyUsernameEmpty() {
-    this.usernameInput.should('have.value', '');
+    this.usernameInput.should("have.value", "");
     return this;
   }
 
@@ -331,7 +304,7 @@ class LoginPage {
    * Verify password input is empty
    */
   verifyPasswordEmpty() {
-    this.passwordInput.should('have.value', '');
+    this.passwordInput.should("have.value", "");
     return this;
   }
 
@@ -340,7 +313,7 @@ class LoginPage {
    */
   waitForPageLoad() {
     cy.wait(1000);
-    this.pageTitle.should('be.visible');
+    this.pageTitle.should("be.visible");
     return this;
   }
 
@@ -348,7 +321,7 @@ class LoginPage {
    * Wait for loading to complete
    */
   waitForLoadingComplete() {
-    this.loadingSpinner.should('not.exist');
+    this.loadingSpinner.should("not.exist");
     return this;
   }
 }

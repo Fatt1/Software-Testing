@@ -1,25 +1,5 @@
 /**
  * Cypress Configuration File
- * 
- * This file configures Cypress for E2E (End-to-End) and Component testing.
- * Cypress is a powerful testing framework for modern web applications.
- * 
- * Testing Types:
- * 1. E2E Testing - Full application flow testing in real browser
- * 2. Component Testing - Isolated component testing with Vite
- * 
- * Running Tests:
- * - Interactive mode: npx cypress open
- * - Headless mode: npx cypress run
- * - Specific spec: npx cypress run --spec "path/to/spec.cy.js"
- * 
- * Key Features:
- * - Time-travel debugging with snapshots
- * - Automatic waiting for elements
- * - Network traffic control and stubbing
- * - Screenshot and video recording
- * - Real browser testing (Chrome, Firefox, Edge)
- * 
  * @see https://docs.cypress.io/guides/references/configuration
  */
 const { defineConfig } = require('cypress');
@@ -31,9 +11,7 @@ module.exports = defineConfig({
    * Configures end-to-end tests that run against the full application
    * in a real browser environment.
    */
-  e2e: {
-    // ============ Test Environment Configuration ============
-    
+  e2e: { 
     /**
      * Base URL for all cy.visit() and cy.request() commands
      * Points to local development server
@@ -47,10 +25,7 @@ module.exports = defineConfig({
      */
     viewportWidth: 1280,
     viewportHeight: 720,
-    
-    // ============ Timeout Settings ============
-    // Increase these values for slower network/systems
-    
+ 
     /**
      * Time to wait for page to load before failing
      * Default: 60000ms (60 seconds)
@@ -75,8 +50,6 @@ module.exports = defineConfig({
      */
     defaultCommandTimeout: 10000,
 
-    // ============ Video and Screenshot Configuration ============
-    
     /**
      * Disable video recording for all tests
      * Enable for debugging: set to true
@@ -97,8 +70,6 @@ module.exports = defineConfig({
      */
     videoOnFailure: false,
 
-    // ============ Test File Configuration ============
-    
     /**
      * Pattern to match E2E test files
      * Looks for *.cy.js files in e2e directory
@@ -120,17 +91,13 @@ module.exports = defineConfig({
      */
     fixturesFolder: 'src/tests/cypress/fixtures',
 
-    // ============ Browser Settings ============
-    
     /**
      * Disable Chrome web security
      * Allows cross-origin requests in tests
      * Useful for testing external APIs or CORS issues
      */
     chromeWebSecurity: false,
-    
-    // ============ Test Retry Configuration ============
-    
+  
     /**
      * Retry failed tests to reduce flakiness
      * - runMode: Retries in headless mode (CI/CD)
