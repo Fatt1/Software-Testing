@@ -171,7 +171,7 @@ public class AuthControllerIntegrationTest {
     @Nested
     @DisplayName("B) Test Response Structure và Status Codes")
     class ResponseStructureTests {
-        
+
         @Test
         @DisplayName("1. Response structure có đầy đủ các field khi login thành công")
         void testSuccessResponseStructure() throws Exception {
@@ -181,7 +181,7 @@ public class AuthControllerIntegrationTest {
             LoginResponse mockResponse = new LoginResponse(
                 true,
                 "Login thành công",
-                "token.jwt.here",
+                "token.jwt",
                 userDto
             );
 
@@ -204,12 +204,7 @@ public class AuthControllerIntegrationTest {
                     .andExpect(jsonPath("$.user.email").exists());
         }
 
-//        @Test
-//        @DisplayName("1. Response structure có đầy đủ các field khi login thành công")
-//        void testSuccessResponseStructure() throws Exception {
-//            //Arrange
-////            LoginRequest request = new LoginRequest(())
-//        }
+
         @Test
         @DisplayName("2. Response structure khi login thất bại (không có token)")
         void testFailureResponseStructure() throws Exception {
@@ -282,6 +277,7 @@ public class AuthControllerIntegrationTest {
                     .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
                     .andExpect(status().is(400));
+
         }
 
         @Test
