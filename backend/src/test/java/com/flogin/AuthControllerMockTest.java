@@ -21,14 +21,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-/**
- * AuthControllerMockTest - Backend Mocking Tests (2.5 điểm)
- * 
- * Mục đích: Test controller với mocked dependencies
- * - Mock AuthService với @MockitoBean
- * - Test controller với mocked service
- * - Verify mock interactions
- */
 @WebMvcTest(AuthController.class)
 @DisplayName("Backend Mocking - AuthController Mock Tests (2.5 điểm)")
 public class AuthControllerMockTest {

@@ -5,49 +5,6 @@ import java.math.BigDecimal;
 
 /**
  * Product Entity - Represents a product in the e-commerce system
- * 
- * <p>This JPA entity maps to the "products" table in the database.
- * Stores complete product information including pricing, inventory,
- * categorization, and detailed descriptions.</p>
- * 
- * <p>Database Schema:</p>
- * <pre>
- * Table: products
- * Columns:
- *   - id (BIGINT, Primary Key, Auto-increment)
- *   - product_name (VARCHAR(100), Not Null)
- *   - price (DOUBLE, Not Null)
- *   - quantity (INTEGER, Not Null)
- *   - category (VARCHAR(50), Not Null, Enum)
- *   - description (VARCHAR(500))
- * </pre>
- * 
- * <p>Business Rules:</p>
- * <ul>
- *   <li>Product name must be unique across all products</li>
- *   <li>Price must be positive (> 0)</li>
- *   <li>Quantity must be non-negative (>= 0)</li>
- *   <li>Category must be one of predefined enum values</li>
- *   <li>Description is optional but recommended</li>
- * </ul>
- * 
- * <p>Category Enum Values:</p>
- * <ul>
- *   <li>ELECTRONICS - Electronic devices and gadgets</li>
- *   <li>BOOKS - Books and reading materials</li>
- *   <li>CLOTHING - Clothing and apparel</li>
- *   <li>TOYS - Toys and games</li>
- *   <li>GROCERIES - Food and grocery items</li>
- * </ul>
- * 
- * <p>JPA Features:</p>
- * <ul>
- *   <li>@Enumerated(EnumType.STRING) - Stores enum as string in database</li>
- *   <li>Auto-generated ID with IDENTITY strategy</li>
- *   <li>Column length constraints for data integrity</li>
- *   <li>Support for both enum and string setters for flexibility</li>
- * </ul>
- * 
  * @author Software Testing Team
  * @version 1.0
  * @since 2025-11-26
@@ -101,13 +58,7 @@ public class Product {
     private String description;
     
     /**
-     * Product category (enum stored as string)
-     * 
-     * <p>Stored as VARCHAR in database but mapped to Category enum in Java.
-     * This provides type safety in code while maintaining flexibility in database.</p>
-     * 
-     * <p>Cannot be null - every product must have a category</p>
-     * 
+     * Product category (enum stored as string) 
      * @see Category
      */
     @Enumerated(EnumType.STRING)
@@ -116,19 +67,12 @@ public class Product {
 
     /**
      * Default constructor (required by JPA)
-     * 
-     * <p>JPA requires a no-argument constructor for entity instantiation.
-     * Used when loading entities from database.</p>
      */
     public Product() {
     }
 
     /**
      * Constructor with all fields (using Category enum)
-     * 
-     * <p>Recommended constructor for type-safe product creation.
-     * Accepts Category enum directly to ensure valid category values.</p>
-     * 
      * @param id Product unique identifier
      * @param category Product category (enum)
      * @param description Product description
@@ -147,12 +91,6 @@ public class Product {
 
     /**
      * Constructor with string category (backward compatibility)
-     * 
-     * <p>Alternative constructor that accepts category as String and converts
-     * to enum. Useful for API requests or legacy code compatibility.</p>
-     * 
-     * <p>Will throw IllegalArgumentException if category string is invalid.</p>
-     * 
      * @param id Product unique identifier
      * @param category Product category as string (e.g., "Electronics")
      * @param description Product description
@@ -199,9 +137,6 @@ public class Product {
 
     /**
      * Set product category (enum - type safe)
-     * 
-     * <p>Recommended method for setting category as it provides type safety.</p>
-     * 
      * @param category Product category enum value
      */
     public void setCategory(Category category) {
@@ -210,10 +145,6 @@ public class Product {
 
     /**
      * Set product category from string (backward compatibility)
-     * 
-     * <p>Convenience method that accepts string and converts to enum.
-     * Useful for API requests where category comes as string.</p>
-     * 
      * @param category Product category as string (e.g., "Electronics")
      * @throws IllegalArgumentException if category string is invalid
      */

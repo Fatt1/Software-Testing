@@ -4,37 +4,6 @@ import jakarta.persistence.*;
 
 /**
  * User Entity - Represents a user in the system
- * 
- * <p>This JPA entity maps to the "users" table in the database.
- * Stores user authentication information including username, email,
- * and hashed password (BCrypt).</p>
- * 
- * <p>Database Schema:</p>
- * <pre>
- * Table: users
- * Columns:
- *   - id (BIGINT, Primary Key, Auto-increment)
- *   - user_name (VARCHAR(50), Unique, Not Null)
- *   - email (VARCHAR(100), Unique, Not Null)
- *   - hash_password (VARCHAR(255), Not Null)
- * </pre>
- * 
- * <p>Security Considerations:</p>
- * <ul>
- *   <li>Password is stored as BCrypt hash (never plain text)</li>
- *   <li>Username and email must be unique across all users</li>
- *   <li>All fields are required (no null values allowed)</li>
- * </ul>
- * 
- * <p>JPA Annotations:</p>
- * <ul>
- *   <li>@Entity - Marks this class as JPA entity</li>
- *   <li>@Table - Specifies database table name "users"</li>
- *   <li>@Id - Marks primary key field</li>
- *   <li>@GeneratedValue - Auto-generates ID values</li>
- *   <li>@Column - Configures column properties (unique, nullable, length)</li>
- * </ul>
- * 
  * @author Software Testing Team
  * @version 1.0
  * @since 2025-11-26
@@ -73,33 +42,18 @@ public class User {
     
     /**
      * User's password (BCrypt hashed)
-     * 
-     * <p>Security Note: This field stores the BCrypt hash of the user's password,
-     * NOT the plain text password. BCrypt automatically includes salt and
-     * uses adaptive hashing to protect against brute force attacks.</p>
-     * 
-     * <p>Hash format: $2a$10$[salt][hash]</p>
-     * <p>Maximum length: 255 characters (to accommodate BCrypt hash)</p>
-     * <p>Cannot be null</p>
      */
     @Column(name = "hash_password", nullable = false, length = 255)
     private String hashPassword;
 
     /**
      * Default constructor (required by JPA)
-     * 
-     * <p>JPA requires a no-argument constructor to instantiate entities
-     * when loading from database. Do not remove this constructor.</p>
      */
     public User() {
     }
 
     /**
      * Constructor with all fields
-     * 
-     * <p>Used for creating User objects in code.
-     * Typically used in testing or manual object creation.</p>
-     * 
      * @param id User's unique identifier
      * @param userName User's login username
      * @param hashPassword BCrypt hashed password

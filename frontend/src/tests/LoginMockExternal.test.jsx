@@ -1,45 +1,4 @@
 /**
- * Login Mock External Dependencies Tests - Service Layer Mocking
- * 
- * Test Suite Purpose:
- * This file demonstrates advanced mocking techniques for external dependencies,
- * specifically testing how the LoginForm component interacts with the mocked
- * authentication service layer.
- * 
- * Testing Focus:
- * - Mocking Strategy: Using Jest's jest.mock() to replace real authService
- * - Mock Verification: Ensuring mock functions are called with correct arguments
- * - Mock Behavior: Testing both resolved and rejected promise scenarios
- * - Spy Functions: Verifying mock function calls and call counts
- * 
- * What is Mocking?
- * Mocking replaces real dependencies with fake implementations (mocks) that:
- * - Allow controlled testing without external dependencies
- * - Enable testing error scenarios that are hard to reproduce
- * - Provide verification of how components interact with services
- * - Improve test speed by avoiding real API calls
- * 
- * Testing Categories:
- * 1. Mock Setup Verification (1 điểm) - Verify mocks are properly configured
- * 2. Mock Resolved Values - Test successful API responses
- * 3. Mock Rejected Values - Test error handling scenarios
- * 4. Spy on Mock Calls - Verify function calls and arguments
- * 
- * Jest Mocking Techniques Used:
- * - jest.mock('../services/authService') - Auto-mock entire module
- * - mockResolvedValue() - Mock successful async responses
- * - mockRejectedValue() - Mock failed async responses  
- * - jest.isMockFunction() - Verify function is mocked
- * - toHaveBeenCalled() - Verify function was invoked
- * - toHaveBeenCalledWith() - Verify function arguments
- * 
- * Why Mock External Dependencies?
- * - Isolate component logic from service implementation
- * - Test component behavior without backend dependency
- * - Simulate network errors and edge cases
- * - Faster test execution (no real HTTP requests)
- * - Deterministic test results
- * 
  * @see ../components/LoginForm.jsx - Component under test
  * @see ../services/authService.js - Mocked external service
  */
@@ -65,9 +24,7 @@ describe('Login - Mock External Dependencies', () => {
     jest.clearAllMocks();
   });
 
-  /**
-   * Mock authService.login()
-   */
+
   describe('Test 1: Mock authService.login() (1 điểm)', () => {
 
     test('nên mock authService.login() function', () => {
@@ -188,7 +145,7 @@ describe('Login - Mock External Dependencies', () => {
   });
 
   /**
-   * Test với mocked successful/failed responses (1 điểm)
+   * Test với mocked successful/failed responses 
    */
   describe('Test 2: Mocked Successful/Failed Responses (1 điểm)', () => {
 

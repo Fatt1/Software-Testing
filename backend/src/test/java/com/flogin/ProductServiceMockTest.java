@@ -60,7 +60,7 @@ public class ProductServiceMockTest {
     }
 
     /**
-     * A) Mock ProductRepository (1 điểm)
+     * A) Mock ProductRepository
      * Test các methods với mocked repository
      */
     @Nested
@@ -126,7 +126,7 @@ public class ProductServiceMockTest {
     }
 
     /**
-     * B) Test Service Layer với Mocked Repository (1 điểm)
+     * B) Test Service Layer với Mocked Repository 
      */
     @Nested
     @DisplayName("B) Test Service Layer với Mocked Repository (1 điểm)")
@@ -190,7 +190,7 @@ public class ProductServiceMockTest {
     }
 
     /**
-     * C) Verify Repository Interactions (0.5 điểm)
+     * C) Verify Repository Interactions 
      */
     @Nested
     @DisplayName("C) Verify Repository Interactions (0.5 điểm)")
