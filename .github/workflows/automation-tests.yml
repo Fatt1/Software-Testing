@@ -1,5 +1,5 @@
 name: Automation Tests - Login E2E & Integration
-# ...
+
 on:
   push:
     branches: [main, develop]
@@ -19,8 +19,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
-      fail-fast: false # Node 18 lỗi thì Node 20 vẫn chạy tiếp để check
+        node-version: [20.x] # Đã sửa thành Node 20 để chạy được Vite mới
+      fail-fast: false
 
     steps:
       - name: Checkout code
@@ -37,11 +37,11 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      # --- FIX 1: Xóa continue-on-error ở Jest ---
+      # --- STEP JEST TEST ---
       - name: Run Integration Tests (Jest)
+        id: run-jest  # <--- ĐÃ THÊM ID Ở ĐÂY
         working-directory: ./frontend
         run: npm test -- --coverage --testPathPattern="Integration|Mock" --passWithNoTests
-        # Đã xóa continue-on-error: true -> Để nếu lỗi thì báo FAIL ngay
 
       - name: Upload Jest Coverage Reports
         uses: actions/upload-artifact@v4
@@ -51,26 +51,25 @@ jobs:
           path: frontend/coverage/
           retention-days: 15
 
+      # --- BUILD & E2E ---
       - name: Build frontend
         working-directory: ./frontend
         run: npm run build
 
-      # --- FIX 2: Thay sleep bằng wait-on ---
       - name: Start dev server & Wait
         working-directory: ./frontend
         run: |
           npm run dev &
           npx wait-on http://localhost:5173 --timeout 60000
 
-      # --- FIX 3: Xóa continue-on-error ở Cypress ---
+      # --- STEP CYPRESS TEST ---
       - name: Run E2E Tests (Cypress)
         working-directory: ./frontend
         run: npx cypress run --spec "src/tests/cypress/e2e/login-scenarios.cy.js" --record false
         env:
           CYPRESS_BASE_URL: http://localhost:5173
-        # Đã xóa continue-on-error: true -> Để kích hoạt if: failure() bên dưới
 
-      # Các bước Upload này giờ sẽ hoạt động đúng
+      # --- UPLOAD ARTIFACTS ---
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
         if: failure() 
@@ -87,11 +86,13 @@ jobs:
           path: frontend/src/tests/cypress/videos/
           retention-days: 15
 
+      # --- REPORTING ---
       - name: Generate Test Report Summary
         if: always()
         run: |
           echo "## 🧪 Automation Test Results" >> $GITHUB_STEP_SUMMARY
           echo "- **Node**: ${{ matrix.node-version }}" >> $GITHUB_STEP_SUMMARY
+          # Bây giờ dòng dưới này sẽ hiện đúng kết quả (success/failure) thay vì rỗng
           echo "- **Jest**: ${{ steps.run-jest.outcome }}" >> $GITHUB_STEP_SUMMARY 
           echo "- **Cypress**: Check logs above" >> $GITHUB_STEP_SUMMARY
 
@@ -106,4 +107,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## ${icon} Automation Tests (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\
+              body: `## ${icon} Automation Tests (Node ${{ matrix.node-version }})\n\n- **Status**: ${status}\n- **Jest**: ${{ steps.run-jest.outcome }}\n- **Artifacts**: Check Summary for details.`
+            })
