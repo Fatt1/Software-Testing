@@ -12,6 +12,12 @@ env:
   BACKEND_PORT: 6969
   SQL_SERVER_SA_PASSWORD: "YourStrong!Passw0rd@"
 
+permissions:
+  contents: read
+  checks: write # QUAN TRỌNG: Để dorny/test-reporter viết báo cáo lên tab Checks
+  pull-requests: write # Để comment vào PR
+  statuses: write # Để cập nhật trạng thái commit
+
 jobs:
   # ============================================================================
   # JOB 1: Backend Build & Test
