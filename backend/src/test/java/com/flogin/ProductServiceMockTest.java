@@ -42,9 +42,6 @@ public class ProductServiceMockTest {
     @Mock
     private Validator validator;
 
-    /**
-     * @InjectMocks tự động inject mock dependencies vào ProductService
-     */
     @InjectMocks
     private ProductService productService;
 

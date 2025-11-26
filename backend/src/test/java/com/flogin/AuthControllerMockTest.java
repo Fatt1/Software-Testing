@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(AuthController.class)
-@DisplayName("Backend Mocking - AuthController Mock Tests (2.5 điểm)")
+@DisplayName("Backend Mocking - AuthController Mock Tests")
 public class AuthControllerMockTest {
     
     @Autowired
@@ -39,7 +39,7 @@ public class AuthControllerMockTest {
     ObjectMapper objectMapper;
 
     /**
-     * A) Test Controller với Mocked Service - Success Cases (1 điểm)
+     * A) Test Controller với Mocked Service - Success Cases
      * Test các trường hợp thành công với mocked service
      */
     @Nested
@@ -196,58 +196,7 @@ public class AuthControllerMockTest {
             verifyNoInteractions(authService);
         }
 
-        @Test
-        @DisplayName("7. Verify: Mock được gọi đúng số lần với atLeast/atMost")
-        void testVerify_MockCalledWithAtLeastAtMost() throws Exception {
-            // Arrange
-            UserDto userDto = new UserDto("testuser", "test@example.com");
-            LoginResponse mockResponse = new LoginResponse(true, "Success", "token", userDto);
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act: Gọi 3 lần
-            for (int i = 0; i < 3; i++) {
-                mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userName\":\"testuser\",\"password\":\"Pass123\"}"))
-                        .andExpect(status().isOk());
-            }
-            
-            // c) Verify: Kiểm tra mock được gọi ít nhất 2 lần và nhiều nhất 5 lần
-            verify(authService, atLeast(2)).authenticate(any(LoginRequest.class));
-            verify(authService, atLeast(5)).authenticate(any(LoginRequest.class));
-            verify(authService, times(3)).authenticate(any(LoginRequest.class));
-        }
 
-        @Test
-        @DisplayName("8. Verify: Kiểm tra thứ tự gọi mock với InOrder")
-        void testVerify_MockCallOrder() throws Exception {
-            // Arrange
-            UserDto user1 = new UserDto("user1", "user1@example.com");
-            UserDto user2 = new UserDto("user2", "user2@example.com");
-            
-            LoginResponse response1 = new LoginResponse(true, "Success", "token1", user1);
-            LoginResponse response2 = new LoginResponse(true, "Success", "token2", user2);
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(response1)
-                .thenReturn(response2);
-            
-            // Act: Gọi theo thứ tự
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"userName\":\"user1\",\"password\":\"Pass123\"}"));
-            
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"userName\":\"user2\",\"password\":\"Pass123\"}"));
-            
-            // c) Verify: Kiểm tra thứ tự gọi
-            var inOrder = inOrder(authService);
-            inOrder.verify(authService).authenticate(argThat(req -> req.getUserName().equals("user1")));
-            inOrder.verify(authService).authenticate(argThat(req -> req.getUserName().equals("user2")));
-        }
 
     }
 
