@@ -11,19 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * AuthController - REST API Controller for Authentication
- * 
- * <p>Controller này xử lý tất cả các request liên quan đến authentication,
- * bao gồm đăng nhập, đăng ký và xác thực người dùng.</p>
- * 
- * <p>Các endpoint chính:</p>
- * <ul>
- *   <li>POST /api/auth/login - Đăng nhập và nhận JWT token</li>
- *   <li>POST /api/auth/register - Đăng ký tài khoản mới</li>
- * </ul>
- * 
- * <p>Security: Sử dụng JWT (JSON Web Token) cho authentication.
- * CORS được enable cho tất cả origins để hỗ trợ frontend development.</p>
- * 
  * @author Software Testing Team
  * @version 1.0
  * @since 2025-11-26
@@ -42,38 +29,6 @@ public class AuthController {
 
     /**
      * Endpoint xử lý login request
-     * 
-     * <p>Nhận username và password từ client, thực hiện validation,
-     * authenticate với database và trả về JWT token nếu thành công.</p>
-     * 
-     * <p><b>Request Body Example:</b></p>
-     * <pre>
-     * {
-     *   "userName": "admin",
-     *   "password": "admin123"
-     * }
-     * </pre>
-     * 
-     * <p><b>Success Response Example (200 OK):</b></p>
-     * <pre>
-     * {
-     *   "success": true,
-     *   "message": "Login successful",
-     *   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-     *   "userName": "admin"
-     * }
-     * </pre>
-     * 
-     * <p><b>Error Response Example (401 Unauthorized):</b></p>
-     * <pre>
-     * {
-     *   "success": false,
-     *   "message": "Invalid username or password",
-     *   "token": null,
-     *   "userName": null
-     * }
-     * </pre>
-     * 
      * @param request LoginRequest object chứa userName và password, được validate bởi @Valid
      * @return ResponseEntity chứa LoginResponse với HTTP status code tương ứng
      *         - 200 OK nếu authentication thành công

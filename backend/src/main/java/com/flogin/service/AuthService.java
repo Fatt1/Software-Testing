@@ -17,35 +17,6 @@ import java.util.stream.Collectors;
 
 /**
  * AuthService - Service Layer for Authentication Business Logic
- * 
- * <p>Service này xử lý toàn bộ business logic liên quan đến authentication,
- * bao gồm validation, password verification, và JWT token generation.</p>
- * 
- * <p>Core Responsibilities:</p>
- * <ul>
- *   <li>Validate login credentials sử dụng Bean Validation (Jakarta Validation)</li>
- *   <li>Verify user existence trong database</li>
- *   <li>Check password correctness với BCrypt hashing</li>
- *   <li>Generate JWT tokens cho authenticated users</li>
- *   <li>Return detailed error messages cho failed authentication attempts</li>
- * </ul>
- * 
- * <p>Security Features:</p>
- * <ul>
- *   <li>BCryptPasswordEncoder cho password hashing (không lưu plain text passwords)</li>
- *   <li>JWT tokens với expiration time</li>
- *   <li>Input validation để prevent injection attacks</li>
- *   <li>Detailed error messages để support debugging</li>
- * </ul>
- * 
- * <p>Dependencies:</p>
- * <ul>
- *   <li>JwtService - Để generate và validate JWT tokens</li>
- *   <li>UserRepository - Để access user data từ database</li>
- *   <li>PasswordEncoder - BCrypt implementation cho password hashing</li>
- *   <li>Validator - Jakarta Bean Validation cho input validation</li>
- * </ul>
- * 
  * @author Software Testing Team
  * @version 1.0
  * @since 2025-11-26
@@ -81,10 +52,6 @@ public class AuthService {
 
     /**
      * Constructor cho testing purposes
-     * 
-     * <p>Constructor này cho phép inject mock objects khi viết unit tests,
-     * giúp test service logic mà không cần real dependencies.</p>
-     * 
      * @param jwtService Mock JwtService cho testing
      * @param userRepository Mock UserRepository cho testing
      * @param passwordEncoder Mock PasswordEncoder cho testing
@@ -99,27 +66,12 @@ public class AuthService {
 
     /**
      * Default constructor cho Spring dependency injection
-     * 
-     * <p>Spring sử dụng constructor này để create bean và inject dependencies
-     * thông qua @Autowired annotations.</p>
      */
     public AuthService() {
     }
 
     /**
      * Core authentication method - xác thực user credentials
-     * 
-     * <p>Method này thực hiện full authentication flow:</p>
-     * <ol>
-     *   <li>Validate input data (username, password format) sử dụng Bean Validation</li>
-     *   <li>Kiểm tra user existence trong database</li>
-     *   <li>Verify password với BCrypt hashing algorithm</li>
-     *   <li>Generate JWT token nếu authentication thành công</li>
-     *   <li>Return response với appropriate success/error message</li>
-     * </ol>
-     * 
-     * <p><b>Authentication Process:</b></p>
-     * <pre>
      * 1. Input Validation
      *    - Check required fields (username, password)
      *    - Validate format và length constraints
@@ -138,25 +90,12 @@ public class AuthService {
      *    - Create JWT token với user information
      *    - Set expiration time
      *    - Return token với success response
-     * </pre>
-     * 
-     * <p><b>Example Success Flow:</b></p>
-     * <pre>
      * Input: { userName: "admin", password: "admin123" }
      * → Validate: OK
      * → Find User: Found
      * → Password Match: OK
      * → Generate Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
      * Output: { success: true, message: "Login thành công", token: "...", user: {...} }
-     * </pre>
-     * 
-     * <p><b>Possible Error Scenarios:</b></p>
-     * <ul>
-     *   <li>Validation Error: "Username is required", "Password must be at least 6 characters"</li>
-     *   <li>User Not Found: "Login thất bại với user name không tồn tại"</li>
-     *   <li>Wrong Password: "Login với password sai"</li>
-     * </ul>
-     * 
      * @param request LoginRequest object chứa userName và password cần authenticate
      * @return LoginResponse object chứa:
      *         - success: boolean indicating authentication result

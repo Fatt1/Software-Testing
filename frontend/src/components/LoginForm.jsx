@@ -1,81 +1,54 @@
-import { useState } from 'react';
-import { login } from '../services/authService';
-import './LoginForm.css';
+import { useState } from "react";
+import { login } from "../services/authService";
+import "./LoginForm.css";
 
 /**
- * LoginForm Component - User Authentication Form
- * 
- * A fully-featured login form component with validation, loading states,
- * error handling, and success feedback. Styled with inline CSS for modern UI.
- * 
  * @component
  * @example
  * // Basic usage
  * <LoginForm />
- * 
- * @features
- * - Username and password input fields
- * - Show/hide password toggle
- * - Client-side validation (username length, required fields)
- * - Loading state during authentication
- * - Error message display
- * - Success message with auto-redirect
- * - Remember me checkbox
- * - Forgot password link
- * - Sign up link
- * - Animated UI elements
- * 
  * @returns {JSX.Element} Rendered login form component
  */
 export default function LoginForm() {
   // State Management
   /** @type {[string, Function]} Username input value */
-  const [username, setUsername] = useState('');
-  
+  const [username, setUsername] = useState("");
+
   /** @type {[string, Function]} Password input value */
-  const [password, setPassword] = useState('');
-  
+  const [password, setPassword] = useState("");
+
   /** @type {[boolean, Function]} Toggle password visibility */
   const [showPassword, setShowPassword] = useState(false);
-  
+
   /** @type {[boolean, Function]} Loading state during API call */
   const [isLoading, setIsLoading] = useState(false);
-  
+
   /** @type {[string, Function]} Error message to display */
-  const [error, setError] = useState('');
-  
+  const [error, setError] = useState("");
+
   /** @type {[boolean, Function]} Success state after login */
   const [success, setSuccess] = useState(false);
 
   /**
-   * Handle form submission and authentication
-   * 
-   * Validates user input, calls authentication service,
-   * and handles success/error states.
-   * 
-   * Validation Rules:
-   * - Username and password are required
-   * - Username must be at least 3 characters
-   * 
    * @async
    * @param {Event} e - Form submit event
    * @returns {Promise<void>}
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     // Validate required fields
     if (!username || !password) {
-      setError('Vui lòng nhập username và mật khẩu');
+      setError("Vui lòng nhập username và mật khẩu");
       setIsLoading(false);
       return;
     }
 
     // Validate username length
     if (username.length < 3) {
-      setError('Username phải có ít nhất 3 ký tự');
+      setError("Username phải có ít nhất 3 ký tự");
       setIsLoading(false);
       return;
     }
@@ -90,16 +63,16 @@ export default function LoginForm() {
         // Auto-clear form after 2 seconds
         setTimeout(() => {
           setSuccess(false);
-          setUsername('');
-          setPassword('');
+          setUsername("");
+          setPassword("");
         }, 2000);
         return;
       }
       // Fallback error
-      setError('Có lỗi xảy ra');
+      setError("Có lỗi xảy ra");
       setIsLoading(false);
     } catch (err) {
-      setError(err?.message || 'Có lỗi xảy ra');
+      setError(err?.message || "Có lỗi xảy ra");
       setIsLoading(false);
     }
   };
@@ -147,7 +120,7 @@ export default function LoginForm() {
                 <label style={styles.label}>Mật Khẩu</label>
                 <div style={styles.passwordWrapper}>
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
@@ -161,7 +134,7 @@ export default function LoginForm() {
                     style={styles.toggleBtn}
                     disabled={isLoading}
                   >
-                    {showPassword ? '👁️‍🗨️' : '👁️'}
+                    {showPassword ? "👁️‍🗨️" : "👁️"}
                   </button>
                 </div>
               </div>
@@ -176,15 +149,13 @@ export default function LoginForm() {
                   />
                   <span>Nhớ mật khẩu</span>
                 </label>
-                <a href="#" style={styles.forgotLink}>Quên mật khẩu?</a>
+                <a href="#" style={styles.forgotLink}>
+                  Quên mật khẩu?
+                </a>
               </div>
 
               {/* Error Message Display - Only shown when error exists */}
-              {error && (
-                <div style={styles.errorMessage}>
-                  {error}
-                </div>
-              )}
+              {error && <div style={styles.errorMessage}>{error}</div>}
 
               {/* Submit Button - Shows loading state during authentication */}
               <button
@@ -193,7 +164,7 @@ export default function LoginForm() {
                 style={{
                   ...styles.submitBtn,
                   opacity: isLoading ? 0.7 : 1,
-                  cursor: isLoading ? 'not-allowed' : 'pointer'
+                  cursor: isLoading ? "not-allowed" : "pointer",
                 }}
               >
                 {isLoading ? (
@@ -216,276 +187,272 @@ export default function LoginForm() {
 
               {/* Sign Up Link - For new users */}
               <p style={styles.signupText}>
-                Chưa có tài khoản?{' '}
-                <a href="#" style={styles.signupLink}>Đăng ký ngay</a>
+                Chưa có tài khoản?{" "}
+                <a href="#" style={styles.signupLink}>
+                  Đăng ký ngay
+                </a>
               </p>
             </div>
           )}
         </div>
 
         {/* Footer - Copyright text */}
-        <p style={styles.footer}>
-          © 2025 Your Company. All rights reserved.
-        </p>
+        <p style={styles.footer}>© 2025 Your Company. All rights reserved.</p>
       </div>
     </div>
   );
 }
 
 /**
- * Inline CSS Styles for LoginForm Component
- * 
- * Modern, gradient-based design with animations and responsive layout.
- * Uses CSS-in-JS pattern for component-scoped styling.
- * 
  * @constant {Object} styles - Collection of style objects
  */
 const styles = {
   /** Main container - Full viewport with gradient background */
   container: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '16px',
-    fontFamily: 'Arial, sans-serif'
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "16px",
+    fontFamily: "Arial, sans-serif",
   },
 
   /** Login container - Max width wrapper for form */
   loginContainer: {
-    width: '100%',
-    maxWidth: '400px',
-    animation: 'slideInUp 0.6s ease-out'
+    width: "100%",
+    maxWidth: "400px",
+    animation: "slideInUp 0.6s ease-out",
   },
 
   /** Header section styling */
   header: {
-    textAlign: 'center',
-    marginBottom: '32px'
+    textAlign: "center",
+    marginBottom: "32px",
   },
 
   /** Logo wrapper with float animation */
   logoWrapper: {
-    display: 'inline-block',
-    marginBottom: '16px',
-    animation: 'float 3s ease-in-out infinite'
+    display: "inline-block",
+    marginBottom: "16px",
+    animation: "float 3s ease-in-out infinite",
   },
 
   /** Circular logo container */
   logoCircle: {
-    width: '64px',
-    height: '64px',
-    background: 'white',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-    margin: '0 auto'
+    width: "64px",
+    height: "64px",
+    background: "white",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+    margin: "0 auto",
   },
 
   /** Logo icon size */
   logoIcon: {
-    fontSize: '32px'
+    fontSize: "32px",
   },
 
   /** Main title styling */
   title: {
-    fontSize: '36px',
-    fontWeight: 'bold',
-    color: 'white',
-    margin: '8px 0'
+    fontSize: "36px",
+    fontWeight: "bold",
+    color: "white",
+    margin: "8px 0",
   },
 
   /** Subtitle text below title */
   subtitle: {
-    fontSize: '14px',
-    color: 'rgba(255, 255, 255, 0.7)',
-    margin: 0
+    fontSize: "14px",
+    color: "rgba(255, 255, 255, 0.7)",
+    margin: 0,
   },
 
   /** Main card container for form */
   card: {
-    background: 'white',
-    borderRadius: '16px',
-    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-    padding: '32px',
-    animation: 'slideInUp 0.6s ease-out'
+    background: "white",
+    borderRadius: "16px",
+    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+    padding: "32px",
+    animation: "slideInUp 0.6s ease-out",
   },
 
   /** Form group container for each input */
   formGroup: {
-    marginBottom: '24px',
-    animation: 'slideInUp 0.6s ease-out 0.1s backwards'
+    marginBottom: "24px",
+    animation: "slideInUp 0.6s ease-out 0.1s backwards",
   },
 
   /** Label styling for inputs */
   label: {
-    display: 'block',
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '8px'
+    display: "block",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: "8px",
   },
 
   /** Input field base styling */
   input: {
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: '8px',
-    border: '2px solid rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    fontSize: '14px',
-    transition: 'all 0.3s ease',
-    boxSizing: 'border-box',
-    outline: 'none',
-    cursor: 'pointer'
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: "8px",
+    border: "2px solid rgba(255, 255, 255, 0.3)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    fontSize: "14px",
+    transition: "all 0.3s ease",
+    boxSizing: "border-box",
+    outline: "none",
+    cursor: "pointer",
   },
 
   /** Password input wrapper for toggle button positioning */
   passwordWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
   },
 
   /** Password visibility toggle button */
   toggleBtn: {
-    position: 'absolute',
-    right: '12px',
-    background: 'none',
-    border: 'none',
-    fontSize: '18px',
-    cursor: 'pointer',
-    padding: '4px 8px',
-    transition: 'transform 0.2s ease',
-    color: '#6b7280'
+    position: "absolute",
+    right: "12px",
+    background: "none",
+    border: "none",
+    fontSize: "18px",
+    cursor: "pointer",
+    padding: "4px 8px",
+    transition: "transform 0.2s ease",
+    color: "#6b7280",
   },
 
   /** Row for remember me and forgot password */
   optionsRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '24px',
-    fontSize: '14px'
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "24px",
+    fontSize: "14px",
   },
 
   /** Remember me checkbox label */
   checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    color: '#6b7280',
-    cursor: 'pointer'
+    display: "flex",
+    alignItems: "center",
+    color: "#6b7280",
+    cursor: "pointer",
   },
 
   /** Checkbox input styling */
   checkbox: {
-    marginRight: '8px',
-    cursor: 'pointer'
+    marginRight: "8px",
+    cursor: "pointer",
   },
 
   /** Forgot password link styling */
   forgotLink: {
-    color: '#3b82f6',
-    textDecoration: 'none',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'color 0.2s ease'
+    color: "#3b82f6",
+    textDecoration: "none",
+    fontWeight: "500",
+    cursor: "pointer",
+    transition: "color 0.2s ease",
   },
 
   /** Error message box styling */
   errorMessage: {
-    background: 'rgba(239, 68, 68, 0.1)',
-    borderLeft: '4px solid #ef4444',
-    color: '#dc2626',
-    padding: '12px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    marginBottom: '24px',
-    animation: 'shake 0.5s ease-in-out'
+    background: "rgba(239, 68, 68, 0.1)",
+    borderLeft: "4px solid #ef4444",
+    color: "#dc2626",
+    padding: "12px",
+    borderRadius: "6px",
+    fontSize: "14px",
+    marginBottom: "24px",
+    animation: "shake 0.5s ease-in-out",
   },
 
   /** Success message box styling */
   successMessage: {
-    background: 'rgba(34, 197, 94, 0.1)',
-    borderLeft: '4px solid #22c55e',
-    color: '#16a34a',
-    padding: '16px',
-    borderRadius: '6px',
-    textAlign: 'center',
-    animation: 'slideInUp 0.4s ease-out'
+    background: "rgba(34, 197, 94, 0.1)",
+    borderLeft: "4px solid #22c55e",
+    color: "#16a34a",
+    padding: "16px",
+    borderRadius: "6px",
+    textAlign: "center",
+    animation: "slideInUp 0.4s ease-out",
   },
 
   /** Success message title */
   successTitle: {
-    fontWeight: '600',
-    margin: '0 0 4px 0',
-    fontSize: '16px'
+    fontWeight: "600",
+    margin: "0 0 4px 0",
+    fontSize: "16px",
   },
 
   /** Success message subtitle */
   successSubtitle: {
-    fontSize: '14px',
-    margin: '0',
-    opacity: 0.8
+    fontSize: "14px",
+    margin: "0",
+    opacity: 0.8,
   },
 
   /** Submit button styling */
   submitBtn: {
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: '8px',
-    border: 'none',
-    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-    color: 'white',
-    fontWeight: '600',
-    fontSize: '18px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    animation: 'slideInUp 0.6s ease-out 0.3s backwards'
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: "8px",
+    border: "none",
+    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+    color: "white",
+    fontWeight: "600",
+    fontSize: "18px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    animation: "slideInUp 0.6s ease-out 0.3s backwards",
   },
 
   /** Loading spinner animation */
   spinner: {
-    display: 'inline-block',
-    animation: 'spin 1s linear infinite'
+    display: "inline-block",
+    animation: "spin 1s linear infinite",
   },
 
   /** Visual divider line */
   divider: {
-    height: '1px',
-    background: 'linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent)',
-    margin: '24px 0',
-    border: 'none'
+    height: "1px",
+    background:
+      "linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent)",
+    margin: "24px 0",
+    border: "none",
   },
 
   /** Sign up text styling */
   signupText: {
-    textAlign: 'center',
-    color: '#6b7280',
-    fontSize: '14px',
-    margin: 0
+    textAlign: "center",
+    color: "#6b7280",
+    fontSize: "14px",
+    margin: 0,
   },
 
   /** Sign up link styling */
   signupLink: {
-    color: '#3b82f6',
-    textDecoration: 'none',
-    fontWeight: '600',
-    cursor: 'pointer'
+    color: "#3b82f6",
+    textDecoration: "none",
+    fontWeight: "600",
+    cursor: "pointer",
   },
 
   /** Footer copyright text */
   footer: {
-    textAlign: 'center',
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: '12px',
-    marginTop: '24px'
-  }
+    textAlign: "center",
+    color: "rgba(255, 255, 255, 0.6)",
+    fontSize: "12px",
+    marginTop: "24px",
+  },
 };
