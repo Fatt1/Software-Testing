@@ -11,9 +11,25 @@
 import ProductPage from "../pages/ProductPage.js";
 
 describe("Product Management - Basic Operations", () => {
+  
+  // --- PHẦN QUAN TRỌNG ĐÃ SỬA ---
   beforeEach(() => {
-    ProductPage.navigateToProductPage();
+    // 1. Vào trang Login thay vì vào thẳng Product
+    cy.visit('/login');
+
+    // 2. Nhập thông tin đăng nhập (Admin)
+    // Selector này dựa trên code LoginForm bạn gửi trước đó (input type="text")
+    cy.get('input[type="text"]').clear().type('admin'); 
+    cy.get('input[type="password"]').clear().type('123456');
+
+    // 3. Click nút Đăng nhập
+    cy.get('button').contains(/Đăng Nhập|Login/i).click();
+
+    // 4. QUAN TRỌNG: Đợi React Router chuyển hướng sang '/products'
+    // Nếu bước này qua, nghĩa là Login thành công và đang ở đúng trang
+    cy.url().should('include', '/products', { timeout: 10000 }); 
   });
+  // ------------------------------
 
   describe("Scenario 1: Page Load and UI Elements", () => {
     it("Should load product management page successfully", () => {
