@@ -14,9 +14,9 @@ env:
 
 permissions:
   contents: read
-  checks: write # QUAN TRỌNG: Để dorny/test-reporter viết báo cáo lên tab Checks
-  pull-requests: write # Để comment vào PR
-  statuses: write # Để cập nhật trạng thái commit
+  checks: write 
+  pull-requests: write 
+  statuses: write 
 
 jobs:
   # ============================================================================
@@ -27,7 +27,6 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      # SQL Server for integration tests
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
@@ -99,7 +98,6 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
           SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
           SPRING_TEST_DATABASE_REPLACE: NONE
-          # 👇 SỬA LẠI TÊN BIẾN NÀY
           SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
 
       - name: 🔐 Run Security Tests
@@ -113,7 +111,6 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: ${{ env.SQL_SERVER_SA_PASSWORD }}
           SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
           SPRING_TEST_DATABASE_REPLACE: NONE
-          # 👇 SỬA LẠI TÊN BIẾN NÀY
           SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
 
       - name: 🌐 Run Integration Tests
@@ -159,7 +156,7 @@ jobs:
           fail-on-error: false
 
   # ============================================================================
-  # JOB 2: Frontend Build & Test (Unchanged)
+  # JOB 2: Frontend Build & Test
   # ============================================================================
   frontend-tests:
     name: Frontend - Build & Test
@@ -173,9 +170,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+          # Tắt cache tạm thời để tránh lỗi lock file cũ
+          # cache: "npm"
+          # cache-dependency-path: frontend/package-lock.json
 
+      # 👇 ĐÃ SỬA: Dùng npm install thay vì npm ci để fix lỗi Rollup Linux
       - name: 📦 Install Frontend Dependencies
         run: |
           cd frontend
@@ -265,8 +264,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+          # cache: "npm"
+          # cache-dependency-path: frontend/package-lock.json
 
       - name: 🗄️ Create E2E Database
         run: |
@@ -295,10 +294,12 @@ jobs:
             sleep 5
           done
 
+      # 👇 ĐÃ SỬA: Dùng npm install thay vì npm ci
       - name: 📦 Install Frontend Dependencies
         run: |
           cd frontend
-          npm ci
+          rm -rf node_modules
+          npm install
 
       - name: 🚀 Start Frontend Server
         run: |
