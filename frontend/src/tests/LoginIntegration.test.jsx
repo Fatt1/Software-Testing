@@ -1,3 +1,41 @@
+/**
+ * Login Integration Tests - Component + Service Layer Testing
+ * 
+ * Test Suite Purpose:
+ * This file contains integration tests that verify the interaction between
+ * the LoginForm component and the mocked authentication service layer.
+ * 
+ * Testing Strategy:
+ * - Integration Level: Component + Service (mocked backend API)
+ * - Focus Areas: User interactions, form validation, API calls, error handling
+ * - Testing Library: React Testing Library (user-centric approach)
+ * - Mocking Strategy: Mock external API service to isolate component behavior
+ * 
+ * Test Coverage Categories:
+ * 1. Rendering & User Interactions (UI elements, input handling, button clicks)
+ * 2. Form Submission & API Calls (service layer integration, data passing)
+ * 3. Error Handling & Success Messages (validation errors, API errors, user feedback)
+ * 
+ * Why Integration Tests?
+ * - Verify component works correctly with service layer
+ * - Test real user workflows (typing, clicking, form submission)
+ * - Catch integration issues between UI and business logic
+ * - More confidence than isolated unit tests
+ * 
+ * Test Data:
+ * - Valid users: admin/admin123, user01/password123, testuser/test1234
+ * - Invalid scenarios: empty fields, short username, wrong credentials
+ * 
+ * Key Testing Patterns:
+ * - userEvent.setup() for realistic user interactions
+ * - waitFor() for async operations and state updates
+ * - jest.mock() to isolate component from real API calls
+ * - Screen queries: getByRole, getByPlaceholderText, getByText
+ * 
+ * @see ../components/LoginForm.jsx - Component under test
+ * @see ../services/authService.js - Mocked service layer
+ */
+
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,6 +43,8 @@ import LoginForm from '../components/LoginForm';
 import * as authService from '../services/authService';
 import '@testing-library/jest-dom';
 
+// Mock the authentication service to isolate component testing
+// This prevents real API calls during tests
 jest.mock('../services/authService');
 
 /**
