@@ -1,4 +1,148 @@
 /**
+ * E2E Test Scenarios: Product Management - Comprehensive CRUD Testing
+ * 
+ * Test Suite Purpose:
+ * Comprehensive end-to-end testing covering all product management scenarios
+ * with detailed validation of CRUD operations, search/filter functionality,
+ * and edge cases in a production-like environment.
+ * 
+ * Total Points: 2.5 điểm
+ * This is the most comprehensive product testing suite, covering every
+ * aspect of product management functionality.
+ * 
+ * Testing Approach:
+ * - Scenario-Based: Each scenario represents a complete user workflow
+ * - Behavior-Driven: Tests written from user's perspective
+ * - Production-Ready: Tests realistic scenarios users encounter
+ * - Full Coverage: Positive, negative, and edge cases
+ * 
+ * Test Scenarios Breakdown:
+ * 
+ * 1. Create Product Flow (0.5 điểm)
+ *    - Open create product dialog
+ *    - Display all required form fields
+ *    - Validate empty form submission
+ *    - Validate individual fields
+ *    - Successfully create valid product
+ *    - Verify product appears in list
+ *    - Check product count increases
+ *    - Test duplicate product names
+ *    - Test special characters in fields
+ *    - Close modal without saving
+ * 
+ * 2. Read/List Products (0.5 điểm)
+ *    - Load product list on page load
+ *    - Display all product columns (name, price, quantity, category, actions)
+ *    - Show correct product data
+ *    - Handle empty product list
+ *    - Display product count
+ *    - Paginate large product lists
+ *    - Refresh product list
+ *    - Sort products by columns
+ *    - View product details
+ * 
+ * 3. Update Product Flow (0.5 điểm)
+ *    - Select product to edit
+ *    - Open edit dialog with pre-filled data
+ *    - Modify product fields
+ *    - Validate updated data
+ *    - Save changes successfully
+ *    - Verify changes in product list
+ *    - Cancel editing without saving
+ *    - Handle concurrent edits
+ *    - Test partial updates
+ * 
+ * 4. Delete Product Flow (0.5 điểm)
+ *    - Click delete button
+ *    - Show confirmation dialog
+ *    - Confirm deletion
+ *    - Product removed from list
+ *    - Product count decreases
+ *    - Cancel deletion
+ *    - Delete multiple products
+ *    - Handle delete errors
+ *    - Verify permanent deletion
+ * 
+ * 5. Search/Filter Functionality (0.5 điểm)
+ *    - Search by product name (exact match)
+ *    - Search by product name (partial match)
+ *    - Search with no results
+ *    - Filter by category
+ *    - Filter by price range
+ *    - Filter by stock status
+ *    - Combine search and filters
+ *    - Clear search/filters
+ *    - Real-time search updates
+ *    - Case-insensitive search
+ * 
+ * Product Data Structure:
+ * {
+ *   name: string,           // Product name (3-100 chars)
+ *   price: number,          // Price (positive number)
+ *   quantity: number,       // Stock (non-negative)
+ *   category: string,       // Category (Điện tử, Thời trang, etc.)
+ *   description: string     // Description (10-500 chars)
+ * }
+ * 
+ * ProductPage Object Methods:
+ * - navigateToProductPage() - Go to product page
+ * - clickAddProduct() - Open create form
+ * - fillProductForm(data) - Fill all fields
+ * - fillProductName(name) - Enter product name
+ * - fillPrice(price) - Enter price
+ * - fillQuantity(qty) - Enter quantity
+ * - selectCategory(category) - Select category
+ * - fillDescription(desc) - Enter description
+ * - submitProductForm() - Save product
+ * - cancelProductForm() - Cancel without saving
+ * - searchProduct(query) - Search products
+ * - filterByCategory(category) - Filter by category
+ * - clearFilters() - Reset filters
+ * - clickEditProduct(name) - Edit specific product
+ * - clickDeleteProduct(name) - Delete specific product
+ * - confirmDelete() - Confirm deletion
+ * - cancelDelete() - Cancel deletion
+ * - verifyProductExists(name) - Check product in table
+ * - verifyProductNotExists(name) - Check product removed
+ * - getProductCount() - Get total products
+ * 
+ * Cypress Advanced Features:
+ * - cy.intercept() - Mock/spy on API calls
+ * - cy.wait() - Wait for API responses
+ * - cy.request() - Make direct API calls
+ * - Custom commands - Reusable test actions
+ * - Fixtures - Test data management
+ * - Aliases - Store and reuse values
+ * 
+ * Test Data Strategy:
+ * - Valid products: Complete with all fields
+ * - Invalid products: Missing/invalid fields
+ * - Edge cases: Boundary values, special chars
+ * - Realistic data: Vietnamese product names
+ * - Categories: Điện tử, Thời trang, Thực phẩm, Đồ gia dụng
+ * 
+ * Validation Checks:
+ * ✅ Form validation (empty, too short, invalid format)
+ * ✅ Business rules (positive price, non-negative quantity)
+ * ✅ UI feedback (success/error messages)
+ * ✅ Data persistence (changes saved to backend)
+ * ✅ List updates (changes reflected immediately)
+ * ✅ Error handling (network errors, server errors)
+ * 
+ * Why Comprehensive E2E Testing?
+ * - Ensures all CRUD operations work end-to-end
+ * - Validates complete user workflows
+ * - Tests real-world scenarios
+ * - Catches integration bugs
+ * - Provides deployment confidence
+ * - Documents expected behavior
+ * 
+ * @see ../pages/ProductPage.js - Page Object Model
+ * @see ../../components/ProductManagement.jsx - Component under test
+ * @see ../../services/productService.js - API service layer
+ */
+
+/**
  * E2E Test Scenarios cho Product Management
  * Tổng điểm: 2.5 điểm
  * 

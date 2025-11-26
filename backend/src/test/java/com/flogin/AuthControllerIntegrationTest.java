@@ -22,6 +22,113 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * AuthControllerIntegrationTest - Integration Testing for Authentication API Endpoints
+ * 
+ * Test Suite Purpose:
+ * Integration-level testing of the AuthController REST API endpoints, focusing on
+ * HTTP request/response handling, JSON serialization, and controller-service integration.
+ * 
+ * Testing Level: Integration Testing
+ * - Tests Controller layer with mocked Service layer
+ * - Validates HTTP endpoint mappings and request handling
+ * - Verifies JSON request/response serialization
+ * - Tests Spring MVC framework integration
+ * - Does NOT start full application context (uses @WebMvcTest)
+ * 
+ * Spring Testing Annotations:
+ * 
+ * @WebMvcTest(AuthController.class)
+ * - Configures Spring MVC test infrastructure
+ * - Loads only AuthController and related MVC components
+ * - Does NOT load full Spring Boot application
+ * - Provides MockMvc for simulating HTTP requests
+ * - Faster than @SpringBootTest (only loads MVC layer)
+ * 
+ * @MockitoBean
+ * - Creates Mockito mock and registers it in Spring context
+ * - Replaces real AuthService bean with mock
+ * - Allows controlling service behavior in tests
+ * - Isolates controller testing from service implementation
+ * 
+ * @DisplayName
+ * - Provides readable test names in test reports
+ * - Improves test documentation
+ * - Makes test failures easier to understand
+ * 
+ * MockMvc - Spring's HTTP Testing Framework:
+ * Purpose: Simulate HTTP requests without starting web server
+ * Benefits:
+ * - Fast: No server startup overhead
+ * - Complete: Tests full Spring MVC stack
+ * - Controllable: Full control over request/response
+ * - Verifiable: Assert on status, headers, body content
+ * 
+ * MockMvc Methods Used:
+ * - perform() - Execute HTTP request
+ * - post() - Create POST request
+ * - content() - Set request body
+ * - contentType() - Set Content-Type header
+ * - andExpect() - Add response assertions
+ * - status() - Assert HTTP status code
+ * - jsonPath() - Assert JSON response content
+ * 
+ * ObjectMapper:
+ * - Jackson library for JSON serialization/deserialization
+ * - Converts Java objects to JSON strings for requests
+ * - Used to create JSON request payloads
+ * 
+ * Test Structure:
+ * 
+ * Group A: POST /api/auth/login Endpoint Tests (3 điểm)
+ * - Successful login with valid credentials
+ * - Failed login scenarios (invalid username, wrong password)
+ * - Validation errors (empty fields, too short, invalid format)
+ * - Request/response JSON structure validation
+ * - HTTP status code verification
+ * 
+ * Test Scenarios Covered:
+ * ✅ Login success with valid credentials
+ * ✅ Login failure - user not found
+ * ✅ Login failure - incorrect password
+ * ✅ Validation error - empty username
+ * ✅ Validation error - empty password
+ * ✅ Validation error - username too short (<3 chars)
+ * ✅ Validation error - password too short (<6 chars)
+ * ✅ Validation error - username with invalid characters
+ * ✅ Validation error - password without letters
+ * ✅ Validation error - password without numbers
+ * 
+ * HTTP Status Codes Tested:
+ * - 200 OK - Successful login
+ * - 400 BAD REQUEST - Validation errors
+ * - 401 UNAUTHORIZED - Invalid credentials
+ * 
+ * JSON Response Structure:
+ * Success: { "message": "...", "user": {...}, "token": "..." }
+ * Error: { "message": "..." }
+ * 
+ * Why Integration Testing for Controllers?
+ * - Validates HTTP layer works correctly
+ * - Tests request mapping and routing
+ * - Verifies JSON serialization/deserialization
+ * - Ensures proper error handling and status codes
+ * - Tests Spring MVC configuration
+ * - Catches issues in HTTP contract
+ * 
+ * Testing Best Practices:
+ * - Use @WebMvcTest for fast controller tests
+ * - Mock service layer to isolate controller
+ * - Test all HTTP methods and endpoints
+ * - Verify status codes and response structure
+ * - Test both success and error scenarios
+ * - Use @Nested classes to organize related tests
+ * 
+ * @see com.flogin.controller.AuthController - Controller under test
+ * @see com.flogin.service.AuthService - Mocked service dependency
+ * @see com.flogin.dto.LoginDto - Request/Response DTOs
+ */
+
+/**
  * AuthControllerIntegrationTest - Integration Test cho Auth API
  * Sử dụng @WebMvcTest để test các endpoint của AuthController
  * MockMvc cho phép test HTTP requests mà không cần start toàn bộ server

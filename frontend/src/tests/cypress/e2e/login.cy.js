@@ -1,4 +1,71 @@
 /**
+ * E2E Test Suite: Login Page - End-to-End Automation Testing
+ * 
+ * Test Suite Purpose:
+ * Comprehensive end-to-end testing of the login functionality using Cypress.
+ * Tests the complete user journey from opening the page to successful authentication.
+ * 
+ * Testing Level: E2E (End-to-End)
+ * - Tests entire system: Frontend + Backend + Database
+ * - Real browser interactions with actual application
+ * - Uses real HTTP requests to backend API
+ * - Validates complete user workflows
+ * 
+ * Page Object Model Pattern:
+ * This suite uses POM for maintainability and reusability:
+ * - LoginPage object encapsulates all page interactions
+ * - Separates test logic from page implementation details
+ * - Makes tests more readable and maintainable
+ * - Allows easy updates when UI changes
+ * 
+ * Test Data Management:
+ * - Uses Cypress fixtures (users.json) for test data
+ * - Fixture loaded before each test via cy.fixture()
+ * - Contains valid and invalid user credentials
+ * - Promotes data-driven testing approach
+ * 
+ * Test Structure (1 điểm):
+ * 1. Setup & Configuration Tests - Verify Cypress environment
+ * 2. Page Load Tests - Verify login page loads correctly
+ * 3. User Interaction Tests - Test form inputs and buttons
+ * 4. Authentication Tests - Test login success and failure
+ * 5. Error Handling Tests - Test validation and error messages
+ * 
+ * Cypress Features Demonstrated:
+ * - cy.fixture() - Load test data from JSON files
+ * - cy.visit() - Navigate to pages
+ * - cy.get() - Query DOM elements
+ * - Page Object Model - Structured test organization
+ * - Assertions - expect() and should() chains
+ * - Hooks - beforeEach() for setup
+ * 
+ * Configuration Verified:
+ * - baseUrl: http://localhost:5173 (Vite dev server)
+ * - viewport: 1280x720 (standard desktop resolution)
+ * - Test data fixtures properly loaded
+ * - Page objects properly initialized
+ * 
+ * Test Scenarios:
+ * ✅ Cypress setup and configuration
+ * ✅ Login page loads successfully
+ * ✅ Form elements are visible and interactive
+ * ✅ Valid credentials login successfully
+ * ✅ Invalid credentials show error messages
+ * ✅ Empty fields trigger validation errors
+ * ✅ Password visibility toggle works
+ * 
+ * Why E2E Testing?
+ * - Validates entire application stack
+ * - Tests real user workflows
+ * - Catches integration issues
+ * - Provides confidence in deployment
+ * - Simulates production environment
+ * 
+ * @see ../pages/LoginPage.js - Page Object Model implementation
+ * @see ../fixtures/users.json - Test user credentials
+ */
+
+/**
  * E2E Test Suite: Login Page
  * Using Page Object Model pattern for maintainability
  */

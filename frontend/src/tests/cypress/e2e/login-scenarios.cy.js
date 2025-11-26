@@ -1,4 +1,101 @@
 /**
+ * E2E Test Scenarios: Complete Login Flow - Advanced User Scenarios
+ * 
+ * Test Suite Purpose:
+ * Advanced end-to-end testing covering complete login workflows and user scenarios.
+ * Goes beyond basic functionality to test real-world user behavior patterns.
+ * 
+ * Test Coverage: 2.5 điểm
+ * This comprehensive suite covers all critical login scenarios that users
+ * encounter in production, ensuring robust authentication functionality.
+ * 
+ * Testing Approach:
+ * - Scenario-Based Testing: Tests complete user journeys
+ * - Behavior-Driven: Tests written from user perspective
+ * - Real-World Flows: Simulates actual user interactions
+ * - Edge Cases: Tests uncommon but important scenarios
+ * 
+ * Test Scenarios Breakdown:
+ * 
+ * 1. Complete Login Flow (1 điểm) - 10 tests
+ *    - Open login page successfully
+ *    - Enter valid username
+ *    - Enter valid password
+ *    - Submit form with valid data
+ *    - Login button enabled/disabled states
+ *    - Form submission process
+ *    - Redirect after successful login
+ *    - Session/token handling
+ *    - Remember me functionality
+ *    - Logout and re-login flow
+ * 
+ * 2. Validation Messages (0.5 điểm) - 5 tests
+ *    - Empty username validation
+ *    - Empty password validation
+ *    - Invalid username format
+ *    - Invalid password format
+ *    - Real-time validation feedback
+ * 
+ * 3. Success/Error Flows (0.5 điểm) - 5 tests
+ *    - Successful login with valid credentials
+ *    - Error message for invalid credentials
+ *    - Error message for non-existent user
+ *    - Network error handling
+ *    - Server error handling (500)
+ * 
+ * 4. UI Elements Interactions (0.5 điểm) - 5 tests
+ *    - Password visibility toggle
+ *    - Tab navigation between fields
+ *    - Enter key to submit
+ *    - Button hover states
+ *    - Focus states on inputs
+ * 
+ * Page Object Model Benefits:
+ * - Encapsulates page interactions in LoginPage object
+ * - Makes tests readable and maintainable
+ * - Reduces code duplication
+ * - Simplifies updates when UI changes
+ * - Provides reusable page methods
+ * 
+ * LoginPage Methods Used:
+ * - navigateToLoginPage() - Navigate to login URL
+ * - enterUsername(username) - Type into username field
+ * - enterPassword(password) - Type into password field
+ * - login(username, password) - Complete login flow
+ * - verifyPageTitle() - Check page title
+ * - verifyFormElementsVisible() - Verify form elements
+ * - verifyUsernameValue(value) - Check username input value
+ * - verifyLoginButtonEnabled() - Check button state
+ * 
+ * Test Data Strategy:
+ * - Uses Cypress fixtures (users.json)
+ * - Contains multiple test users
+ * - Valid and invalid credential sets
+ * - Edge case data (special characters, long strings)
+ * 
+ * Cypress Commands Demonstrated:
+ * - cy.fixture() - Load test data
+ * - cy.get() - Query elements
+ * - cy.type() - Simulate typing
+ * - cy.click() - Simulate clicks
+ * - should() - Assertions
+ * - invoke() - Call jQuery methods
+ * 
+ * Real-World Scenarios Tested:
+ * ✅ User opens login page
+ * ✅ User enters credentials step-by-step
+ * ✅ User corrects typos in username/password
+ * ✅ User toggles password visibility
+ * ✅ User submits form via Enter key
+ * ✅ User receives clear error messages
+ * ✅ User successfully logs in
+ * ✅ User's session is maintained
+ * 
+ * @see ../pages/LoginPage.js - Page Object implementation
+ * @see ../fixtures/users.json - Test user data
+ */
+
+/**
  * E2E Test Scenarios: Complete Login Flow
  * Using Page Object Model pattern
  * 

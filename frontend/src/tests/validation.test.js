@@ -1,3 +1,67 @@
+/**
+ * Validation Utility Unit Tests - Username & Password Validation
+ * 
+ * Test Suite Purpose:
+ * Pure unit tests for validation utility functions that enforce business rules
+ * for username and password inputs. These are critical security and UX functions.
+ * 
+ * Functions Under Test:
+ * 1. validateUsername(username) - Validates username format and constraints
+ * 2. validatePassword(password) - Validates password strength and requirements
+ * 
+ * Testing Strategy:
+ * - Pure Unit Testing: Test functions in complete isolation
+ * - Boundary Testing: Test edge cases and limits
+ * - Negative Testing: Test invalid inputs
+ * - Positive Testing: Test valid inputs
+ * - Return Value Validation: Check { isValid, error } structure
+ * 
+ * Username Validation Rules:
+ * - Not empty/null/whitespace only
+ * - Minimum length: 3 characters
+ * - Maximum length: 50 characters
+ * - Allowed characters: letters, numbers, underscores
+ * - No special characters or spaces
+ * 
+ * Password Validation Rules:
+ * - Not empty/null/whitespace only
+ * - Minimum length: 6 characters
+ * - Maximum length: 50 characters
+ * - Must contain at least one letter
+ * - Must contain at least one number
+ * - Optionally: special characters allowed
+ * 
+ * Test Categories:
+ * 
+ * validateUsername() Tests:
+ * 1. Empty/Null Cases (1 điểm) - Empty string, null, whitespace
+ * 2. Length Validation (1 điểm) - Too short (<3), too long (>50)
+ * 3. Character Validation - Valid alphanumeric and underscores
+ * 4. Invalid Characters - Special chars, spaces, symbols
+ * 5. Boundary Cases - Exactly 3 chars, exactly 50 chars
+ * 
+ * validatePassword() Tests:
+ * 1. Empty/Null Cases - Empty string, null, whitespace
+ * 2. Length Validation - Too short (<6), too long (>50)
+ * 3. Complexity Rules - Must have letters and numbers
+ * 4. Valid Passwords - Meeting all requirements
+ * 5. Edge Cases - Boundary lengths, special characters
+ * 
+ * Expected Return Format:
+ * Success: { isValid: true }
+ * Failure: { isValid: false, error: 'Error message in Vietnamese' }
+ * 
+ * Why These Tests Matter:
+ * - Security: Prevent weak passwords
+ * - UX: Provide clear error messages
+ * - Data Quality: Ensure valid usernames
+ * - Business Rules: Enforce requirements
+ * - Regression Prevention: Catch validation breaks
+ * 
+ * @see ../utils/vailidation.js - Validation functions under test
+ * @see ../components/LoginForm.jsx - Uses these validators
+ */
+
 import { validateUsername, validatePassword } from '../utils/vailidation.js';
 import { describe, test, expect } from '@jest/globals';
 

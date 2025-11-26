@@ -30,6 +30,158 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * ProductControllerIntegrationTest - Integration Testing for Product CRUD API
+ * 
+ * Test Suite Purpose:
+ * Comprehensive integration testing of ProductController REST API endpoints,
+ * covering all CRUD (Create, Read, Update, Delete) operations with proper
+ * HTTP protocol testing, JSON handling, and Spring MVC integration.
+ * 
+ * Testing Level: Integration Testing
+ * - Tests Controller layer with mocked Service layer
+ * - Validates all REST API endpoints and HTTP methods
+ * - Verifies request/response JSON serialization
+ * - Tests pagination, filtering, and search functionality
+ * - Ensures proper HTTP status codes and error handling
+ * 
+ * API Endpoints Tested:
+ * 
+ * 1. POST /api/products - Create new product
+ *    - Request: CreateProductRequest JSON body
+ *    - Response: 201 CREATED with ProductDto
+ *    - Validates required fields
+ *    - Tests business rule violations
+ * 
+ * 2. GET /api/products - List all products (paginated)
+ *    - Query params: page, size, category, search
+ *    - Response: 200 OK with Page<ProductDto>
+ *    - Tests pagination metadata
+ *    - Tests filtering by category
+ *    - Tests search functionality
+ * 
+ * 3. GET /api/products/{id} - Get product by ID
+ *    - Path variable: product ID
+ *    - Response: 200 OK with ProductDto
+ *    - Tests 404 NOT FOUND for non-existent ID
+ * 
+ * 4. PUT /api/products/{id} - Update existing product
+ *    - Path variable: product ID
+ *    - Request: UpdateProductRequest JSON body
+ *    - Response: 200 OK with updated ProductDto
+ *    - Tests partial updates
+ *    - Tests 404 for non-existent product
+ * 
+ * 5. DELETE /api/products/{id} - Delete product
+ *    - Path variable: product ID
+ *    - Response: 204 NO CONTENT
+ *    - Tests 404 for non-existent product
+ *    - Tests cascade delete if needed
+ * 
+ * Spring Test Infrastructure:
+ * 
+ * @WebMvcTest(ProductController.class)
+ * - Configures only MVC layer for ProductController
+ * - Loads controller, converters, filters
+ * - Does NOT load services, repositories, database
+ * - Provides MockMvc for HTTP testing
+ * - Fast and focused testing
+ * 
+ * @MockitoBean ProductService
+ * - Mocks the service layer
+ * - Isolates controller testing
+ * - Allows controlled service responses
+ * - Registered in Spring context automatically
+ * 
+ * MockMvc Testing Patterns:
+ * 
+ * POST Request:
+ * mockMvc.perform(post("/api/products")
+ *     .contentType(MediaType.APPLICATION_JSON)
+ *     .content(objectMapper.writeValueAsString(request)))
+ *     .andExpect(status().isCreated())
+ *     .andExpect(jsonPath("$.name").value("Product Name"));
+ * 
+ * GET Request with Path Variable:
+ * mockMvc.perform(get("/api/products/{id}", productId))
+ *     .andExpect(status().isOk())
+ *     .andExpect(jsonPath("$.id").value(productId));
+ * 
+ * PUT Request:
+ * mockMvc.perform(put("/api/products/{id}", productId)
+ *     .contentType(MediaType.APPLICATION_JSON)
+ *     .content(jsonBody))
+ *     .andExpect(status().isOk());
+ * 
+ * DELETE Request:
+ * mockMvc.perform(delete("/api/products/{id}", productId))
+ *     .andExpect(status().isNoContent());
+ * 
+ * JSON Path Assertions:
+ * - jsonPath("$.name") - Assert top-level field
+ * - jsonPath("$.price") - Assert numeric field
+ * - jsonPath("$", hasSize(3)) - Assert array size
+ * - jsonPath("$.content[0].name") - Assert nested field
+ * - jsonPath("$.totalElements") - Assert pagination metadata
+ * 
+ * Test Categories:
+ * 
+ * A) Create Product Tests (1 điểm)
+ * - Successful product creation
+ * - Validation errors (missing fields, invalid data)
+ * - Duplicate product handling
+ * - Category validation
+ * 
+ * B) Read Product Tests
+ * - Get all products with pagination
+ * - Get product by ID (success and not found)
+ * - Filter by category
+ * - Search by name
+ * - Empty result handling
+ * 
+ * C) Update Product Tests
+ * - Successful update
+ * - Partial update (only some fields)
+ * - Update non-existent product (404)
+ * - Validation on update
+ * 
+ * D) Delete Product Tests
+ * - Successful deletion
+ * - Delete non-existent product (404)
+ * - Verify service method called
+ * 
+ * HTTP Status Codes:
+ * - 200 OK - Successful GET, PUT
+ * - 201 CREATED - Successful POST
+ * - 204 NO CONTENT - Successful DELETE
+ * - 400 BAD REQUEST - Validation errors
+ * - 404 NOT FOUND - Resource not found
+ * - 500 INTERNAL SERVER ERROR - Server errors
+ * 
+ * Product DTO Structure:
+ * {
+ *   "id": "uuid",
+ *   "name": "Product Name",
+ *   "price": 99.99,
+ *   "quantity": 100,
+ *   "category": "ELECTRONICS",
+ *   "description": "Product description"
+ * }
+ * 
+ * Why Integration Test REST Controllers?
+ * - Validates HTTP layer works correctly
+ * - Tests request routing and mapping
+ * - Verifies JSON serialization/deserialization
+ * - Ensures proper status codes
+ * - Tests error handling
+ * - Documents API contract
+ * - Catches integration issues
+ * 
+ * @see com.flogin.controller.ProductController - Controller under test
+ * @see com.flogin.service.ProductService - Mocked service
+ * @see com.flogin.dto.ProductDtos - Request/Response DTOs
+ */
+
+/**
  * ProductControllerIntegrationTest - Integration Test cho Product API
  * Test các CRUD operations: Create, Read, Update, Delete
  */
