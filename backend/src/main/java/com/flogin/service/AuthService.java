@@ -201,36 +201,5 @@ public class AuthService {
         return new LoginResponse(true, "Login thành công", token, userDto);
     }
 
-    /**
-     * Validate LoginRequest và trả về list of error messages
-     * 
-     * <p>Helper method để validate LoginRequest object và collect
-     * tất cả validation errors (không chỉ error đầu tiên).</p>
-     * 
-     * <p>Sử dụng cho:</p>
-     * <ul>
-     *   <li>Testing purposes - kiểm tra tất cả validation rules</li>
-     *   <li>Detailed error reporting - show all errors to user</li>
-     *   <li>Form validation - hiển thị multiple field errors</li>
-     * </ul>
-     * 
-     * <p><b>Example Usage:</b></p>
-     * <pre>
-     * LoginRequest request = new LoginRequest("", "");
-     * List&lt;String&gt; errors = authService.validate(request);
-     * // errors = ["Username is required", "Password is required"]
-     * </pre>
-     * 
-     * @param request LoginRequest object cần validate
-     * @return List of error messages (empty list nếu không có errors)
-     */
-    public java.util.List<String> validate(LoginRequest request) {
-        // Validate request và collect tất cả constraint violations
-        Set<ConstraintViolation<LoginRequest>> violations = validator.validate(request);
 
-        // Convert violations to list of error messages
-        return violations.stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toList());
-    }
 }

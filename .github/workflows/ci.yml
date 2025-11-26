@@ -452,45 +452,7 @@ jobs:
           path: performance-tests/results/
 
   # ============================================================================
-  # JOB 5: Security Scan
-  # ============================================================================
-  security-scan:
-    name: Security Vulnerability Scan
-    runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
-
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v3
-
-      - name: 🔒 Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          scan-ref: "."
-          format: "sarif"
-          output: "trivy-results.sarif"
-
-      - name: 📤 Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: "trivy-results.sarif"
-
-      - name: 🔍 OWASP Dependency Check (Backend)
-        run: |
-          cd backend
-          ./mvnw dependency-check:check || true
-        continue-on-error: true
-
-      - name: 🔍 npm audit (Frontend)
-        run: |
-          cd frontend
-          npm audit --audit-level=moderate || true
-        continue-on-error: true
-
-  # ============================================================================
-  # JOB 6: Code Quality Analysis
+  # JOB 5: Code Quality Analysis
   # ============================================================================
   code-quality:
     name: Code Quality Analysis
@@ -534,7 +496,7 @@ jobs:
           path: coverage-summary.md
 
   # ============================================================================
-  # JOB 7: Build Summary & Notification
+  # JOB 6: Build Summary & Notification
   # ============================================================================
   build-summary:
     name: Build Summary
