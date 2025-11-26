@@ -8,7 +8,7 @@ on:
 
 env:
   JAVA_VERSION: "21"
-  NODE_VERSION: "18"
+  NODE_VERSION: "20"
   BACKEND_PORT: 6969
   SQL_SERVER_SA_PASSWORD: "YourStrong!Passw0rd@"
 
