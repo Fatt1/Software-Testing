@@ -223,41 +223,7 @@ public class ProductServiceTest {
             verify(productRepository, times(1)).save(any(Product.class));
         }
 
-//        @Test
-//        @DisplayName("TC2: Tạo sản phẩm với tất cả categories hợp lệ")
-//        void testCreateProduct_AllValidCategories() {
-//            List<String> validCategories = Arrays.asList("Electronics", "Books", "Clothing", "Toys", "Groceries");
-//
-//            for (String category : validCategories) {
-//                CreateProductRequest request = new CreateProductRequest("Product", 100.0, "Description", 10, category);
-//                Product savedProduct = new Product(1L, category, "Description", 10, "Product", 100.0);
-//                when(mockValidator.validate(request)).thenReturn(Set.of());
-//                when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-//
-//                ProductDto result = productService.createProduct(request);
-//
-//                assertEquals(category, result.getCategory());
-//            }
-//        }
-
         // ========== BOUNDARY TESTS ==========
-
-//        @Test
-//        @DisplayName("TC3: Product Name - Min boundary (3 ký tự)")
-//        void testCreateProduct_ProductName_MinBoundary() {
-//            // Arrange
-//            CreateProductRequest request = new CreateProductRequest("ABC", 15000.0, "Description", 10, "Electronics");
-//            Product savedProduct = new Product(1L, "Electronics", "Description", 10, "ABC", 15000.0);
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-//
-//            // Act
-//            ProductDto result = productService.createProduct(request);
-//
-//            // Assert
-//            assertEquals("ABC", result.getProductName());
-//        }
 
         @Test
         @DisplayName("TC4: Product Name - Below min boundary (2 ký tự)")
@@ -278,23 +244,6 @@ public class ProductServiceTest {
             assertTrue(exception.getMessage().contains("Product Name phải từ 3 đến 100 ký tự"));
         }
 
-//        @Test
-//        @DisplayName("TC5: Product Name - Max boundary (100 ký tự)")
-//        void testCreateProduct_ProductName_MaxBoundary() {
-//            // Arrange
-//            String productName = "A".repeat(100); // 100 ký tự
-//            CreateProductRequest request = new CreateProductRequest(productName, 15000.0, "Description", 10, "Electronics");
-//            Product savedProduct = new Product(1L, "Electronics", "Description", 10, productName, 15000.0);
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-//
-//            // Act
-//            ProductDto result = productService.createProduct(request);
-//
-//            // Assert
-//            assertEquals(100, result.getProductName().length());
-//        }
 
         @Test
         @DisplayName("TC6: Product Name - Above max boundary (101 ký tự)")
@@ -408,22 +357,6 @@ public class ProductServiceTest {
             verify(productRepository, never()).save(any());
         }
 
-//        @Test
-//        @DisplayName("TC13: Category case sensitive - IllegalArgumentException")
-//        void testCreateProduct_Category_CaseSensitive() {
-//            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", 10, "electronics");
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//
-//            // Category.isValid("electronics") return false → throw IllegalArgumentException
-//            IllegalArgumentException exception = assertThrows(
-//                    IllegalArgumentException.class,
-//                    () -> productService.createProduct(request)
-//            );
-//
-//            assertTrue(exception.getMessage().contains("Category"));
-//            verify(productRepository, never()).save(any());
-//        }
-//
         @Test
         @DisplayName("TC14: Category null - Validation fail trước")
         void testCreateProduct_Category_Null() {
@@ -441,76 +374,6 @@ public class ProductServiceTest {
 
             assertTrue(exception.getMessage().contains("Validation failed"));
         }
-//
-//        @Test
-//        @DisplayName("TC16: Category với spaces - NullPointerException từ enum comparison")
-//        void testCreateProduct_Category_WithSpaces() {
-//            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", 10, " Electronics ");
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//
-//            // " Electronics " không match → Category.isValid() có thể throw NPE trong enum comparison
-//            assertThrows(
-//                    Exception.class, // Có thể là IllegalArgumentException hoặc NullPointerException
-//                    () -> productService.createProduct(request)
-//            );
-//        }
-
-//        @Test
-//        @DisplayName("TC17: Price - Số thập phân nhiều chữ số")
-//        void testCreateProduct_Price_ManyDecimals() {
-//            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.999999, "Description", 10, "Electronics");
-//            Product savedProduct = new Product(1L, "Electronics", "Description", 10, "Laptop", 15000.999999);
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-//
-//            ProductDto result = productService.createProduct(request);
-//
-//            assertEquals(15000.999999, result.getPrice(), 0.000001);
-//        }
-
-        @Test
-        @DisplayName("TC18: Quantity - Số lượng lớn")
-        void testCreateProduct_Quantity_LargeNumber() {
-            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", Integer.MAX_VALUE, "Electronics");
-            Product savedProduct = new Product(1L, "Electronics", "Description", Integer.MAX_VALUE, "Laptop", 15000.0);
-
-            when(mockValidator.validate(request)).thenReturn(Set.of());
-            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-
-            ProductDto result = productService.createProduct(request);
-
-            assertEquals(Integer.MAX_VALUE, result.getQuantity());
-        }
-
-//        @Test
-//        @DisplayName("TC19: Description null - Cho phép")
-//        void testCreateProduct_Description_Null() {
-//            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, null, 10, "Electronics");
-//            Product savedProduct = new Product(1L, "Electronics", null, 10, "Laptop", 15000.0);
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-//
-//            ProductDto result = productService.createProduct(request);
-//
-//            assertNull(result.getDescription());
-//        }
-
-//        @Test
-//        @DisplayName("TC20: Product Name với ký tự đặc biệt")
-//        void testCreateProduct_ProductName_SpecialCharacters() {
-//            String productName = "Laptop @#$ 123";
-//            CreateProductRequest request = new CreateProductRequest(productName, 15000.0, "Description", 10, "Electronics");
-//            Product savedProduct = new Product(1L, "Electronics", "Description", 10, productName, 15000.0);
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-//
-//            ProductDto result = productService.createProduct(request);
-//
-//            assertEquals(productName, result.getProductName());
-//        }
 
         @Test
         @DisplayName("TC14: Nhiều lỗi validation cùng lúc")
@@ -529,6 +392,20 @@ public class ProductServiceTest {
             // Act & Assert
             assertThrows(IllegalArgumentException.class, () -> productService.createProduct(request));
             verify(productRepository, never()).save(any());
+        }
+
+         @Test
+        @DisplayName("TC18: Quantity - Số lượng lớn")
+        void testCreateProduct_Quantity_LargeNumber() {
+            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", Integer.MAX_VALUE, "Electronics");
+            Product savedProduct = new Product(1L, "Electronics", "Description", Integer.MAX_VALUE, "Laptop", 15000.0);
+
+            when(mockValidator.validate(request)).thenReturn(Set.of());
+            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+
+            ProductDto result = productService.createProduct(request);
+
+            assertEquals(Integer.MAX_VALUE, result.getQuantity());
         }
 
         @Test
@@ -572,43 +449,6 @@ public class ProductServiceTest {
             verify(productRepository, times(1)).save(any(Product.class));
         }
 
-//        @Test
-//        @DisplayName("TC23: Tạo sản phẩm thất bại - Tên trùng nhưng khác chữ hoa/thường")
-//        void testCreateProduct_DuplicateProductName_CaseInsensitive() {
-//            // Arrange - Giả sử database case-insensitive
-//            CreateProductRequest request = new CreateProductRequest("LAPTOP", 15000.0, "Gaming laptop", 10, "Electronics");
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.existsByProductName("LAPTOP")).thenReturn(true);
-//
-//            // Act & Assert
-//            IllegalArgumentException exception = assertThrows(
-//                    IllegalArgumentException.class,
-//                    () -> productService.createProduct(request)
-//            );
-//
-//            assertTrue(exception.getMessage().contains("Product name 'LAPTOP' đã tồn tại"));
-//            verify(productRepository, never()).save(any());
-//        }
-
-//        @Test
-//        @DisplayName("TC24: Tạo sản phẩm thất bại - Tên có khoảng trắng đầu cuối nhưng trùng")
-//        void testCreateProduct_DuplicateProductName_WithSpaces() {
-//            // Arrange
-//            CreateProductRequest request = new CreateProductRequest(" Laptop ", 15000.0, "Gaming laptop", 10, "Electronics");
-//
-//            when(mockValidator.validate(request)).thenReturn(Set.of());
-//            when(productRepository.existsByProductName(" Laptop ")).thenReturn(true);
-//
-//            // Act & Assert
-//            IllegalArgumentException exception = assertThrows(
-//                    IllegalArgumentException.class,
-//                    () -> productService.createProduct(request)
-//            );
-//
-//            assertTrue(exception.getMessage().contains("Product name ' Laptop ' đã tồn tại"));
-//            verify(productRepository, never()).save(any());
-//        }
     }
 
     // ========================================================================================
