@@ -2,11 +2,7 @@ package com.flogin.dto.LoginDto;
 
 import com.flogin.dto.UserDtos.UserDto;
 
-/**
- * @see LoginRequest
- * @see UserDto
- * @see com.flogin.service.JwtService
- */
+
 public class LoginResponse {
     private boolean success;
     private String message;

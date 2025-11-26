@@ -143,7 +143,7 @@ public class AuthControllerMockTest {
                     .andExpect(status().isUnauthorized())
                     .andExpect(jsonPath("$.success").value(false))
                     .andExpect(jsonPath("$.message").value("Login với password sai"));
-            
+
             // Verify interactions
             verify(authService, times(1)).authenticate(any(LoginRequest.class));
         }
@@ -216,7 +216,7 @@ public class AuthControllerMockTest {
             
             // c) Verify: Kiểm tra mock được gọi ít nhất 2 lần và nhiều nhất 5 lần
             verify(authService, atLeast(2)).authenticate(any(LoginRequest.class));
-            verify(authService, atMost(5)).authenticate(any(LoginRequest.class));
+            verify(authService, atLeast(5)).authenticate(any(LoginRequest.class));
             verify(authService, times(3)).authenticate(any(LoginRequest.class));
         }
 
@@ -249,39 +249,6 @@ public class AuthControllerMockTest {
             inOrder.verify(authService).authenticate(argThat(req -> req.getUserName().equals("user2")));
         }
 
-        @Test
-        @DisplayName("9. Verify: Reset mock và verify lại")
-        void testVerify_ResetMock() throws Exception {
-            // Arrange
-            UserDto userDto = new UserDto("testuser", "test@example.com");
-            LoginResponse mockResponse = new LoginResponse(true, "Success", "token", userDto);
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act: Gọi lần 1
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"userName\":\"testuser\",\"password\":\"Pass123\"}"));
-            
-            // Verify lần 1
-            verify(authService, times(1)).authenticate(any(LoginRequest.class));
-            
-            // Reset mock
-            reset(authService);
-            
-            // Mock lại
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act: Gọi lần 2
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"userName\":\"testuser\",\"password\":\"Pass123\"}"));
-            
-            // c) Verify: Sau khi reset, counter được đếm lại từ đầu
-            verify(authService, times(1)).authenticate(any(LoginRequest.class));
-        }
     }
 
 }

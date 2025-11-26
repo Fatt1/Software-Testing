@@ -2,11 +2,7 @@ package com.flogin.dto.LoginDto;
 
 import jakarta.validation.constraints.*;
 
-/**
- * @see LoginResponse
- * @see com.flogin.controller.AuthController#login(LoginRequest)
- * @see com.flogin.service.AuthService#authenticate(LoginRequest)
- */
+
 public class LoginRequest {
     
     @NotBlank(message = "Username không được để trống")

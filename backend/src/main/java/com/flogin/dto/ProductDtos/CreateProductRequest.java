@@ -2,16 +2,7 @@ package com.flogin.dto.ProductDtos;
 
 import jakarta.validation.constraints.*;
 
-/**
- * @see ProductDto
- * @see UpdateProductRequest
- * @see com.flogin.entity.Product
- * @see com.flogin.entity.Category
- */
-/**
- * CreateProductRequest - DTO cho việc tạo product mới
- * Không có field id vì id được tự động generate
- */
+
 public class CreateProductRequest {
     
     @NotBlank(message = "Product Name không được rỗng")
