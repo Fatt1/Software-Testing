@@ -20,7 +20,7 @@ describe("Product Management - Basic Operations", () => {
     // 2. Nhập thông tin đăng nhập (Admin)
     // Selector này dựa trên code LoginForm bạn gửi trước đó (input type="text")
     cy.get('input[type="text"]').clear().type('admin'); 
-    cy.get('input[type="password"]').clear().type('123456');
+    cy.get('input[type="password"]').clear().type('admin123');
 
     // 3. Click nút Đăng nhập
     cy.get('button').contains(/Đăng Nhập|Login/i).click();
