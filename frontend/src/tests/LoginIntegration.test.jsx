@@ -171,8 +171,7 @@ describe('Login - Integration Testing', () => {
       await user.click(submitButton);
       
       await waitFor(() => {
-        const errorMessage = screen.getByText(/Vui lòng nhập username và mật khẩu/i);
-        expect(errorMessage).toBeInTheDocument();
+        expect(screen.getByText(/Username không được để trống/i)).toBeInTheDocument();    
       });
     });
 
@@ -193,7 +192,7 @@ describe('Login - Integration Testing', () => {
       await user.click(submitButton);
       
       await waitFor(() => {
-        const errorMessage = screen.getByText(/Username phải có ít nhất 3 ký tự/i);
+        const errorMessage = screen.getByText(/Username phải ít nhất 3 ký tự/i);
         expect(errorMessage).toBeInTheDocument();
       });
     });
@@ -213,7 +212,7 @@ describe('Login - Integration Testing', () => {
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
       await user.type(usernameInput, 'testuser');
-      await user.type(passwordInput, 'wrongpassword');
+      await user.type(passwordInput, 'wrongpassword1');
       await user.click(submitButton);
       
       // Verify error message

@@ -221,9 +221,9 @@ describe("ProductForm Component (create/edit) Tests (2 điểm)", () => {
       });
 
       const categorySelect = screen.getByLabelText(/danh mục/i);
-      await user.selectOptions(categorySelect, "Điện tử");
+      await user.selectOptions(categorySelect, "Electronics");
 
-      expect(categorySelect).toHaveValue("Điện tử");
+      expect(categorySelect).toHaveValue("Electronics");
     });
 
     test("nên có thể nhập mô tả sản phẩm", async () => {
@@ -456,7 +456,7 @@ describe("ProductForm Component (create/edit) Tests (2 điểm)", () => {
       await user.type(quantityInput, "10");
 
       const categorySelect = screen.getByLabelText(/danh mục/i);
-      await user.selectOptions(categorySelect, "Điện tử");
+      await user.selectOptions(categorySelect, "Electronics");
 
       const descriptionInput = screen.getByLabelText(/mô tả/i);
       await user.type(descriptionInput, "This is a test product description");

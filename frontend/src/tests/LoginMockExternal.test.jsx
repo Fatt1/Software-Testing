@@ -88,7 +88,7 @@ describe('Login - Mock External Dependencies', () => {
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
       await user.type(usernameInput, 'testuser');
-      await user.type(passwordInput, 'wrongpassword');
+      await user.type(passwordInput, 'wrongpassword1');
       await user.click(submitButton);
       
       // Verify error message appears
