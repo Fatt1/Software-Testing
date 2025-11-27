@@ -8,8 +8,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ProductManagement from "../components/ProductManagement";
 import "@testing-library/jest-dom";
-
+import { getAllProducts, createProduct } from "../services/productService";
 // Helper function to click the header "Thêm Sản Phẩm" button
+
+jest.mock("../services/productService");
+
 const openProductForm = async (user) => {
   const buttons = screen.getAllByRole("button");
   const addButton = buttons.find((btn) => {
@@ -39,6 +42,11 @@ const getSubmitButton = () => {
 describe("ProductForm Component (create/edit) Tests (2 điểm)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    getAllProducts.mockResolvedValue([]);
+    if (createProduct) {
+        createProduct.mockResolvedValue({ id: 1, name: "Test Product" });
+    }
   });
 
   /**
