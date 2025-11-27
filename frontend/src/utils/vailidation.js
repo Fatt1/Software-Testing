@@ -34,12 +34,12 @@ export const validateUsername = (username) => {
       error: "Username không được vượt quá 50 ký tự",
     };
   }
-  // Check for valid character pattern (letters, dot, underscore, hyphen only)
-  const validPattern = /^[a-zA-Z._-]+$/;
+  // Check for valid character pattern (letters, numbers, dot, underscore, hyphen only)
+  const validPattern = /^[a-zA-Z0-9._-]+$/;
   if (!validPattern.test(username)) {
     return {
       isValid: false,
-      error: "Username chỉ chứa chữ, chấm, gạch dưới, và gạch ngang",
+      error: "Username chỉ chứa chữ, số, dấu chấm (.), gạch dưới (_), và gạch ngang (-)",
     };
   }
   // All validations passed
@@ -107,4 +107,49 @@ export const validatePassword = (password) => {
     isValid: true,
     error: null,
   };
+};
+
+/**
+ * Calculate password strength based on various criteria
+ * Returns strength level and score for UI display
+ *
+ * @function getPasswordStrength
+ * @param {string} password - Password to evaluate
+ * @returns {Object} Strength evaluation object
+ * @returns {number} return.score - Strength score (0-4)
+ * @returns {string} return.label - Strength label (Rất yếu, Yếu, Trung bình, Mạnh, Rất mạnh)
+ * @returns {string} return.color - Color for UI display
+ */
+export const getPasswordStrength = (password) => {
+  if (!password) {
+    return { score: 0, label: '', color: '#e5e7eb' };
+  }
+
+  let score = 0;
+  
+  // Length scoring
+  if (password.length >= 6) score++;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  
+  // Character variety scoring
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++; // Has both cases
+  if (/[0-9]/.test(password)) score++; // Has numbers
+  if (/[^a-zA-Z0-9]/.test(password)) score++; // Has special chars
+  
+  // Reduce score if too simple
+  if (/^[a-zA-Z]+$/.test(password) || /^[0-9]+$/.test(password)) score = Math.max(0, score - 2);
+  
+  // Normalize score to 0-4 range
+  score = Math.min(4, Math.floor(score * 4 / 6));
+  
+  const strengthMap = {
+    0: { label: 'Rất yếu', color: '#ef4444' },
+    1: { label: 'Yếu', color: '#f97316' },
+    2: { label: 'Trung bình', color: '#eab308' },
+    3: { label: 'Mạnh', color: '#22c55e' },
+    4: { label: 'Rất mạnh', color: '#10b981' }
+  };
+  
+  return { score, ...strengthMap[score] };
 };

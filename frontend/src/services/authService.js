@@ -88,7 +88,19 @@ export const login = async (username, password) => {
     return response.data;
   } catch (error) {
     // Extract error message from response or use default
-    throw new Error(error.response?.data?.message || "Login failed");
+    const errorMessage = error.response?.data?.message || "Login failed";
+    
+    // Translate common error messages to Vietnamese
+    const vietnameseErrors = {
+      "Login failed": "Sai tên đăng nhập hoặc mật khẩu",
+      "Invalid credentials": "Sai tên đăng nhập hoặc mật khẩu",
+      "User not found": "Tài khoản không tồn tại",
+      "Wrong password": "Mật khẩu không chính xác",
+      "Account locked": "Tài khoản đã bị khóa",
+      "Account disabled": "Tài khoản đã bị vô hiệu hóa",
+    };
+    
+    throw new Error(vietnameseErrors[errorMessage] || errorMessage);
   }
 };
 
