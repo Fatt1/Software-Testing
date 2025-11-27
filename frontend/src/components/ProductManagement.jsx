@@ -33,13 +33,7 @@ const ProductManagement = () => {
   const [notification, setNotification] = useState(null);
   const itemsPerPage = 5;
 
-  const categories = [
-    "Điện tử",
-    "Thời trang",
-    "Thực phẩm",
-    "Đồ gia dụng",
-    "Sách",
-  ];
+  const categories = ["Electronics", "Books", "Clothing", "Toys", "Groceries"];
 
   const [formData, setFormData] = useState({
     productName: "",

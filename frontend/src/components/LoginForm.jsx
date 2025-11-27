@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { login } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { validateUsername, validatePassword } from "../utils/vailidation";
 import "./LoginForm.css";
 
 /**
@@ -27,9 +28,90 @@ export default function LoginForm() {
   /** @type {[string, Function]} Error message to display */
   const [error, setError] = useState("");
 
+  /** @type {[Object, Function]} Field-specific errors */
+  const [fieldErrors, setFieldErrors] = useState({
+    username: "",
+    password: ""
+  });
+
   /** @type {[boolean, Function]} Success state after login */
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  /**
+   * Handle password input change
+   */
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    
+    // Clear password error when user types
+    if (fieldErrors.password) {
+      setFieldErrors(prev => ({ ...prev, password: "" }));
+    }
+  };
+
+  /**
+   * Handle username input change
+   */
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    
+    // Clear username error when user types
+    if (fieldErrors.username) {
+      setFieldErrors(prev => ({ ...prev, username: "" }));
+    }
+  };
+
+  /**
+   * Handle Enter key press on username field - move to password field
+   */
+  const handleUsernameKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // Focus on password input
+      document.getElementById('password-input')?.focus();
+    }
+  };
+
+  /**
+   * Handle Enter key press on password field - submit form
+   */
+  const handlePasswordKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // Submit form (will validate and show errors)
+      handleSubmit(e);
+    }
+  };
+
+  /**
+   * Validate all form fields before submission
+   * @returns {boolean} True if all fields are valid
+   */
+  const validateForm = () => {
+    const errors = {
+      username: "",
+      password: ""
+    };
+    let isValid = true;
+
+    // Validate username
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.isValid) {
+      errors.username = usernameValidation.error;
+      isValid = false;
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      errors.password = passwordValidation.error;
+      isValid = false;
+    }
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
   /**
    * @async
    * @param {Event} e - Form submit event
@@ -38,24 +120,16 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Validate all fields before submission
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
-    // Validate required fields
-    if (!username || !password) {
-      setError("Vui lòng nhập username và mật khẩu");
-      setIsLoading(false);
-      return;
-    }
-
-    // Validate username length
-    if (username.length < 3) {
-      setError("Username phải có ít nhất 3 ký tự");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Call authentication service (mocked in tests)
+      // Call authentication service
       const res = await login(username, password);
       if (res && res.success) {
         setSuccess(true);
@@ -72,10 +146,12 @@ export default function LoginForm() {
         return;
       }
       // Fallback error
-      setError("Có lỗi xảy ra");
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
       setIsLoading(false);
     } catch (err) {
-      setError(err?.message || "Có lỗi xảy ra");
+      // Display backend error message
+      const errorMessage = err?.message || "Đăng nhập thất bại. Vui lòng thử lại.";
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -109,13 +185,25 @@ export default function LoginForm() {
               <div style={styles.formGroup}>
                 <label style={styles.label}>Username</label>
                 <input
+                  id="username-input"
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={handleUsernameChange}
+                  onKeyPress={handleUsernameKeyPress}
                   placeholder="your_username"
-                  style={styles.input}
+                  style={{
+                    ...styles.input,
+                    borderColor: fieldErrors.username ? '#ef4444' : 'rgba(209, 213, 219, 0.5)',
+                    backgroundColor: fieldErrors.username ? 'rgba(254, 242, 242, 0.5)' : 'rgba(255, 255, 255, 0.9)'
+                  }}
                   disabled={isLoading}
                 />
+                {fieldErrors.username && (
+                  <p style={styles.fieldError}>
+                    <span style={styles.errorIcon}>⚠</span>
+                    {fieldErrors.username}
+                  </p>
+                )}
               </div>
 
               {/* Password Input Field with Show/Hide Toggle */}
@@ -123,11 +211,17 @@ export default function LoginForm() {
                 <label style={styles.label}>Mật Khẩu</label>
                 <div style={styles.passwordWrapper}>
                   <input
+                    id="password-input"
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
+                    onKeyPress={handlePasswordKeyPress}
                     placeholder="••••••••"
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      borderColor: fieldErrors.password ? '#ef4444' : 'rgba(209, 213, 219, 0.5)',
+                      backgroundColor: fieldErrors.password ? 'rgba(254, 242, 242, 0.5)' : 'rgba(255, 255, 255, 0.9)'
+                    }}
                     disabled={isLoading}
                   />
                   {/* Toggle password visibility button */}
@@ -140,6 +234,12 @@ export default function LoginForm() {
                     {showPassword ? "👁️‍🗨️" : "👁️"}
                   </button>
                 </div>
+                {fieldErrors.password && (
+                  <p style={styles.fieldError}>
+                    <span style={styles.errorIcon}>⚠</span>
+                    {fieldErrors.password}
+                  </p>
+                )}
               </div>
 
               {/* Remember Me Checkbox & Forgot Password Link */}
@@ -303,13 +403,28 @@ const styles = {
     width: "100%",
     padding: "12px 16px",
     borderRadius: "8px",
-    border: "2px solid rgba(255, 255, 255, 0.3)",
+    border: "2px solid rgba(209, 213, 219, 0.5)",
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     fontSize: "14px",
     transition: "all 0.3s ease",
     boxSizing: "border-box",
     outline: "none",
-    cursor: "pointer",
+  },
+
+  /** Field-specific error message */
+  fieldError: {
+    margin: "8px 0 0 0",
+    fontSize: "13px",
+    color: "#dc2626",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    animation: "slideInDown 0.3s ease-out",
+  },
+
+  /** Error icon */
+  errorIcon: {
+    fontSize: "14px",
   },
 
   /** Password input wrapper for toggle button positioning */
