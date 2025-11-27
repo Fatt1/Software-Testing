@@ -15,6 +15,7 @@
  */
 
 import axios from "axios";
+import { validateProduct } from "../utils/validateProduct";
 
 /**
  * Get API base URL from environment variables
@@ -166,6 +167,9 @@ export const createProduct = async (product) => {
  */
 export const updateProduct = async (id, product) => {
   try {
+    if (validateProduct(product)) {
+      console.log("Product data is valid");
+    }
     const response = await axiosInstance.put(`/products/${id}`, product);
     return response.data;
   } catch (error) {

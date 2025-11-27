@@ -53,7 +53,6 @@ public class AuthenticationBypassTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-
         User admin = new User();
         admin.setUserName("admin");
         admin.setEmail("admin@example.com");
@@ -77,10 +76,6 @@ public class AuthenticationBypassTest {
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isBadRequest());
     }
-
-    // ===================================================================
-    // TC2: Invalid Credentials
-    // ===================================================================
 
     @Test
     @DisplayName("TC2.1: Auth bypass - Wrong password")

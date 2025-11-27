@@ -247,7 +247,6 @@ public class ProductServiceTest {
 
             when(mockValidator.validate(request)).thenReturn(Set.of());
             when(productRepository.findById(1L)).thenReturn(Optional.of(existingProduct));
-            when(productRepository.existsByProductName("Laptop")).thenReturn(false);
 
             // Act & Assert
             IllegalArgumentException exception = assertThrows(
