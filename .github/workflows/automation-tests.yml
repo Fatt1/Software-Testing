@@ -107,7 +107,7 @@ jobs:
         with:
           script: |
             const status = '${{ job.status }}';
-            const icon = status === 'success' ? '✅' : '❌';
+            const icon = status === 'success' ? 'Dung' : 'Sai';
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
