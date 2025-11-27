@@ -81,7 +81,7 @@ describe("validateUsername()", () => {
       const result = validateUsername("user name");
       expect(result.isValid).toBe(false);
       expect(result.error).toBe(
-        "Username chỉ chứa chữ, chấm, gạch dưới, và gạch ngang"
+        "Username chỉ chứa chữ, số, dấu chấm (.), gạch dưới (_), và gạch ngang (-)"
       );
     });
 
@@ -89,7 +89,7 @@ describe("validateUsername()", () => {
       const result = validateUsername("user@name");
       expect(result.isValid).toBe(false);
       expect(result.error).toBe(
-        "Username chỉ chứa chữ, chấm, gạch dưới, và gạch ngang"
+        "Username chỉ chứa chữ, số, dấu chấm (.), gạch dưới (_), và gạch ngang (-)"
       );
     });
 
@@ -97,7 +97,7 @@ describe("validateUsername()", () => {
       const result = validateUsername("user#name");
       expect(result.isValid).toBe(false);
       expect(result.error).toBe(
-        "Username chỉ chứa chữ, chấm, gạch dưới, và gạch ngang"
+        "Username chỉ chứa chữ, số, dấu chấm (.), gạch dưới (_), và gạch ngang (-)"
       );
     });
 
@@ -105,7 +105,7 @@ describe("validateUsername()", () => {
       const result = validateUsername("user$name");
       expect(result.isValid).toBe(false);
       expect(result.error).toBe(
-        "Username chỉ chứa chữ, chấm, gạch dưới, và gạch ngang"
+        "Username chỉ chứa chữ, số, dấu chấm (.), gạch dưới (_), và gạch ngang (-)"
       );
     });
 
