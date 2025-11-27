@@ -43,13 +43,6 @@ public class AuthService {
     @Autowired
     private Validator validator;
 
-    /**
-     * Constructor cho testing purposes
-     * @param jwtService Mock JwtService cho testing
-     * @param userRepository Mock UserRepository cho testing
-     * @param passwordEncoder Mock PasswordEncoder cho testing
-     * @param validator Mock Validator cho testing
-     */
     public AuthService(JwtService jwtService, UserRepository userRepository, PasswordEncoder passwordEncoder, Validator validator) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
@@ -57,45 +50,10 @@ public class AuthService {
         this.validator = validator;
     }
 
-    /**
-     * Default constructor cho Spring dependency injection
-     */
+
     public AuthService() {
     }
 
-    /**
-     * Core authentication method - xác thực user credentials
-     * 1. Input Validation
-     *    - Check required fields (username, password)
-     *    - Validate format và length constraints
-     *    - Return error nếu validation fails
-     * 
-     * 2. User Verification
-     *    - Query database cho user với given username
-     *    - Return error nếu user không tồn tại
-     * 
-     * 3. Password Check
-     *    - Compare provided password với hashed password trong DB
-     *    - Sử dụng BCrypt's secure comparison
-     *    - Return error nếu password không match
-     * 
-     * 4. Token Generation
-     *    - Create JWT token với user information
-     *    - Set expiration time
-     *    - Return token với success response
-     * Input: { userName: "admin", password: "admin123" }
-     * → Validate: OK
-     * → Find User: Found
-     * → Password Match: OK
-     * → Generate Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-     * Output: { success: true, message: "Login thành công", token: "...", user: {...} }
-     * @param request LoginRequest object chứa userName và password cần authenticate
-     * @return LoginResponse object chứa:
-     *         - success: boolean indicating authentication result
-     *         - message: descriptive message (success or error)
-     *         - token: JWT token nếu thành công, null nếu thất bại
-     *         - user: UserDto object nếu thành công, null nếu thất bại
-     */
     public LoginResponse authenticate(LoginRequest request) {
         // Step 1: Validate request bằng Bean Validation annotations
         // Kiểm tra @NotBlank, @Size, và các constraints khác

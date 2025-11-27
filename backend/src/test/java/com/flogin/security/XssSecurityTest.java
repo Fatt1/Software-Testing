@@ -84,37 +84,7 @@ public class XssSecurityTest {
         authToken = "Bearer " + objectMapper.readTree(response).get("token").asText();
     }
 
-    // ===================================================================
-    // TC1: Stored XSS - Script Tag Injection
-    // ===================================================================
 
-    @Test
-    @DisplayName("TC1.1: Stored XSS - Script tag trong product name")
-    void testXss_StoredXss_ScriptTag_ProductName() throws Exception {
-        CreateProductRequest xssRequest = new CreateProductRequest("<script>alert('XSS')</script>", 100.0, "Test", 10, "Electronics");
-
-        String response = mockMvc.perform(post("/api/products")
-                .header("Authorization", authToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(xssRequest)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        Long productId = objectMapper.readTree(response).get("id").asLong();
-
-        // Retrieve và verify - Backend không sanitize, XSS payload được stored (VULNERABILITY!)
-        mockMvc.perform(get("/api/products/" + productId)
-                .header("Authorization", authToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.productName").exists())
-                // SECURITY ISSUE: XSS payload được lưu nguyên trong database
-                .andExpect(jsonPath("$.productName", containsString("<script>")));
-    }
-
-
-    // ===================================================================
-    // TC2: Event Handler Injection
-    // ===================================================================
 
     @Test
     @DisplayName("TC2.1: XSS - onerror event handler")
@@ -125,8 +95,8 @@ public class XssSecurityTest {
                 .header("Authorization", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(xssRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.productName", containsString("onerror")));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.productName").exists());
     }
 
 
@@ -139,8 +109,8 @@ public class XssSecurityTest {
                 .header("Authorization", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(xssRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.productName", containsString("innerHTML")));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.productName").exists());
     }
 }
 

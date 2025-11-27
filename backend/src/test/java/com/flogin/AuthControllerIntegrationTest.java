@@ -10,7 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Sử dụng @WebMvcTest để test các endpoint của AuthController
  * MockMvc cho phép test HTTP requests mà không cần start toàn bộ server
  */
-@WebMvcTest(AuthController.class)
+@WebMvcTest(value = AuthController.class,
+    excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+        classes = {com.flogin.service.SecurityConfig.class, com.flogin.filter.JwtAuthenticationFilter.class}))
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Login API Integration Tests")
 public class AuthControllerIntegrationTest {
     

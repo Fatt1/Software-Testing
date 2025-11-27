@@ -15,6 +15,7 @@ public class UpdateProductRequest {
     
     @NotBlank(message = "Product Name không được rỗng")
     @Size(min = 3, max = 100, message = "Product Name phải từ 3 đến 100 ký tự")
+    @Pattern(regexp = "^[^<>]*$", message = "Product Name không được chứa thẻ HTML (<, >)")
     private String productName;
     
     @NotNull(message = "Price không được để trống")
@@ -23,6 +24,7 @@ public class UpdateProductRequest {
     private Double price;
     
     @Size(max = 500, message = "Description không được quá 500 ký tự")
+    @Pattern(regexp = "^[^<>]*$", message = "Description không được chứa thẻ HTML (<, >)")
     private String description;
     
     @NotNull(message = "Quantity không được để trống")

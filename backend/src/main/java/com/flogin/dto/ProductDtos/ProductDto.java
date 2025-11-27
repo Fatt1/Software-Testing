@@ -22,6 +22,7 @@ public class ProductDto {
     
     @NotBlank(message = "Product Name không được rỗng")
     @Size(min = 3, max = 100, message = "Product Name phải từ 3 đến 100 ký tự")
+
     private String productName;
     
     @NotNull(message = "Quantity không được để trống")

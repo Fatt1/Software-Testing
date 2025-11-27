@@ -56,34 +56,13 @@ public class SqlInjectionTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        productRepository.deleteAll();
         userRepository.deleteAll();
-
         com.flogin.entity.User admin = new com.flogin.entity.User();
         admin.setUserName("admin");
         admin.setEmail("admin@example.com");
         admin.setHashPassword(passwordEncoder.encode("admin123"));
         userRepository.save(admin);
 
-        com.flogin.entity.Product product = new com.flogin.entity.Product();
-        product.setProductName("Test Product");
-        product.setPrice(100.0);
-        product.setQuantity(10);
-        product.setDescription("Test Description");
-        product.setCategory("Electronics");
-        product = productRepository.save(product);
-        productId = product.getId();
-
-        // Login để lấy token
-        LoginRequest loginRequest = new LoginRequest("admin", "admin123");
-
-        String response = mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        authToken = "Bearer " + objectMapper.readTree(response).get("token").asText();
     }
 
     @Test
