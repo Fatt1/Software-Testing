@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import {
   Search,
   Plus,
@@ -118,7 +119,7 @@ const ProductManagement = () => {
       newErrors.price = "Giá không được là số âm";
     } else if (parseFloat(formData.price) === 0) {
       newErrors.price = "Giá phải là số dương";
-    }
+    } 
 
     // Quantity validation
     if (
