@@ -18,17 +18,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Input Validation và Sanitization Tests (3 điểm)
- * 
- * Tests input validation:
- * - Length constraints
- * - Type validation
- * - Range validation
- * - Format validation
- * - Special characters handling
- * - Null/Empty validation
- */
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -93,8 +83,9 @@ public class InputValidationTest {
                 .header("Authorization", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.productName").value("Product <>&\"'"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.productName").exists());
+
     }
 
 

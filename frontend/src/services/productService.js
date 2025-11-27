@@ -15,6 +15,7 @@
  */
 
 import axios from "axios";
+import { validateProduct } from "../utils/validateProduct";
 
 /**
  * Get API base URL from environment variables
@@ -76,6 +77,8 @@ axiosInstance.interceptors.request.use(
 /**
  * @async
  * @function getAllProducts
+ * @param {number} page - Page number (default: 0)
+ * @param {number} size - Items per page (default: 1000 to get all)
  * @returns {Promise<Object>} Products response object
  * @returns {Array<Object>} return.content - Array of product objects
  * @returns {number} return.totalElements - Total number of products
@@ -83,9 +86,9 @@ axiosInstance.interceptors.request.use(
  * @returns {Object} return.pageable - Pagination information
  * @throws {Error} When API request fails
  */
-export const getAllProducts = async () => {
+export const getAllProducts = async (page = 0, size = 1000) => {
   try {
-    const response = await axiosInstance.get("/products");
+    const response = await axiosInstance.get(`/products?page=${page}&size=${size}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -164,6 +167,9 @@ export const createProduct = async (product) => {
  */
 export const updateProduct = async (id, product) => {
   try {
+    if (validateProduct(product)) {
+      console.log("Product data is valid");
+    }
     const response = await axiosInstance.put(`/products/${id}`, product);
     return response.data;
   } catch (error) {

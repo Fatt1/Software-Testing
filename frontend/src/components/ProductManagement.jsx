@@ -91,16 +91,16 @@ const ProductManagement = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Name validation
+    // Name validation: 3-100 ký tự, không được rỗng
     if (!formData.productName || !formData.productName.trim()) {
       newErrors.productName = "Tên sản phẩm không được để trống";
-    } else if (formData.productName.length < 3) {
+    } else if (formData.productName.trim().length < 3) {
       newErrors.productName = "Tên sản phẩm phải có ít nhất 3 ký tự";
-    } else if (formData.productName.length > 100) {
+    } else if (formData.productName.trim().length > 100) {
       newErrors.productName = "Tên sản phẩm không được vượt quá 100 ký tự";
     }
 
-    // Price validation
+    // Price validation: > 0, <= 999,999,999
     if (
       formData.price === "" ||
       formData.price === null ||
@@ -109,13 +109,16 @@ const ProductManagement = () => {
       newErrors.price = "Giá không được để trống";
     } else if (isNaN(formData.price)) {
       newErrors.price = "Giá phải là số";
-    } else if (parseFloat(formData.price) < 0) {
-      newErrors.price = "Giá không được là số âm";
-    } else if (parseFloat(formData.price) === 0) {
-      newErrors.price = "Giá phải là số dương";
-    } 
+    } else {
+      const priceValue = parseFloat(formData.price);
+      if (priceValue <= 0) {
+        newErrors.price = "Giá phải lớn hơn 0";
+      } else if (priceValue > 999999999) {
+        newErrors.price = "Giá không được vượt quá 999,999,999";
+      }
+    }
 
-    // Quantity validation
+    // Quantity validation: >= 0, <= 99,999
     if (
       formData.quantity === "" ||
       formData.quantity === null ||
@@ -124,21 +127,26 @@ const ProductManagement = () => {
       newErrors.quantity = "Số lượng không được để trống";
     } else if (isNaN(formData.quantity)) {
       newErrors.quantity = "Số lượng phải là số";
-    } else if (parseInt(formData.quantity) < 0) {
-      newErrors.quantity = "Số lượng không được là số âm";
+    } else {
+      const quantityValue = parseInt(formData.quantity);
+      if (quantityValue < 0) {
+        newErrors.quantity = "Số lượng không được là số âm";
+      } else if (quantityValue > 99999) {
+        newErrors.quantity = "Số lượng không được vượt quá 99,999";
+      }
     }
 
-    // Category validation
+    // Category validation: Phải thuộc danh sách categories
     if (!formData.category) {
       newErrors.category = "Vui lòng chọn danh mục";
+    } else if (!categories.includes(formData.category)) {
+      newErrors.category = "Danh mục không hợp lệ";
     }
 
-    // Description validation
+    // Description validation: <= 500 ký tự
     if (!formData.description || !formData.description.trim()) {
       newErrors.description = "Mô tả không được để trống";
-    } else if (formData.description.length < 10) {
-      newErrors.description = "Mô tả phải có ít nhất 10 ký tự";
-    } else if (formData.description.length > 500) {
+    } else if (formData.description.trim().length > 500) {
       newErrors.description = "Mô tả không được vượt quá 500 ký tự";
     }
 
@@ -219,6 +227,20 @@ const ProductManagement = () => {
         error.message || "Có lỗi xảy ra khi xóa sản phẩm",
         "error"
       );
+    }
+  };
+
+  // Handle Enter key press to navigate between inputs
+  const handleKeyPress = (e, nextFieldId) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (nextFieldId === 'submit') {
+        // Submit form when on last field
+        handleSubmit();
+      } else {
+        // Focus next field
+        document.getElementById(nextFieldId)?.focus();
+      }
     }
   };
 
@@ -367,6 +389,18 @@ const ProductManagement = () => {
                 >
                   Trước
                 </button>
+                
+                {/* Page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                
                 <button
                   onClick={() =>
                     setCurrentPage((prev) => Math.min(totalPages, prev + 1))
@@ -409,6 +443,7 @@ const ProductManagement = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, productName: e.target.value })
                     }
+                    onKeyPress={(e) => handleKeyPress(e, 'price-input')}
                     className={`form-input ${
                       errors.productName ? "error" : ""
                     }`}
@@ -431,6 +466,7 @@ const ProductManagement = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, price: e.target.value })
                       }
+                      onKeyPress={(e) => handleKeyPress(e, 'quantity-input')}
                       className={`form-input ${errors.price ? "error" : ""}`}
                       placeholder="0"
                     />
@@ -450,6 +486,7 @@ const ProductManagement = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, quantity: e.target.value })
                       }
+                      onKeyPress={(e) => handleKeyPress(e, 'category-select')}
                       className={`form-input ${errors.quantity ? "error" : ""}`}
                       placeholder="0"
                     />
@@ -469,6 +506,7 @@ const ProductManagement = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, category: e.target.value })
                     }
+                    onKeyPress={(e) => handleKeyPress(e, 'description-textarea')}
                     className={`form-select ${errors.category ? "error" : ""}`}
                   >
                     <option value="">Chọn danh mục</option>
@@ -493,6 +531,7 @@ const ProductManagement = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
+                    onKeyPress={(e) => handleKeyPress(e, 'submit')}
                     rows="4"
                     className={`form-textarea ${
                       errors.description ? "error" : ""
