@@ -10,7 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +36,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * ProductControllerIntegrationTest - Integration Test cho Product API
  * Test các CRUD operations: Create, Read, Update, Delete
  */
-@WebMvcTest(ProductController.class)
+@WebMvcTest(value = ProductController.class,
+    excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+        classes = {com.flogin.service.SecurityConfig.class, com.flogin.filter.JwtAuthenticationFilter.class}))
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Product API Integration Tests")
 public class ProductControllerIntegrationTest {
     
@@ -47,8 +53,6 @@ public class ProductControllerIntegrationTest {
     private ProductService productService;
 
 
-
-        
         @Test
         @DisplayName("1. Tạo product thành công với dữ liệu hợp lệ")
         void testCreateProduct_Success() throws Exception {
