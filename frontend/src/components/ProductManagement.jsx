@@ -389,6 +389,18 @@ const ProductManagement = () => {
                 >
                   Trước
                 </button>
+                
+                {/* Page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                
                 <button
                   onClick={() =>
                     setCurrentPage((prev) => Math.min(totalPages, prev + 1))

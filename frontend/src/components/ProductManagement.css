@@ -288,6 +288,7 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   font-size: 14px;
+  min-width: 40px;
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -297,6 +298,16 @@ body {
 .pagination-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.pagination-btn.active:hover {
+  background-color: #1d4ed8;
 }
 
 /* Modal/Overlay */
