@@ -129,11 +129,9 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
 
 
-        // Step 3: Kiểm tra tên sản phẩm đã tồn tại chưa
-        // (Cần cải thiện: nên allow keep same name nếu update product đó)
-        if (productRepository.existsByProductName(request.getProductName())) {
-            throw new IllegalArgumentException("Product name '" + request.getProductName() + "' đã tồn tại");
-        }
+       if(productRepository.existsByProductNameAndIdNot(request.getProductName(), id))
+           throw new IllegalArgumentException("Sản phẩm với tên " + request.getProductName() + " đẫ tồn tại");
+
         
         // Step 4: Validate category với enum values
         if (!Category.isValid(request.getCategory())) {
