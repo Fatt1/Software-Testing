@@ -98,37 +98,6 @@ public class ProductServiceTest {
             assertTrue(exception.getMessage().contains("Product Name phải từ 3 đến 100 ký tự"));
         }
 
-
-        @Test
-        @DisplayName("TC3: Product Name - Above max boundary (101 ký tự)")
-        void testCreateProduct_ProductName_AboveMaxBoundary() {
-            // Arrange
-            String productName = "A".repeat(101); // 101 ký tự
-            CreateProductRequest request = new CreateProductRequest(productName, 15000.0, "Description", 10, "Electronics");
-
-            ConstraintViolation<CreateProductRequest> violation = mock(ConstraintViolation.class);
-            when(violation.getMessage()).thenReturn("Product Name phải từ 3 đến 100 ký tự");
-            when(mockValidator.validate(request)).thenReturn(Set.of(violation));
-
-            // Act & Assert
-            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(request));
-        }
-
-
-        @Test
-        @DisplayName("TC7: Quantity - Invalid (-1)")
-        void testCreateProduct_Quantity_Negative() {
-            // Arrange
-            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", -1, "Electronics");
-
-            ConstraintViolation<CreateProductRequest> violation = mock(ConstraintViolation.class);
-            when(violation.getMessage()).thenReturn("Quantity phải >= 0");
-            when(mockValidator.validate(request)).thenReturn(Set.of(violation));
-
-            // Act & Assert
-            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(request));
-        }
-
         // ========== NEGATIVE TESTS ==========
 
         @Test

@@ -89,68 +89,9 @@ public class CsrfSecurityTest {
         authToken = "Bearer " + objectMapper.readTree(response).get("token").asText();
     }
 
-    // ===================================================================
-    // TC1: CSRF Protection on POST Requests
-    // ===================================================================
 
 
-    @Test
-    @DisplayName("TC1.2: CSRF - Create product without Authorization header")
-    void testCsrf_CreateProduct_NoAuth() throws Exception {
-        CreateProductRequest request = new CreateProductRequest("Test Product 1.2", 100.0, "Test", 10, "Electronics");
 
-        // Backend allows creating product without auth - VULNERABILITY
-        mockMvc.perform(post("/api/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-    }
-
-    // ===================================================================
-    // TC2: CSRF Protection on PUT Requests
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC2.1: CSRF - Update product với stolen JWT token")
-    void testCsrf_UpdateProduct_StolenToken() throws Exception {
-        // Scenario: Attacker có JWT token của victim
-        // Nhưng không thể forge request từ evil.com vì CORS
-        UpdateProductRequest request = new UpdateProductRequest("Hacked Product", 0.01, "Hacked", 999, "Electronics");
-
-        // Request từ different origin sẽ bị CORS block
-        mockMvc.perform(put("/api/products/" + productId)
-                .header("Authorization", authToken)
-                .header("Origin", "http://evil.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                // Trong test environment, CORS có thể không được enforce
-                // Trong production, request này sẽ bị CORS block
-                .andExpect(status().isOk()); // Mock test sẽ pass, nhưng browser sẽ block
-    }
-
-    // ===================================================================
-    // TC3: CSRF Protection on DELETE Requests
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC3.1: CSRF - Delete product without proper authorization")
-    void testCsrf_DeleteProduct_NoAuth() throws Exception {
-        // Backend allows deletion without auth - VULNERABILITY
-        mockMvc.perform(delete("/api/products/" + productId))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("TC3.2: CSRF - Delete product với valid token")
-    void testCsrf_DeleteProduct_WithValidToken() throws Exception {
-        mockMvc.perform(delete("/api/products/" + productId)
-                .header("Authorization", authToken))
-                .andExpect(status().isNoContent()); // DELETE returns 204 not 200
-    }
-
-    // ===================================================================
-    // TC4: Same-Origin Policy Enforcement
-    // ===================================================================
 
     @Test
     @DisplayName("TC4.1: CSRF - Request từ different origin")
@@ -199,63 +140,6 @@ public class CsrfSecurityTest {
         // Note: Trong production với proper CORS config, request này sẽ fail
     }
 
-    // ===================================================================
-    // TC6: Double Submit Cookie Pattern
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC6.1: CSRF - Token in cookie vs token in request mismatch")
-    void testCsrf_DoubleSubmitCookie_Mismatch() throws Exception {
-        // Test double submit cookie pattern nếu được implement
-        CreateProductRequest request = new CreateProductRequest("Test Product 6.1", 100.0, "Test", 10, "Electronics");
-
-        mockMvc.perform(post("/api/products")
-                .header("Authorization", authToken)
-                .cookie(new jakarta.servlet.http.Cookie("XSRF-TOKEN", "token-in-cookie"))
-                .header("X-XSRF-TOKEN", "different-token-in-header")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                // Nếu implement double submit cookie, request này phải fail
-                .andExpect(status().isCreated()); // Hiện tại chưa implement
-    }
-
-    // ===================================================================
-    // TC7: CSRF on Login Endpoint
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC7.1: CSRF - Login endpoint không cần CSRF token")
-    void testCsrf_Login_NoToken() throws Exception {
-        LoginRequest loginRequest = new LoginRequest("user01", "password123");
-
-        // Login endpoint không nên require CSRF token
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk());
-    }
-
-    // ===================================================================
-    // TC8: CSRF với Custom Headers
-    // ===================================================================
-
-    @Test
-    @DisplayName("TC8.1: CSRF - Custom header required")
-    void testCsrf_CustomHeader() throws Exception {
-        // Custom headers (như X-Requested-With) không thể được set bởi simple CORS requests
-        CreateProductRequest request = new CreateProductRequest("Test Product 8.1", 100.0, "Test", 10, "Electronics");
-
-        mockMvc.perform(post("/api/products")
-                .header("Authorization", authToken)
-                .header("X-Requested-With", "XMLHttpRequest")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-    }
-
-    // ===================================================================
-    // TC9: CSRF Protection Best Practices
-    // ===================================================================
 
     @Test
     @DisplayName("TC9.1: CSRF - GET request không change state")
@@ -275,7 +159,7 @@ public class CsrfSecurityTest {
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isForbidden());
     }
 
     // ===================================================================

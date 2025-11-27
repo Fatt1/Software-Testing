@@ -273,7 +273,5 @@ public class AuthControllerIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
-
-
     }
 }
