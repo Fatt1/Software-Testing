@@ -1,29 +1,51 @@
-import { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Eye, X, Check, AlertCircle } from 'lucide-react';
-import "./ProductManagement.css"; // Đảm bảo bạn đã import file CSS
+import { useState, useEffect } from "react";
+import {
+  Search,
+  Plus,
+  Edit2,
+  Trash2,
+  Eye,
+  X,
+  Check,
+  AlertCircle,
+} from "lucide-react";
+import "./ProductManagement.css";
+import {
+  getAllProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../services/productService";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('create');
+  const [modalMode, setModalMode] = useState("create");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [notification, setNotification] = useState(null);
   const itemsPerPage = 5;
 
-  const categories = ['Điện tử', 'Thời trang', 'Thực phẩm', 'Đồ gia dụng', 'Sách'];
+  const categories = [
+    "Điện tử",
+    "Thời trang",
+    "Thực phẩm",
+    "Đồ gia dụng",
+    "Sách",
+  ];
 
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    quantity: '',
-    description: '',
-    category: ''
+    productName: "",
+    price: "",
+    quantity: "",
+    description: "",
+    category: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -37,48 +59,36 @@ const ProductManagement = () => {
     let filtered = [...products];
 
     if (searchTerm) {
-      filtered = filtered.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter((p) =>
+        p.productName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (filterCategory !== 'all') {
-      filtered = filtered.filter(p => p.category === filterCategory);
+    if (filterCategory !== "all") {
+      filtered = filtered.filter((p) => p.category === filterCategory);
     }
 
     setFilteredProducts(filtered);
     setCurrentPage(1);
   }, [products, searchTerm, filterCategory]);
 
-  // SỬA: Dùng localStorage
+  // Load products from API
   const loadProducts = async () => {
     try {
-      // Lấy tất cả các key từ localStorage
-      const allKeys = Object.keys(localStorage);
-      
-      // Lọc ra các key bắt đầu bằng "product:"
-      const productKeys = allKeys.filter(key => key.startsWith('product:'));
-
-      // Lấy dữ liệu cho từng key
-      const loadedProducts = productKeys.map(key => {
-        try {
-          const data = localStorage.getItem(key); // Dùng localStorage.getItem
-          return data ? JSON.parse(data) : null;
-        } catch {
-          return null;
-        }
-      });
-
-      setProducts(loadedProducts.filter(p => p !== null));
+      const response = await getAllProducts();
+      // Backend trả về array products hoặc có thể là object với content property
+      const productsData = Array.isArray(response)
+        ? response
+        : response.content || [];
+      setProducts(productsData);
     } catch (error) {
-      console.log('Lỗi khi tải sản phẩm: ' + error);
+      console.error("Lỗi khi tải sản phẩm:", error);
+      showNotification("Không thể tải danh sách sản phẩm", "error");
       setProducts([]);
     }
   };
 
-  
-
-  const showNotification = (message, type = 'success') => {
+  const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -87,46 +97,54 @@ const ProductManagement = () => {
     const newErrors = {};
 
     // Name validation
-    if (!formData.name || !formData.name.trim()) {
-      newErrors.name = 'Tên sản phẩm không được để trống';
-    } else if (formData.name.length < 3) {
-      newErrors.name = 'Tên sản phẩm phải có ít nhất 3 ký tự';
-    } else if (formData.name.length > 100) {
-      newErrors.name = 'Tên sản phẩm không được vượt quá 100 ký tự';
+    if (!formData.productName || !formData.productName.trim()) {
+      newErrors.productName = "Tên sản phẩm không được để trống";
+    } else if (formData.productName.length < 3) {
+      newErrors.productName = "Tên sản phẩm phải có ít nhất 3 ký tự";
+    } else if (formData.productName.length > 100) {
+      newErrors.productName = "Tên sản phẩm không được vượt quá 100 ký tự";
     }
 
     // Price validation
-    if (formData.price === '' || formData.price === null || formData.price === undefined) {
-      newErrors.price = 'Giá không được để trống';
+    if (
+      formData.price === "" ||
+      formData.price === null ||
+      formData.price === undefined
+    ) {
+      newErrors.price = "Giá không được để trống";
     } else if (isNaN(formData.price)) {
-      newErrors.price = 'Giá phải là số';
+      newErrors.price = "Giá phải là số";
     } else if (parseFloat(formData.price) < 0) {
-      newErrors.price = 'Giá không được là số âm';
+      newErrors.price = "Giá không được là số âm";
     } else if (parseFloat(formData.price) === 0) {
-      newErrors.price = 'Giá phải là số dương';
+      newErrors.price = "Giá phải là số dương";
     }
 
     // Quantity validation
-    if (formData.quantity === '' || formData.quantity === null || formData.quantity === undefined) {
-      newErrors.quantity = 'Số lượng không được để trống';
+    if (
+      formData.quantity === "" ||
+      formData.quantity === null ||
+      formData.quantity === undefined
+    ) {
+      newErrors.quantity = "Số lượng không được để trống";
     } else if (isNaN(formData.quantity)) {
-      newErrors.quantity = 'Số lượng phải là số';
+      newErrors.quantity = "Số lượng phải là số";
     } else if (parseInt(formData.quantity) < 0) {
-      newErrors.quantity = 'Số lượng không được là số âm';
+      newErrors.quantity = "Số lượng không được là số âm";
     }
 
     // Category validation
     if (!formData.category) {
-      newErrors.category = 'Vui lòng chọn danh mục';
+      newErrors.category = "Vui lòng chọn danh mục";
     }
 
     // Description validation
     if (!formData.description || !formData.description.trim()) {
-      newErrors.description = 'Mô tả không được để trống';
+      newErrors.description = "Mô tả không được để trống";
     } else if (formData.description.length < 10) {
-      newErrors.description = 'Mô tả phải có ít nhất 10 ký tự';
+      newErrors.description = "Mô tả phải có ít nhất 10 ký tự";
     } else if (formData.description.length > 500) {
-      newErrors.description = 'Mô tả không được vượt quá 500 ký tự';
+      newErrors.description = "Mô tả không được vượt quá 500 ký tự";
     }
 
     setErrors(newErrors);
@@ -135,17 +153,17 @@ const ProductManagement = () => {
 
   const handleOpenModal = (mode, product = null) => {
     setModalMode(mode);
-    if (mode === 'create') {
+    if (mode === "create") {
       setFormData({
-        name: '',
-        price: '',
-        quantity: '',
-        description: '',
-        category: ''
+        productName: "",
+        price: "",
+        quantity: "",
+        description: "",
+        category: "",
       });
-    } else if (mode === 'edit' && product) {
+    } else if (mode === "edit" && product) {
       setFormData({ ...product });
-    } else if (mode === 'view' && product) {
+    } else if (mode === "view" && product) {
       setSelectedProduct(product);
     }
     setErrors({});
@@ -156,64 +174,56 @@ const ProductManagement = () => {
     setShowModal(false);
     setSelectedProduct(null);
     setFormData({
-      name: '',
-      price: '',
-      quantity: '',
-      description: '',
-      category: ''
+      productName: "",
+      price: "",
+      quantity: "",
+      description: "",
+      category: "",
     });
     setErrors({});
   };
 
-  // SỬA: Dùng localStorage
+  // Call API to create or update product
   const handleSubmit = async () => {
     if (!validateForm()) {
-      showNotification('Vui lòng kiểm tra lại thông tin nhập vào', 'error');
+      showNotification("Vui lòng kiểm tra lại thông tin nhập vào", "error");
       return;
     }
 
     try {
-      if (modalMode === 'create') {
-        const newProduct = {
-          ...formData,
-          id: Date.now().toString(),
-          createdAt: new Date().toISOString()
-        };
-        // THAY ĐỔI: Dùng localStorage.setItem
-        localStorage.setItem(`product:${newProduct.id}`, JSON.stringify(newProduct));
-        showNotification('Thêm sản phẩm thành công!');
-      } else if (modalMode === 'edit') {
-        const updatedProduct = {
-          ...formData,
-          updatedAt: new Date().toISOString()
-        };
-        // THAY ĐỔI: Dùng localStorage.setItem
-        localStorage.setItem(`product:${formData.id}`, JSON.stringify(updatedProduct));
-        showNotification('Cập nhật sản phẩm thành công!');
+      if (modalMode === "create") {
+        await createProduct(formData);
+        showNotification("Thêm sản phẩm thành công!");
+      } else if (modalMode === "edit") {
+        await updateProduct(formData.id, formData);
+        showNotification("Cập nhật sản phẩm thành công!");
       }
-      
-      await loadProducts(); // Vẫn cần await để đợi loadProducts chạy xong
+
+      await loadProducts();
       handleCloseModal();
     } catch (error) {
-      // Thêm console.error để bạn thấy lỗi chi tiết trong console
-      console.error("Lỗi khi submit sản phẩm:", error); 
-      showNotification('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+      console.error("Lỗi khi submit sản phẩm:", error);
+      showNotification(
+        error.message || "Có lỗi xảy ra. Vui lòng thử lại!",
+        "error"
+      );
     }
   };
 
-  // SỬA: Dùng localStorage
+  // Call API to delete product
   const handleDelete = async () => {
     try {
-      // THAY ĐỔI: Dùng localStorage.removeItem
-      localStorage.removeItem(`product:${deleteId}`);
-      await loadProducts(); // Vẫn cần await để đợi loadProducts chạy xong
-      showNotification('Xóa sản phẩm thành công!');
+      await deleteProduct(deleteId);
+      await loadProducts();
+      showNotification("Xóa sản phẩm thành công!");
       setShowDeleteConfirm(false);
       setDeleteId(null);
     } catch (error) {
-      // Thêm console.error để bạn thấy lỗi chi tiết trong console
       console.error("Lỗi khi xóa sản phẩm:", error);
-      showNotification('Có lỗi xảy ra khi xóa sản phẩm', 'error');
+      showNotification(
+        error.message || "Có lỗi xảy ra khi xóa sản phẩm",
+        "error"
+      );
     }
   };
 
@@ -224,13 +234,20 @@ const ProductManagement = () => {
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  const currentProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   return (
     <div className="app-container">
       {notification && (
         <div className={`notification ${notification.type}`}>
-          {notification.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
+          {notification.type === "success" ? (
+            <Check size={20} />
+          ) : (
+            <AlertCircle size={20} />
+          )}
           {notification.message}
         </div>
       )}
@@ -240,7 +257,7 @@ const ProductManagement = () => {
           <div className="header-top">
             <h1 className="page-title">Quản Lý Sản Phẩm</h1>
             <button
-              onClick={() => handleOpenModal('create')}
+              onClick={() => handleOpenModal("create")}
               className="btn btn-primary"
             >
               <Plus size={20} />
@@ -265,8 +282,10 @@ const ProductManagement = () => {
               className="filter-select"
             >
               <option value="all">Tất cả danh mục</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
@@ -294,8 +313,10 @@ const ProductManagement = () => {
                 ) : (
                   currentProducts.map((product) => (
                     <tr key={product.id}>
-                      <td>{product.name}</td>
-                      <td>{parseFloat(product.price).toLocaleString('vi-VN')} đ</td>
+                      <td>{product.productName}</td>
+                      <td>
+                        {parseFloat(product.price).toLocaleString("vi-VN")} đ
+                      </td>
                       <td>{product.quantity}</td>
                       <td>
                         <span className="category-badge">
@@ -305,14 +326,14 @@ const ProductManagement = () => {
                       <td>
                         <div className="action-buttons">
                           <button
-                            onClick={() => handleOpenModal('view', product)}
+                            onClick={() => handleOpenModal("view", product)}
                             className="icon-btn blue"
                             title="Xem chi tiết"
                           >
                             <Eye size={18} />
                           </button>
                           <button
-                            onClick={() => handleOpenModal('edit', product)}
+                            onClick={() => handleOpenModal("edit", product)}
                             className="icon-btn green"
                             title="Chỉnh sửa"
                           >
@@ -337,18 +358,24 @@ const ProductManagement = () => {
           {totalPages > 1 && (
             <div className="pagination">
               <div className="pagination-info">
-                Hiển thị {startIndex + 1} - {Math.min(startIndex + itemsPerPage, filteredProducts.length)} của {filteredProducts.length} sản phẩm
+                Hiển thị {startIndex + 1} -{" "}
+                {Math.min(startIndex + itemsPerPage, filteredProducts.length)}{" "}
+                của {filteredProducts.length} sản phẩm
               </div>
               <div className="pagination-buttons">
                 <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
                   disabled={currentPage === 1}
                   className="pagination-btn"
                 >
                   Trước
                 </button>
                 <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="pagination-btn"
                 >
@@ -360,13 +387,15 @@ const ProductManagement = () => {
         </div>
       </div>
 
-      {showModal && modalMode !== 'view' && (
+      {showModal && modalMode !== "view" && (
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-content">
               <div className="modal-header">
                 <h2 className="modal-title">
-                  {modalMode === 'create' ? 'Thêm Sản Phẩm Mới' : 'Chỉnh Sửa Sản Phẩm'}
+                  {modalMode === "create"
+                    ? "Thêm Sản Phẩm Mới"
+                    : "Chỉnh Sửa Sản Phẩm"}
                 </h2>
                 <button onClick={handleCloseModal} className="modal-close">
                   <X size={24} />
@@ -381,12 +410,18 @@ const ProductManagement = () => {
                   <input
                     id="name-input"
                     type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`form-input ${errors.name ? 'error' : ''}`}
+                    value={formData.productName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, productName: e.target.value })
+                    }
+                    className={`form-input ${
+                      errors.productName ? "error" : ""
+                    }`}
                     placeholder="Nhập tên sản phẩm"
                   />
-                  {errors.name && <p className="error-message">{errors.name}</p>}
+                  {errors.productName && (
+                    <p className="error-message">{errors.productName}</p>
+                  )}
                 </div>
 
                 <div className="form-row">
@@ -398,11 +433,15 @@ const ProductManagement = () => {
                       id="price-input"
                       type="text"
                       value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className={`form-input ${errors.price ? 'error' : ''}`}
+                      onChange={(e) =>
+                        setFormData({ ...formData, price: e.target.value })
+                      }
+                      className={`form-input ${errors.price ? "error" : ""}`}
                       placeholder="0"
                     />
-                    {errors.price && <p className="error-message">{errors.price}</p>}
+                    {errors.price && (
+                      <p className="error-message">{errors.price}</p>
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -413,11 +452,15 @@ const ProductManagement = () => {
                       id="quantity-input"
                       type="text"
                       value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                      className={`form-input ${errors.quantity ? 'error' : ''}`}
+                      onChange={(e) =>
+                        setFormData({ ...formData, quantity: e.target.value })
+                      }
+                      className={`form-input ${errors.quantity ? "error" : ""}`}
                       placeholder="0"
                     />
-                    {errors.quantity && <p className="error-message">{errors.quantity}</p>}
+                    {errors.quantity && (
+                      <p className="error-message">{errors.quantity}</p>
+                    )}
                   </div>
                 </div>
 
@@ -428,15 +471,21 @@ const ProductManagement = () => {
                   <select
                     id="category-select"
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className={`form-select ${errors.category ? 'error' : ''}`}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                    className={`form-select ${errors.category ? "error" : ""}`}
                   >
                     <option value="">Chọn danh mục</option>
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
-                  {errors.category && <p className="error-message">{errors.category}</p>}
+                  {errors.category && (
+                    <p className="error-message">{errors.category}</p>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -446,12 +495,18 @@ const ProductManagement = () => {
                   <textarea
                     id="description-textarea"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     rows="4"
-                    className={`form-textarea ${errors.description ? 'error' : ''}`}
+                    className={`form-textarea ${
+                      errors.description ? "error" : ""
+                    }`}
                     placeholder="Nhập mô tả sản phẩm"
                   />
-                  {errors.description && <p className="error-message">{errors.description}</p>}
+                  {errors.description && (
+                    <p className="error-message">{errors.description}</p>
+                  )}
                 </div>
               </form>
 
@@ -460,7 +515,7 @@ const ProductManagement = () => {
                   onClick={handleSubmit}
                   className="btn btn-primary btn-full"
                 >
-                  {modalMode === 'create' ? 'Thêm Sản Phẩm' : 'Cập Nhật'}
+                  {modalMode === "create" ? "Thêm Sản Phẩm" : "Cập Nhật"}
                 </button>
                 <button
                   onClick={handleCloseModal}
@@ -474,7 +529,7 @@ const ProductManagement = () => {
         </div>
       )}
 
-      {showModal && modalMode === 'view' && selectedProduct && (
+      {showModal && modalMode === "view" && selectedProduct && (
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-content">
@@ -489,7 +544,9 @@ const ProductManagement = () => {
                 <div className="detail-grid">
                   <div className="detail-item">
                     <p className="detail-label">Tên sản phẩm</p>
-                    <p className="detail-value">{selectedProduct.name}</p>
+                    <p className="detail-value">
+                      {selectedProduct.productName}
+                    </p>
                   </div>
                   <div className="detail-item">
                     <p className="detail-label">Danh mục</p>
@@ -503,7 +560,10 @@ const ProductManagement = () => {
                   <div className="detail-item">
                     <p className="detail-label">Giá</p>
                     <p className="detail-value price">
-                      {parseFloat(selectedProduct.price).toLocaleString('vi-VN')} đ
+                      {parseFloat(selectedProduct.price).toLocaleString(
+                        "vi-VN"
+                      )}{" "}
+                      đ
                     </p>
                   </div>
                   <div className="detail-item">
@@ -514,7 +574,9 @@ const ProductManagement = () => {
 
                 <div className="detail-item">
                   <p className="detail-label">Mô tả</p>
-                  <p className="detail-description">{selectedProduct.description}</p>
+                  <p className="detail-description">
+                    {selectedProduct.description}
+                  </p>
                 </div>
               </div>
 
@@ -522,7 +584,7 @@ const ProductManagement = () => {
                 <button
                   onClick={() => {
                     handleCloseModal();
-                    handleOpenModal('edit', selectedProduct);
+                    handleOpenModal("edit", selectedProduct);
                   }}
                   className="btn btn-success btn-full"
                 >
@@ -551,7 +613,8 @@ const ProductManagement = () => {
                 <h3 className="confirm-title">Xác Nhận Xóa</h3>
               </div>
               <p className="confirm-message">
-                Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.
+                Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể
+                hoàn tác.
               </p>
               <div className="form-actions">
                 <button
