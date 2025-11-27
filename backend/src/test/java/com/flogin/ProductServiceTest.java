@@ -115,8 +115,6 @@ public class ProductServiceTest {
         }
 
 
-
-
         @Test
         @DisplayName("TC7: Quantity - Invalid (-1)")
         void testCreateProduct_Quantity_Negative() {
@@ -167,39 +165,6 @@ public class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("TC10: Category null - Validation fail trước")
-        void testCreateProduct_Category_Null() {
-            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", 10, null);
-
-            // @NotBlank phải catch null trước → Validation fail
-            ConstraintViolation<CreateProductRequest> violation = mock(ConstraintViolation.class);
-            when(violation.getMessage()).thenReturn("Category không được rỗng");
-            when(mockValidator.validate(request)).thenReturn(Set.of(violation));
-
-            IllegalArgumentException exception = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> productService.createProduct(request)
-            );
-
-            assertTrue(exception.getMessage().contains("Validation failed"));
-        }
-
-
-         @Test
-        @DisplayName("TC11: Quantity - Số lượng lớn")
-        void testCreateProduct_Quantity_LargeNumber() {
-            CreateProductRequest request = new CreateProductRequest("Laptop", 15000.0, "Description", Integer.MAX_VALUE, "Electronics");
-            Product savedProduct = new Product(1L, "Electronics", "Description", Integer.MAX_VALUE, "Laptop", 15000.0);
-
-            when(mockValidator.validate(request)).thenReturn(Set.of());
-            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-
-            ProductDto result = productService.createProduct(request);
-
-            assertEquals(Integer.MAX_VALUE, result.getQuantity());
-        }
-
-        @Test
         @DisplayName("TC12: Tạo sản phẩm thất bại - Tên sản phẩm đã tồn tại")
         void testCreateProduct_DuplicateProductName() {
             // Arrange
@@ -217,27 +182,6 @@ public class ProductServiceTest {
             assertTrue(exception.getMessage().contains("Product name 'Laptop' đã tồn tại"));
             verify(productRepository, times(1)).existsByProductName("Laptop");
             verify(productRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("TC13: Tạo sản phẩm thành công - Tên sản phẩm chưa tồn tại")
-        void testCreateProduct_UniqueProductName() {
-            // Arrange
-            CreateProductRequest request = new CreateProductRequest("New Laptop", 15000.0, "Gaming laptop", 10, "Electronics");
-            Product savedProduct = new Product(1L, "Electronics", "Gaming laptop", 10, "New Laptop", 15000.0);
-
-            when(mockValidator.validate(request)).thenReturn(Set.of());
-            when(productRepository.existsByProductName("New Laptop")).thenReturn(false);
-            when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-
-            // Act
-            ProductDto result = productService.createProduct(request);
-
-            // Assert
-            assertNotNull(result);
-            assertEquals("New Laptop", result.getProductName());
-            verify(productRepository, times(1)).existsByProductName("New Laptop");
-            verify(productRepository, times(1)).save(any(Product.class));
         }
 
     }

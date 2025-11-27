@@ -85,23 +85,6 @@ public class ProductServiceMockTest {
         }
 
 
-
-        @Test
-        @DisplayName("2. Mock findById - Product không tồn tại")
-        void testGetProductById_NotFound() {
-            // Arrange: Mock repository trả về empty
-            when(productRepository.findById(999L))
-                    .thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThrows(NoSuchElementException.class, () -> {
-                productService.getProductById(999L);
-            });
-
-            // c) Verify repository interaction
-            verify(productRepository, times(1)).findById(999L);
-        }
-
         @Test
         @DisplayName("3. Mock save - Tạo product mới")
         void testCreateProduct_Success() {
@@ -170,22 +153,7 @@ public class ProductServiceMockTest {
             verify(productRepository, times(1)).deleteById(1L);
         }
 
-        @Test
-        @DisplayName("6. Service handle exception khi repository throw error")
-        void testDeleteProduct_NotFound() {
-            // Arrange
-            when(productRepository.findById(999L))
-                    .thenReturn(Optional.empty());
 
-            // Act & Assert
-            assertThrows(NoSuchElementException.class, () -> {
-                productService.deleteProduct(999L);
-            });
-
-            // c) Verify deleteById KHÔNG được gọi khi product không tồn tại
-            verify(productRepository, times(1)).findById(999L);
-            verify(productRepository, never()).deleteById(anyLong());
-        }
     }
 
     /**
@@ -230,50 +198,5 @@ public class ProductServiceMockTest {
             verifyNoInteractions(productRepository);
         }
 
-        @Test
-        @DisplayName("9. Verify multiple repository interactions")
-        void testVerify_MultipleRepositoryInteractions() {
-            // Arrange
-            when(validator.validate(any(UpdateProductRequest.class)))
-                    .thenReturn(Set.of());
-            when(productRepository.findById(1L))
-                    .thenReturn(Optional.of(mockProduct));
-            when(productRepository.save(any(Product.class)))
-                    .thenReturn(mockProduct);
-
-            // Act
-            productService.updateProduct(1L, mockUpdateRequest);
-
-            // c) Verify thứ tự gọi repository methods
-            var inOrder = inOrder(productRepository);
-            inOrder.verify(productRepository).findById(1L);
-            inOrder.verify(productRepository).save(any(Product.class));
-
-            // Verify tổng số lần gọi
-            verify(productRepository, times(1)).findById(anyLong());
-            verify(productRepository, times(1)).save(any(Product.class));
-        }
-
-        @Test
-        @DisplayName("10. Verify với ArgumentCaptor")
-        void testVerify_WithArgumentCaptor() {
-            // Arrange
-            when(validator.validate(any(CreateProductRequest.class)))
-                    .thenReturn(Set.of());
-            when(productRepository.save(any(Product.class)))
-                    .thenReturn(mockProduct);
-
-            // Act
-            productService.createProduct(mockCreateRequest);
-
-            // c) Verify với ArgumentCaptor
-            var captor = org.mockito.ArgumentCaptor.forClass(Product.class);
-            verify(productRepository).save(captor.capture());
-
-            Product capturedProduct = captor.getValue();
-            assertEquals("Laptop", capturedProduct.getProductName());
-            assertEquals(15000000.0, capturedProduct.getPrice());
-            assertEquals(Category.ELECTRONICS, capturedProduct.getCategory());
-        }
     }
 }

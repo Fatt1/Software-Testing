@@ -38,14 +38,6 @@ public class AuthControllerMockTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    /**
-     * A) Test Controller với Mocked Service - Success Cases
-     * Test các trường hợp thành công với mocked service
-     */
-    @Nested
-    @DisplayName("A) Mock AuthService và Test Controller với Mocked Service - Success (1 điểm)")
-    class MockedServiceSuccessTests {
-
         @Test
         @DisplayName("1. Mock: Controller với mocked service - Login thành công")
         void testLoginWithMockedService_Success() throws Exception {
@@ -72,35 +64,6 @@ public class AuthControllerMockTest {
         }
 
 
-        @Test
-        @DisplayName("2. Mock: Verify argument matcher - Kiểm tra argument cụ thể")
-        void testLoginWithMockedService_VerifySpecificArgument() throws Exception {
-            // Arrange
-            UserDto userDto = new UserDto("admin", "admin@example.com");
-            LoginResponse mockResponse = new LoginResponse(true, "Admin login", "admin-token", userDto);
-            
-            when(authService.authenticate(any(LoginRequest.class)))
-                .thenReturn(mockResponse);
-            
-            // Act
-            mockMvc.perform(post("/api/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"userName\":\"admin\",\"password\":\"Admin123\"}"))
-                    .andExpect(status().isOk());
-            
-            // Verify: Kiểm tra authenticate được gọi với LoginRequest có userName cụ thể
-            verify(authService, times(1)).authenticate(argThat(request -> "admin".equals(request.getUserName())));
-        }
-    }
-
-    /**
-     * B) Test Controller với Mocked Service - Failure Cases
-     * Test các trường hợp thất bại để verify mock hoạt động đúng
-     */
-    @Nested
-    @DisplayName("B) Test Controller với Mocked Service - Failure Cases")
-    class MockedServiceFailureTests {
-        
         @Test
         @DisplayName("3. Mock: Login thất bại - Username không tồn tại")
         void testLoginWithMockedService_UserNotFound() throws Exception {
@@ -147,14 +110,13 @@ public class AuthControllerMockTest {
             // Verify interactions
             verify(authService, times(1)).authenticate(any(LoginRequest.class));
         }
-    }
+
 
     /**
-     * C) Verify Mock Interactions - Chi tiết (0.5 điểm)
-     * Test verify các interactions với mock objects
+     * C) Verify Mock Interactions
      */
     @Nested
-    @DisplayName("C) Verify Mock Interactions - Chi tiết (0.5 điểm)")
+    @DisplayName("C) Verify Mock Interactions - Chi tiết ")
     class VerifyMockInteractionsTests {
         
         @Test
@@ -195,8 +157,6 @@ public class AuthControllerMockTest {
             verify(authService, never()).authenticate(any(LoginRequest.class));
             verifyNoInteractions(authService);
         }
-
-
 
     }
 

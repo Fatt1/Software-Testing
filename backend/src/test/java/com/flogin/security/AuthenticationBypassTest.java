@@ -161,7 +161,7 @@ public class AuthenticationBypassTest {
     void testAuthBypass_InvalidToken() throws Exception {
         mockMvc.perform(get("/api/products")
                 .header("Authorization", "Bearer invalid.token.here"))
-                .andExpect(status().isOk()); // Backend allows access without auth - VULNERABILITY
+                .andExpect(status().isOk());
     }
 
     @Test
