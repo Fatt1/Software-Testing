@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 
+@RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProductController {
