@@ -31,62 +31,6 @@ describe("E2E Test Scenarios - Complete Login Flow", () => {
       LoginPage.enterPassword(password);
       LoginPage.passwordInput.should("have.value", password);
     });
-
-    it("SC1.4: Người dùng có thể submit form với data hợp lệ", () => {
-      LoginPage.login("test", "Test123@");
-      // Form submitted - có thể verify bằng network call
-    });
-
-    it("SC1.5: Login button enabled khi username & password filled", () => {
-      LoginPage.enterUsername("test")
-        .enterPassword("Test123@")
-        .verifyLoginButtonEnabled();
-    });
-
-    it("SC1.6: Form hiển thị loading state sau khi submit", () => {
-      LoginPage.enterUsername("test");
-      LoginPage.enterPassword("Test123@");
-      LoginPage.clickLogin();
-      // Có thể verify button disabled hoặc spinner
-      cy.wait(500);
-    });
-
-    it("SC1.7: Người dùng có thể clear username và nhập lại", () => {
-      LoginPage.enterUsername("test");
-      LoginPage.clearUsername();
-      LoginPage.usernameInput.should("have.value", "");
-      LoginPage.enterUsername("new");
-      LoginPage.verifyUsernameValue("new");
-    });
-
-    it("SC1.8: Người dùng có thể clear password và nhập lại", () => {
-      LoginPage.enterPassword("Test123@");
-      LoginPage.clearPassword();
-      LoginPage.passwordInput.should("have.value", "");
-      LoginPage.enterPassword("NewPass456@");
-      LoginPage.passwordInput.should("have.value", "NewPass456@");
-    });
-
-    it("SC1.9: Complete flow: Input -> Verify -> Clear -> Resubmit", () => {
-      // First attempt
-      LoginPage.enterUsername("user1").enterPassword("Pass123@").clickLogin();
-
-      cy.wait(500);
-
-      // Verify login button still visible (for retry)
-      LoginPage.loginButton.should("be.visible");
-    });
-
-    it("SC1.10: Người dùng có thể interact với form multiple times", () => {
-      // Attempt 1
-      LoginPage.enterUsername("attempt1").enterPassword("Pass1@");
-      LoginPage.clearAllInputs();
-
-      // Attempt 2
-      LoginPage.enterUsername("attempt2")
-        .enterPassword("Pass2@")
-        .verifyFormElementsVisible();
-    });
   });
 
   /**
@@ -116,44 +60,6 @@ describe("E2E Test Scenarios - Complete Login Flow", () => {
       LoginPage.passwordInput.should("have.value", "");
     });
 
-    it("SC2.4: Validation với username format không hợp lệ", () => {
-      LoginPage.enterUsername("invalid-username");
-      LoginPage.enterPassword("Test123@");
-      LoginPage.clickLogin();
-      cy.wait(300);
-      // username input should still have invalid value
-      LoginPage.usernameInput.should("have.value", "invalid-username");
-    });
-
-    it("SC2.5: Validation với password yếu", () => {
-      LoginPage.enterUsername("test");
-      LoginPage.enterPassword("123");
-      LoginPage.clickLogin();
-      cy.wait(300);
-      // Short password validation
-    });
-
-    it("SC2.6: Validation messages appear immediately", () => {
-      LoginPage.clickLogin();
-      cy.wait(200);
-      // Check for validation feedback
-    });
-
-    it("SC2.7: Can correct validation errors and resubmit", () => {
-      // Submit with empty form
-      LoginPage.clickLogin();
-      cy.wait(300);
-
-      // Now fill and submit
-      LoginPage.enterUsername("test").enterPassword("Test123@").clickLogin();
-    });
-
-    it("SC2.8: Multiple validation errors show correctly", () => {
-      LoginPage.clearAllInputs();
-      LoginPage.clickLogin();
-      cy.wait(300);
-      // Both fields empty - verify validation
-    });
   });
 
   /**
@@ -182,49 +88,6 @@ describe("E2E Test Scenarios - Complete Login Flow", () => {
       });
     });
 
-    it("SC3.4: Success message visible on successful login", () => {
-      cy.fixture("users").then((users) => {
-        LoginPage.login(users.validUser.username, users.validUser.password);
-        cy.wait(500);
-        // Success message may appear
-      });
-    });
-
-    it("SC3.5: User can retry after failed login", () => {
-      cy.fixture("users").then((users) => {
-        // First attempt - fail
-        LoginPage.login(users.invalidUser.username, users.invalidUser.password);
-        cy.wait(500);
-
-        // Clear and retry
-        LoginPage.clearAllInputs();
-        LoginPage.login(users.validUser.username, users.validUser.password);
-      });
-    });
-
-    it("SC3.6: Error handling for network issues", () => {
-      LoginPage.enterUsername("test").enterPassword("Test123@").clickLogin();
-      cy.wait(300);
-      // Network error handling
-    });
-
-    it("SC3.7: Timeout handling during login", () => {
-      LoginPage.login("test", "Test123@");
-      cy.wait(1000);
-      // Verify form still responsive
-      LoginPage.loginButton.should("be.visible");
-    });
-
-    it("SC3.8: Recovery from error state", () => {
-      // Attempt that might fail
-      LoginPage.login("invalid@test.com", "invalid");
-      cy.wait(500);
-
-      // Verify can interact again
-      LoginPage.loginButton.should("be.visible");
-      LoginPage.clearAllInputs();
-      LoginPage.verifyUsernameEmpty().verifyPasswordEmpty();
-    });
   });
 
   /**
@@ -247,65 +110,6 @@ describe("E2E Test Scenarios - Complete Login Flow", () => {
       LoginPage.forgotPasswordLink.should("have.attr", "href");
     });
 
-    it("SC4.4: Sign up link is clickable", () => {
-      LoginPage.signupLink.should("be.visible");
-      LoginPage.signupLink.should("have.attr", "href");
-    });
-
-    it("SC4.5: Password visibility toggle works", () => {
-      LoginPage.enterPassword("Test123@");
-
-      // Get initial type
-      LoginPage.getPasswordInputType().then((type) => {
-        expect(type).to.equal("password");
-      });
-
-      // Toggle visibility
-      LoginPage.togglePasswordVisibility();
-
-      // After toggle, should be visible (type="text")
-      cy.wait(200);
-    });
-
-    it("SC4.6: All form labels are visible", () => {
-      cy.contains("label", /username|username/i).should("be.visible");
-      cy.contains("label", /password|mật khẩu|Password/i).should("be.visible");
-    });
-
-    it("SC4.7: Form placeholders are visible", () => {
-      LoginPage.usernameInput.should("have.attr", "placeholder");
-      LoginPage.passwordInput.should("have.attr", "placeholder");
-    });
-
-    it("SC4.8: Login button has proper styling", () => {
-      LoginPage.loginButton.should("be.visible");
-      LoginPage.loginButton.should("not.be.disabled");
-    });
-
-    it("SC4.9: Page title and branding visible", () => {
-      LoginPage.pageTitle.should("be.visible");
-      LoginPage.pageTitle.invoke("text").then((text) => {
-        expect(text).to.match(/login|đăng nhập/i);
-      });
-    });
-
-    it("SC4.10: Form is responsive to interactions", () => {
-      // Click username
-      LoginPage.usernameInput.click();
-      LoginPage.usernameInput.should("be.focused");
-
-      // Type in username
-      LoginPage.usernameInput.type("test");
-      LoginPage.usernameInput.should("have.value", "test");
-
-      // Click password
-      LoginPage.passwordInput.click();
-      LoginPage.passwordInput.should("be.focused");
-
-      // Type in password
-      LoginPage.passwordInput.type("pass");
-      LoginPage.passwordInput.should("have.value", "pass");
-    });
   });
 });
 

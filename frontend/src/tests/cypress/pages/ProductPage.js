@@ -255,7 +255,7 @@ class ProductPage {
    * Navigate to product management page
    */
   navigateToProductPage() {
-    cy.visit('/');
+    cy.visit('/products');
     this.pageTitle.should('be.visible');
     return this;
   }
@@ -282,11 +282,13 @@ class ProductPage {
       this.quantityInput.clear().type(productData.quantity, { delay: 100 });
     }
     if (productData.category) {
-      this.categorySelect.select(productData.category);
+      // Select using the correct #category-select selector
+      cy.get('#category-select').select(productData.category, { force: true });
     }
     if (productData.description) {
       this.descriptionInput.clear().type(productData.description, { delay: 100 });
     }
+    cy.wait(300);
     return this;
   }
 

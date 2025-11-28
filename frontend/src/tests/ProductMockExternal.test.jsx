@@ -72,11 +72,9 @@ describe('Product Mock Tests', () => {
     await fillAndSubmitForm(user);
 
     await waitFor(() => {
-      // SỬA QUAN TRỌNG: Đổi 'name' thành 'productName' để khớp với code của bạn
-      // Code của bạn gửi lên server object có key là 'productName'
       expect(productService.createProduct).toHaveBeenCalledWith(expect.objectContaining({
-        productName: 'New Laptop',  // <--- Đã sửa từ name -> productName
-        price: '20000000'           // Giữ nguyên là string
+        productName: 'New Laptop',  
+        price: '20000000'           
       }));
       
       expect(screen.getByText(/thành công/i)).toBeInTheDocument();
@@ -103,15 +101,12 @@ describe('Product Mock Tests', () => {
     render(<ProductManagement />);
     await waitFor(() => screen.getByText('Laptop Dell'));
     
-    // 1. Bấm icon thùng rác (title="Xóa")
     const deleteBtns = screen.getAllByTitle(/Xóa/i);
     await user.click(deleteBtns[0]);
 
-    // 2. Bấm nút "Xóa" trong Modal xác nhận (Tìm theo Text để tránh trùng icon)
     const confirmBtn = await screen.findByText('Xóa', { selector: 'button' });
     await user.click(confirmBtn);
 
-    // 3. Verify
     await waitFor(() => {
       expect(productService.deleteProduct).toHaveBeenCalledWith(1);
     });
@@ -124,7 +119,6 @@ describe('Product Mock Tests', () => {
     render(<ProductManagement />);
     await waitFor(() => screen.getByText('Laptop Dell'));
     
-    // 1. Bấm icon sửa
     const editBtns = screen.getAllByTitle(/Chỉnh sửa/i); 
     await user.click(editBtns[0]);
     
@@ -133,11 +127,9 @@ describe('Product Mock Tests', () => {
     await user.clear(priceInput);
     await user.type(priceInput, '18000000');
     
-    // 3. Bấm Lưu (Lấy nút cuối cùng trong danh sách nút tìm được)
     const submitBtns = screen.getAllByRole('button', { name: /Lưu|Cập nhật/i });
     await user.click(submitBtns[submitBtns.length - 1]);
 
-    // 4. Verify
     await waitFor(() => {
       expect(productService.updateProduct).toHaveBeenCalledWith(1, expect.objectContaining({
         price: '18000000'
