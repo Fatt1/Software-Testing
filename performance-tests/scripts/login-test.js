@@ -1,7 +1,15 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
 import { Rate, Trend, Counter } from "k6/metrics";
-import { BASE_URL, TEST_USERS } from "./config.js";
+import {
+  API_ENDPOINTS,
+  HTTP_HEADERS,
+  THRESHOLDS,
+  SCENARIOS,
+  getRandomUser,
+  getRandomThinkTime,
+  createLoginPayload,
+} from "./config.js";
 
 // Custom metrics
 const loginSuccessRate = new Rate("login_success_rate");
@@ -15,89 +23,44 @@ const failedLogins = new Counter("failed_logins");
 export const options = {
   // LOAD TEST: 100 concurrent users
   scenarios: {
-    load_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
-    },
+    load_100: SCENARIOS.load_100,
   },
 
   // LOAD TEST: 500 concurrent users
   // scenarios: {
-  //   load_500: {
-  //     executor: "constant-vus",
-  //     vus: 500,
-  //     duration: "1m",
-  //   },
+  //   load_500: SCENARIOS.load_500,
   // },
 
-  // // LOAD TEST: 1000 concurrent users
+  // LOAD TEST: 1000 concurrent users
   // scenarios: {
-  //   load_1000: {
-  //     executor: "constant-vus",
-  //     vus: 1000,
-  //     duration: "1m",
-  //   },
+  //   load_1000: SCENARIOS.load_1000,
   // },
 
-  // // STRESS TEST: Tìm breaking point
+  // STRESS TEST: Tìm breaking point
   // scenarios: {
-  //   stress_test_step: {
-  //     executor: "ramping-vus",
-  //     startVUs: 0,
-  //     stages: [
-  //       // Khởi động nhẹ
-  //       { duration: "30s", target: 100 },
-
-  //       // Tăng tốc lên 1000
-  //       { duration: "1m", target: 1000 },
-  //       { duration: "2m", target: 1000 }, // Giữ 2p là đủ thấy lỗi rồi
-
-  //       // Tăng tốc lên 3000
-  //       { duration: "1m", target: 3000 },
-  //       { duration: "2m", target: 3000 },
-
-  //       // Đẩy lên cực hạn 5000
-  //       { duration: "2m", target: 5000 }, // Tìm breaking point ở đoạn này
-  //       { duration: "3m", target: 5000 }, // Chỉ giữ nếu chưa sập
-
-  //       { duration: "1m", target: 0 },
-  //     ],
-  //   },
+  //   stress_test: SCENARIOS.stress_test,
   // },
 
-  thresholds: {
-    http_req_failed: ["rate<0.01"], // < 1% errors
-    http_req_duration: ["p(95)<2000", "p(99)<3000"],
-    login_success_rate: ["rate>0.99"], // > 99% success
-  },
+  thresholds: THRESHOLDS,
 };
 
 export default function () {
   totalRequests.add(1);
 
-  // Chọn ngẫu nhiên 1 user từ danh sách
-  const user = TEST_USERS[Math.floor(Math.random() * TEST_USERS.length)];
+  // Lấy random user từ config
+  const user = getRandomUser();
 
-  const loginPayload = JSON.stringify({
-    userName: user.userName,
-    password: user.password,
-  });
+  // Tạo login payload từ config helper
+  const loginPayload = createLoginPayload(user.userName, user.password);
 
   const params = {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: HTTP_HEADERS.JSON,
     tags: { name: "LoginAPI" },
   };
 
-  // Gửi login request
+  // Gửi login request đến endpoint từ config
   const startTime = new Date();
-  const response = http.post(
-    `${BASE_URL}/api/auth/login`,
-    loginPayload,
-    params
-  );
+  const response = http.post(API_ENDPOINTS.LOGIN, loginPayload, params);
   const endTime = new Date();
   const duration = endTime - startTime;
 
@@ -142,25 +105,20 @@ export default function () {
   }
 
   // Simulate think time (người dùng thật không gửi request liên tục)
-  sleep(Math.random() * 2 + 1); // Random 1-3 giây
+  sleep(getRandomThinkTime());
 }
 
 // Setup function - chạy 1 lần trước khi test
 export function setup() {
   console.log("=== Starting Login Performance Test ===");
-  console.log(`Base URL: ${BASE_URL}`);
-  console.log(`Test Users: ${TEST_USERS.length}`);
+  console.log(`API Endpoint: ${API_ENDPOINTS.LOGIN}`);
 
   // Warm-up request
+  const firstUser = getRandomUser();
   const warmup = http.post(
-    `${BASE_URL}/api/auth/login`,
-    JSON.stringify({
-      userName: TEST_USERS[0].userName,
-      password: TEST_USERS[0].password,
-    }),
-    {
-      headers: { "Content-Type": "application/json" },
-    }
+    API_ENDPOINTS.LOGIN,
+    createLoginPayload(firstUser.userName, firstUser.password),
+    { headers: HTTP_HEADERS.JSON }
   );
 
   if (warmup.status === 200) {

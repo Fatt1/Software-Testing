@@ -155,15 +155,6 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
-      - name: 📊 Publish Unit Test Results (EnricoMi)
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always() # Luôn chạy để báo cáo kết quả dù test có fail
-        with:
-          # LƯU Ý QUAN TRỌNG: Phải thêm prefix 'backend/' vì code của bạn nằm trong folder này
-          files: |
-            backend/target/surefire-reports/*.xml
-            backend/target/failsafe-reports/*.xml
-
   # ============================================================================
   # JOB 2: Frontend Build & Test
   # ============================================================================

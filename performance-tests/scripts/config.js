@@ -1,19 +1,13 @@
-/**
- * Performance Test Configuration File
- *
- * This file contains all shared configuration for k6 performance tests.
- * Modify these values to match your testing environment and requirements.
- *
- * @author Performance Testing Team
- * @since November 2025
- */
-
-/**
- * @type {string}
- * @constant
- */
+// ==================== API Configuration ====================
 export const BASE_URL = "http://localhost:6969";
 
+export const API_ENDPOINTS = {
+  LOGIN: `${BASE_URL}/api/auth/login`,
+  PRODUCTS: `${BASE_URL}/api/products`,
+  PRODUCT_BY_ID: (id) => `${BASE_URL}/api/products/${id}`,
+};
+
+// ==================== Test Data ====================
 /**
  * @type {Array<{userName: string, password: string}>}
  * @constant
@@ -24,76 +18,122 @@ export const TEST_USERS = [
   { userName: "testuser", password: "test1234" },
 ];
 
-/**
+// ==================== HTTP Configuration ====================
+export const HTTP_HEADERS = {
+  JSON: {
+    "Content-Type": "application/json",
+  },
+  WITH_TOKEN: (token) => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  }),
+};
 
+export const HTTP_PARAMS = {
+  timeout: "30s",
+  tags: { name: "PerformanceTest" },
+};
+
+// ==================== Performance Thresholds ====================
+/**
  * @type {Object}
  * @constant
  */
 export const THRESHOLDS = {
+  // Error rate phải < 1%
   http_req_failed: ["rate<0.01"],
 
-  http_req_duration: ["p(95)<2000"],
+  // Response time thresholds
+  http_req_duration: ["p(95)<2000", "p(99)<3000"],
 
-  "http_req_duration{expected_response:true}": ["p(99)<3000"],
+  // Login specific thresholds
+  login_success_rate: ["rate>0.99"], // > 99% success
+  login_duration: ["p(95)<1000", "p(99)<2000"],
 };
 
 /**
-
  * @type {Object}
  * @constant
  */
 export const SCENARIOS = {
-  /**
-   * @property {string} executor - constant-vus maintains fixed user count
-   * @property {number} vus - Virtual Users (concurrent users)
-   * @property {string} duration - Test duration in minutes
-   */
+  // Load Test: 100 concurrent users
   load_100: {
     executor: "constant-vus",
     vus: 100,
-    duration: "5m",
+    duration: "1m",
   },
 
-  /**
-   * @property {string} executor - constant-vus maintains fixed user count
-   * @property {number} vus - Virtual Users (concurrent users)
-   * @property {string} duration - Test duration in minutes
-   */
+  // Load Test: 500 concurrent users
   load_500: {
     executor: "constant-vus",
     vus: 500,
-    duration: "5m",
+    duration: "1m",
   },
 
-  /**
-   * @property {string} executor - constant-vus maintains fixed user count
-   * @property {number} vus - Virtual Users (concurrent users)
-   * @property {string} duration - Test duration in minutes
-   */
+  // Load Test: 1000 concurrent users
   load_1000: {
     executor: "constant-vus",
     vus: 1000,
-    duration: "5m",
+    duration: "1m",
   },
 
-  /**
-   * @property {string} executor - ramping-vus for gradual load increase
-   * @property {number} startVUs - Starting with 0 users
-   * @property {Array<{duration: string, target: number}>} stages - Load stages
-   */
+  // Stress Test: Find breaking point
   stress_test: {
     executor: "ramping-vus",
     startVUs: 0,
     stages: [
-      { duration: "2m", target: 100 }, // Warm-up: Gradually reach 100 users
-      { duration: "5m", target: 100 }, // Sustain: Hold at 100 users for baseline
-      { duration: "2m", target: 500 }, // Ramp: Increase to 500 users
-      { duration: "5m", target: 500 }, // Sustain: Hold at 500 users
-      { duration: "2m", target: 1000 }, // Ramp: Increase to 1000 users
-      { duration: "5m", target: 1000 }, // Sustain: Hold at 1000 users
-      { duration: "2m", target: 2000 }, // Ramp: Push to 2000 users (breaking point)
-      { duration: "5m", target: 2000 }, // Sustain: Hold at 2000 users (observe failure)
-      { duration: "2m", target: 0 }, // Cool-down: Ramp down to 0 (test recovery)
+      { duration: "30s", target: 100 }, // Warm-up
+      { duration: "1m", target: 1000 }, // Ramp to 1000
+      { duration: "2m", target: 1000 }, // Hold at 1000
+      { duration: "1m", target: 3000 }, // Ramp to 3000
+      { duration: "2m", target: 3000 }, // Hold at 3000
+      { duration: "2m", target: 5000 }, // Push to breaking point
+      { duration: "3m", target: 5000 }, // Hold at breaking point
+      { duration: "1m", target: 0 }, // Cool down
     ],
   },
 };
+
+// ==================== Test Configuration Settings ====================
+export const TEST_CONFIG = {
+  // Think time: simulate real user behavior (seconds)
+  THINK_TIME_MIN: 1,
+  THINK_TIME_MAX: 3,
+
+  // Timeout settings
+  REQUEST_TIMEOUT: "30s",
+
+  // Retry settings
+  MAX_RETRIES: 3,
+  RETRY_DELAY: 1000, // milliseconds
+};
+
+// ==================== Helper Functions ====================
+/**
+ * Get random user from TEST_USERS
+ * @returns {{userName: string, password: string}}
+ */
+export function getRandomUser() {
+  return TEST_USERS[Math.floor(Math.random() * TEST_USERS.length)];
+}
+
+/**
+ * Get random think time between min and max
+ * @returns {number} Random seconds
+ */
+export function getRandomThinkTime() {
+  return (
+    Math.random() * (TEST_CONFIG.THINK_TIME_MAX - TEST_CONFIG.THINK_TIME_MIN) +
+    TEST_CONFIG.THINK_TIME_MIN
+  );
+}
+
+/**
+ * Create login payload
+ * @param {string} userName
+ * @param {string} password
+ * @returns {string} JSON string
+ */
+export function createLoginPayload(userName, password) {
+  return JSON.stringify({ userName, password });
+}

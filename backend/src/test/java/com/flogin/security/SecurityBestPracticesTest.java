@@ -53,9 +53,6 @@ public class SecurityBestPracticesTest {
         boolean wrongMatch = passwordEncoder.matches("wrongPassword", hashedPassword);
         assertFalse(wrongMatch, "Password encoder phải reject password sai");
 
-        System.out.println("✓ Password Hashing Test PASSED");
-        System.out.println("  Raw Password: " + rawPassword);
-        System.out.println("  Hashed: " + hashedPassword);
     }
 
 
