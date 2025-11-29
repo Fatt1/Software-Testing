@@ -60,7 +60,7 @@ describe("Product Components - Integration Testing", () => {
   /**
    * Test 2: ProductForm Component (create/edit)
    */
-  describe("Test 2: ProductForm Component (create/edit) (2 điểm)", () => {
+  describe("Test 2: ProductForm Component (create/edit) ", () => {
 
     test("nên validate product data trước submit", async () => {
       const user = userEvent.setup();

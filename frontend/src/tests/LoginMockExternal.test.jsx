@@ -26,7 +26,7 @@ describe('Login - Mock External Dependencies', () => {
   });
 
 
-  describe('Test 1: Mock authService.login() (1 điểm)', () => {
+  describe('Test 1: Mock authService.login() ', () => {
 
     test('nên mock authService.login() function', () => {
       // Verify authService.login được mock
@@ -88,7 +88,7 @@ describe('Login - Mock External Dependencies', () => {
       const submitButton = screen.getByRole('button', { name: /Đăng Nhập/i });
       
       await user.type(usernameInput, 'testuser');
-      await user.type(passwordInput, 'wrongpassword');
+      await user.type(passwordInput, 'wrongpassword1');
       await user.click(submitButton);
       
       // Verify error message appears

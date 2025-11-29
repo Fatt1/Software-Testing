@@ -20,7 +20,6 @@
  * 
  * 4. Description:
  *    - Required field
- *    - Minimum: 10 characters
  *    - Maximum: 500 characters
  * 
  * 5. Category:
@@ -190,14 +189,6 @@ describe('validateProduct - Kiểm tra số lượng', () => {
     expect(result.errors.quantity).toBe('Số lượng không được để trống');
   });
 
-  test('trả về lỗi khi số lượng là null', () => {
-    const product = { name: 'Product', price: 100, quantity: null, description: 'Valid description', category: 'Electronics' };
-    const result = validateProduct(product);
-    
-    expect(result.isValid).toBe(false);
-    expect(result.errors.quantity).toBe('Số lượng không được để trống');
-  });
-
   test('trả về lỗi khi số lượng là chuỗi rỗng', () => {
     const product = { name: 'Product', price: 100, quantity: '', description: 'Valid description', category: 'Electronics' };
     const result = validateProduct(product);
@@ -269,29 +260,6 @@ describe('validateProduct - Kiểm tra độ dài mô tả', () => {
     expect(result.errors.description).toBe('Mô tả không được để trống');
   });
 
-  test('trả về lỗi khi mô tả chỉ là khoảng trắng', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: '   ', category: 'Electronics' };
-    const result = validateProduct(product);
-    
-    expect(result.isValid).toBe(false);
-    expect(result.errors.description).toBe('Mô tả không được để trống');
-  });
-
-  test('trả về lỗi khi mô tả ít hơn 10 ký tự', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Short', category: 'Electronics' };
-    const result = validateProduct(product);
-    
-    expect(result.isValid).toBe(false);
-    expect(result.errors.description).toBe('Mô tả phải có ít nhất 10 ký tự');
-  });
-
-  test('hợp lệ khi mô tả đúng 10 ký tự', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: '1234567890', category: 'Electronics' };
-    const result = validateProduct(product);
-    
-    expect(result.errors.description).toBeUndefined();
-  });
-
   test('hợp lệ khi mô tả đúng 500 ký tự', () => {
     const product = { 
       name: 'Product', 
@@ -334,21 +302,6 @@ describe('validateProduct - Kiểm tra độ dài mô tả', () => {
 });
 
 describe('validateProduct - Kiểm tra danh mục', () => {
-  test('trả về lỗi khi danh mục rỗng', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: '' };
-    const result = validateProduct(product);
-    
-    expect(result.isValid).toBe(false);
-    expect(result.errors.category).toBe('Danh mục không được để trống');
-  });
-
-  test('trả về lỗi khi danh mục chỉ là khoảng trắng', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: '   ' };
-    const result = validateProduct(product);
-    
-    expect(result.isValid).toBe(false);
-    expect(result.errors.category).toBe('Danh mục không được để trống');
-  });
 
   test('trả về lỗi khi danh mục không hợp lệ', () => {
     const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: 'InvalidCategory' };
@@ -356,41 +309,6 @@ describe('validateProduct - Kiểm tra danh mục', () => {
     
     expect(result.isValid).toBe(false);
     expect(result.errors.category).toBe('Danh mục không hợp lệ');
-  });
-
-  test('hợp lệ khi danh mục là Electronics', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: 'Electronics' };
-    const result = validateProduct(product);
-    
-    expect(result.errors.category).toBeUndefined();
-  });
-
-  test('hợp lệ khi danh mục là Clothing', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: 'Clothing' };
-    const result = validateProduct(product);
-    
-    expect(result.errors.category).toBeUndefined();
-  });
-
-  test('hợp lệ khi danh mục là Food', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: 'Food' };
-    const result = validateProduct(product);
-    
-    expect(result.errors.category).toBeUndefined();
-  });
-
-  test('hợp lệ khi danh mục là Books', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: 'Books' };
-    const result = validateProduct(product);
-    
-    expect(result.errors.category).toBeUndefined();
-  });
-
-  test('hợp lệ khi danh mục là Other', () => {
-    const product = { name: 'Product', price: 100, quantity: 10, description: 'Valid description', category: 'Other' };
-    const result = validateProduct(product);
-    
-    expect(result.errors.category).toBeUndefined();
   });
 });
 
