@@ -12,7 +12,6 @@ import ProductPage from "../pages/ProductPage.js";
 
 describe("Product Management - Basic Operations", () => {
   
-  // --- PHẦN QUAN TRỌNG ĐÃ SỬA ---
   beforeEach(() => {
     // 1. Vào trang Login thay vì vào thẳng Product
     cy.visit('/login');
