@@ -1,0 +1,562 @@
+================================================================================
+                    HƯỚNG DẪN CHI TIẾT JEST MOCK TESTING
+================================================================================
+
+📋 MỤC LỤC:
+1. Jest.mock() là gì?
+2. Mock Data & Mock Functions
+3. Các Hàm Mock Chính
+4. Helper Functions
+5. Tìm Kiếm Elements (screen)
+6. Tương Tác Người Dùng (userEvent)
+7. Kiểm Tra Kết Quả (Assertions)
+8. Luồng Test Hoàn Chỉnh
+9. Ví Dụ Thực Tế
+
+================================================================================
+1. JEST.MOCK() LÀ GÌ?
+================================================================================
+
+Định nghĩa:
+  jest.mock('../services/productService');
+  
+  → Giả lập (mock) module productService
+  → Không gọi API thật, dùng API giả
+
+Tại sao cần?
+  ❌ Không dùng mock:
+     - Phải chạy backend server
+     - Gọi API thật rất chậm
+     - Test có thể thất bại nếu server down
+     - Khó kiểm soát kết quả
+
+  ✅ Dùng mock:
+     - Không cần backend, chỉ frontend
+     - Test chạy nhanh (< 1s)
+     - Kết quả đáng tin cậy
+     - Dễ test các trường hợp lỗi
+
+Lợi ích:
+  • Unit Test độc lập - không phụ thuộc vào module khác
+  • Kiểm soát output - chúng ta quyết định hàm trả về gì
+  • Test các trường hợp hiếm gặp (lỗi server, timeout, v.v.)
+  • Chạy test nhanh hơn 10x so với gọi API thật
+
+================================================================================
+2. MOCK DATA & MOCK FUNCTIONS
+================================================================================
+
+A) MOCK DATA - Dữ Liệu Giả
+───────────────────────────
+const mockProductList = [
+  {
+    id: 1,
+    name: 'Laptop Dell',
+    productName: 'Laptop Dell',
+    price: 15000000,
+    quantity: 10,
+    category: 'Electronics',
+    description: 'Mô tả sản phẩm mẫu'
+  }
+];
+
+Ý nghĩa:
+  • Giả lập dữ liệu mà API trả về
+  • Dùng trong mockResolvedValue()
+  • Có thể tạo nhiều mock data cho các scenario khác nhau
+
+B) MOCK FUNCTIONS - Hàm Giả
+─────────────────────────────
+jest.mock('../services/productService');
+↓
+productService.getAllProducts       ← Hàm giả
+productService.createProduct        ← Hàm giả
+productService.updateProduct        ← Hàm giả
+productService.deleteProduct        ← Hàm giả
+
+Sau khi mock:
+  • Tất cả hàm trong productService trở thành "spy"
+  • Có thể:
+    - Kiểm soát return value (mockResolvedValue)
+    - Kiểm soát error (mockRejectedValue)
+    - Kiểm tra có được gọi không (toHaveBeenCalled)
+    - Kiểm tra gọi với tham số nào (toHaveBeenCalledWith)
+    - Kiểm tra gọi bao nhiêu lần (toHaveBeenCalledTimes)
+
+================================================================================
+3. CÁC HÀM MOCK CHÍNH
+================================================================================
+
+A) beforeEach() - Chuẩn Bị Trước Mỗi Test
+──────────────────────────────────────────
+beforeEach(() => {
+  jest.clearAllMocks();
+  productService.getAllProducts.mockResolvedValue(mockProductList);
+});
+
+Chạy trước mỗi test() để:
+  ✓ jest.clearAllMocks()
+    → Xóa lịch sử gọi hàm từ test trước
+    → Làm sạch mock states
+    
+  ✓ mockResolvedValue()
+    → Thiết lập lại giá trị trả về
+    → Chuẩn bị dữ liệu cho test mới
+
+Tại sao cần?
+  Test 1: getAllProducts() được gọi 1 lần
+  Test 2: getAllProducts() được gọi lại
+    → Nếu không clearAllMocks(), sẽ thấy 2 lần gọi (1 + 1)
+    → Kết quả sai! Phải clear trước
+
+B) mockResolvedValue() - Thành Công
+────────────────────────────────────
+productService.getAllProducts.mockResolvedValue(mockProductList);
+
+Ý nghĩa:
+  • Khi getAllProducts() được gọi
+  • Nó trả về Promise.resolve(mockProductList)
+  • Giống như server trả về dữ liệu thành công
+
+Ví dụ:
+  const products = await productService.getAllProducts();
+  // products = mockProductList
+  // products = [{ id: 1, name: 'Laptop Dell', ... }]
+
+C) mockRejectedValue() - Lỗi
+────────────────────────────
+productService.createProduct.mockRejectedValue(
+  new Error('Server Error')
+);
+
+Ý nghĩa:
+  • Khi createProduct() được gọi
+  • Nó trả về Promise.reject(Error)
+  • Giống như server lỗi/không phản hồi
+
+Ví dụ:
+  try {
+    await productService.createProduct(data);
+  } catch (error) {
+    console.log(error.message); // 'Server Error'
+  }
+
+================================================================================
+4. HELPER FUNCTIONS - HÀM HỖ TRỢ
+================================================================================
+
+const fillAndSubmitForm = async (user) => {
+  // 1. Mở Modal
+  await user.click(screen.getByText(/Thêm Sản Phẩm/i));
+  
+  // 2. Điền Form
+  await user.type(screen.getByLabelText(/tên sản phẩm/i), 'New Laptop');
+  await user.type(screen.getByLabelText(/giá/i), '20000000');
+  await user.type(screen.getByLabelText(/số lượng/i), '5');
+  await user.selectOptions(screen.getByLabelText(/danh mục/i), 'Electronics');
+  await user.type(screen.getByLabelText(/mô tả/i), 'Mô tả test');
+  
+  // 3. Submit
+  const submitBtns = screen.getAllByRole('button', { name: /Lưu|Thêm|Cập Nhật/i });
+  const submitBtn = submitBtns[submitBtns.length - 1];
+  await user.click(submitBtn);
+};
+
+Lợi ích:
+  • Tái sử dụng code test
+  • Giảm code lặp lại
+  • Dễ bảo trì
+
+Cách sử dụng:
+  test('Create product thành công', async () => {
+    const user = userEvent.setup();
+    productService.createProduct.mockResolvedValue({ id: 2 });
+    
+    render(<ProductManagement />);
+    await fillAndSubmitForm(user);  // ← Chỉ cần 1 dòng!
+    
+    // Kiểm tra kết quả...
+  });
+
+================================================================================
+5. TÌM KIẾM ELEMENTS (screen)
+================================================================================
+
+A) screen.getByText() - Tìm Theo Text
+──────────────────────
+screen.getByText(/Thêm Sản Phẩm/i)
+
+Ý nghĩa:
+  • Tìm element chứa text "Thêm Sản Phẩm"
+  • /i = Case insensitive (không phân biệt hoa/thường)
+
+Ví dụ:
+  ✓ screen.getByText(/Thêm Sản Phẩm/i)   → Tìm "Thêm Sản Phẩm"
+  ✓ screen.getByText('Laptop Dell')       → Tìm text chính xác
+  ✗ screen.getByText('Tìm kiếm')          → Không tìm thấy (nếu không có)
+
+B) screen.getByLabelText() - Tìm Input Theo Label
+──────────────────────────
+screen.getByLabelText(/tên sản phẩm/i)
+
+Ý nghĩa:
+  • Tìm <input> có <label> chứa text "tên sản phẩm"
+  
+HTML:
+  <label>Tên sản phẩm</label>
+  <input type="text" />
+  ↑↑ getByLabelText sẽ tìm cái input này
+
+C) screen.getAllByRole() - Tìm Tất Cả Element Theo Role
+───────────────────────────
+screen.getAllByRole('button', { name: /Lưu|Thêm|Cập Nhật/i })
+
+Ý nghĩa:
+  • Tìm tất cả <button> có text khớp với regex
+  • /Lưu|Thêm|Cập Nhật/ = Tìm một trong 3 text này
+
+Ví dụ kết quả:
+  [
+    <button>Thêm Sản Phẩm</button>,    // [0]
+    <button>Lưu</button>               // [1] ← submitBtn
+  ]
+  
+  const submitBtns = screen.getAllByRole('button', {...});
+  const submitBtn = submitBtns[submitBtns.length - 1]; // Chọn nút cuối cùng
+
+D) screen.getAllByTitle() - Tìm Theo Title Attribute
+───────────────────────────
+screen.getAllByTitle(/Xóa/i)
+
+Ý nghĩa:
+  • Tìm tất cả element có title="Xóa"
+
+HTML:
+  <button title="Xóa">🗑️</button>
+  ↓
+  screen.getAllByTitle(/Xóa/i) → [<button>]
+
+E) screen.getByRole() vs screen.getAllByRole()
+──────────────────────
+getByRole()     → Tìm 1 element (lỗi nếu có nhiều hoặc không có)
+getAllByRole()  → Tìm nhiều elements (trả về array)
+
+================================================================================
+6. TƯƠNG TÁC NGƯỜI DÙNG (userEvent)
+================================================================================
+
+A) user.click() - Click
+────────────────
+await user.click(screen.getByText(/Thêm Sản Phẩm/i));
+
+Ý nghĩa:
+  • Giả lập user click vào button
+  • Kích hoạt onClick event
+
+B) user.type() - Gõ Text
+────────────
+await user.type(screen.getByLabelText(/tên sản phẩm/i), 'New Laptop');
+
+Ý nghĩa:
+  • Giả lập user gõ chữ vào input
+  • Kích hoạt onChange event
+
+C) user.clear() - Xóa Text
+────────────
+await user.clear(screen.getByLabelText(/giá/i));
+
+Ý nghĩa:
+  • Xóa tất cả text trong input
+  • Thường dùng trước khi type text mới
+
+D) user.selectOptions() - Chọn Dropdown
+──────────────────────
+await user.selectOptions(
+  screen.getByLabelText(/danh mục/i),
+  'Electronics'
+);
+
+Ý nghĩa:
+  • Chọn option 'Electronics' từ <select>
+
+HTML:
+  <select>
+    <option value="">Chọn danh mục</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Books">Books</option>
+  </select>
+
+E) Tại sao dùng userEvent?
+──────────────────
+userEvent lập mô phỏng hành động thực tế của người dùng
+  • Phím tắt
+  • Tương tác chậm (typing từng chữ cái)
+  • Các sự kiện phức tạp
+
+Tốt hơn fireEvent (cách cũ):
+  fireEvent chỉ kích hoạt event, không giả lập người dùng
+
+================================================================================
+7. KIỂM TRA KẾT QUẢ (ASSERTIONS)
+================================================================================
+
+A) toHaveBeenCalledTimes() - Kiểm Tra Số Lần Gọi
+─────────────────────────
+expect(productService.getAllProducts).toHaveBeenCalledTimes(1);
+
+Ý nghĩa:
+  • Kiểm tra getAllProducts() được gọi đúng 1 lần
+  • Nếu gọi 2 lần → test fail
+
+Ví dụ:
+  test('getAllProducts được gọi 1 lần', () => {
+    render(<ProductManagement />);
+    expect(productService.getAllProducts).toHaveBeenCalledTimes(1);
+  });
+
+B) toHaveBeenCalledWith() - Kiểm Tra Tham Số
+───────────────────────
+expect(productService.createProduct).toHaveBeenCalledWith(
+  expect.objectContaining({
+    productName: 'New Laptop',
+    price: '20000000'
+  })
+);
+
+Ý nghĩa:
+  • Kiểm tra createProduct() được gọi với tham số cụ thể
+  • expect.objectContaining() → Chỉ kiểm tra những field nào mình muốn
+  
+Ví dụ:
+  // Kiểm tra tên và giá
+  expect(createProduct).toHaveBeenCalledWith(
+    expect.objectContaining({
+      productName: 'New Laptop',  // ✓ Phải chính xác
+      price: '20000000'            // ✓ Phải chính xác
+      // Không kiểm tra category, description v.v.
+    })
+  );
+
+C) toBeInTheDocument() - Element Có Trong DOM
+──────────────────────
+expect(screen.getByText('Laptop Dell')).toBeInTheDocument();
+
+Ý nghĩa:
+  • Element có trong DOM hay không
+  • Dùng để kiểm tra UI sau khi action
+
+D) toHaveBeenCalled() - Kiểm Tra Có Được Gọi
+─────────────────────
+expect(productService.deleteProduct).toHaveBeenCalled();
+
+Ý nghĩa:
+  • Kiểm tra hàm được gọi ít nhất 1 lần
+  • Không kiểm tra số lần cụ thể
+
+================================================================================
+8. LUỒNG TEST HOÀN CHỈNH
+================================================================================
+
+BƯỚC 1: SETUP (beforeEach)
+─────────────────────────
+beforeEach(() => {
+  jest.clearAllMocks();  // ← Xóa lịch sử cũ
+  productService.getAllProducts.mockResolvedValue(mockProductList);
+});
+|
+├─ Xóa tất cả lịch sử gọi hàm từ test trước
+└─ Thiết lập mock data mới
+
+BƯỚC 2: RENDER COMPONENT
+────────────────────────
+render(<ProductManagement />);
+|
+├─ Component render
+└─ Gọi getAllProducts() → Trả về mockProductList (mock)
+
+BƯỚC 3: USER INTERACTION
+────────────────────────
+const user = userEvent.setup();
+await user.click(screen.getByText(/Thêm Sản Phẩm/i));
+await user.type(screen.getByLabelText(/tên sản phẩm/i), 'New Laptop');
+|
+├─ User click button
+├─ Modal mở
+└─ Form điền dữ liệu
+
+BƯỚC 4: SUBMIT
+──────────────
+await user.click(submitBtn);
+|
+└─ Gọi createProduct() → Trả về response giả (mock)
+
+BƯỚC 5: WAIT FOR RESULT
+──────────────────────
+await waitFor(() => {
+  expect(screen.getByText(/thành công/i)).toBeInTheDocument();
+});
+|
+├─ Chờ component update state
+└─ Chờ success message xuất hiện
+
+BƯỚC 6: ASSERTIONS
+───────────────────
+expect(productService.createProduct).toHaveBeenCalledWith({...});
+expect(productService.createProduct).toHaveBeenCalledTimes(1);
+|
+├─ Kiểm tra tham số được truyền
+└─ Kiểm tra số lần gọi
+
+================================================================================
+9. VÍ DỤ THỰC TẾ
+================================================================================
+
+A) TEST TẠOW SẢN PHẨM THÀNH CÔNG
+───────────────────────────────
+
+test('Mock: Create product thành cong', async () => {
+  // Setup
+  const user = userEvent.setup();
+  const newProductResponse = { id: 2, name: 'New Laptop', price: 20000000 };
+  productService.createProduct.mockResolvedValue(newProductResponse);
+  
+  // Render
+  render(<ProductManagement />);
+  
+  // Action
+  await fillAndSubmitForm(user);
+  
+  // Assert
+  await waitFor(() => {
+    // Kiểm tra hàm được gọi với tham số đúng
+    expect(productService.createProduct).toHaveBeenCalledWith(
+      expect.objectContaining({
+        productName: 'New Laptop',
+        price: '20000000'
+      })
+    );
+    
+    // Kiểm tra success message xuất hiện
+    expect(screen.getByText(/thành công/i)).toBeInTheDocument();
+  });
+});
+
+Giải thích:
+  1. Setup: Tạo user object, mock API trả về response
+  2. Render: Hiển thị component
+  3. Action: User click button, điền form, submit
+  4. Assert: Kiểm tra API được gọi đúng, message xuất hiện
+
+B) TEST TẠO SẢN PHẨM THẤT BẠI
+──────────────────────────────
+
+test('Mock: Create product that bai (Failure Scenario)', async () => {
+  // Setup
+  const user = userEvent.setup();
+  productService.createProduct.mockRejectedValue(
+    new Error('Server Error')
+  );
+  
+  // Render
+  render(<ProductManagement />);
+  
+  // Action
+  await fillAndSubmitForm(user);
+  
+  // Assert
+  await waitFor(() => {
+    // Kiểm tra API được gọi
+    expect(productService.createProduct).toHaveBeenCalledTimes(1);
+    
+    // Kiểm tra error message xuất hiện
+    expect(screen.getByText(/Server Error/i)).toBeInTheDocument();
+  });
+});
+
+Giải thích:
+  • mockRejectedValue() → API trả về lỗi
+  • Test kiểm tra component xử lý lỗi đúng
+
+C) TEST CẬP NHẬT SẢN PHẨM
+─────────────────────────
+
+test('Mock: Update product', async () => {
+  // Setup
+  const user = userEvent.setup();
+  productService.updateProduct.mockResolvedValue({ success: true });
+  
+  // Render
+  render(<ProductManagement />);
+  await waitFor(() => screen.getByText('Laptop Dell'));
+  
+  // Action: Click nút chỉnh sửa
+  const editBtns = screen.getAllByTitle(/Chỉnh sửa/i);
+  await user.click(editBtns[0]);
+  
+  // Sửa giá
+  const priceInput = screen.getByLabelText(/giá/i);
+  await user.clear(priceInput);
+  await user.type(priceInput, '18000000');
+  
+  // Submit
+  const submitBtns = screen.getAllByRole('button', { name: /Lưu|Cập nhật/i });
+  await user.click(submitBtns[submitBtns.length - 1]);
+  
+  // Assert
+  await waitFor(() => {
+    expect(productService.updateProduct).toHaveBeenCalledWith(
+      1,  // Product ID
+      expect.objectContaining({
+        price: '18000000'
+      })
+    );
+  });
+});
+
+================================================================================
+10. CHEAT SHEET - TÓMI TẮT
+================================================================================
+
+SETUP:
+  jest.mock('../services/productService');
+  beforeEach(() => {
+    jest.clearAllMocks();
+    productService.getAllProducts.mockResolvedValue(mockProductList);
+  });
+
+MOCK DATA:
+  const mockData = { id: 1, name: 'Product' };
+
+MOCK RESOLVE:
+  productService.getProducts.mockResolvedValue(mockData);
+
+MOCK REJECT:
+  productService.getProducts.mockRejectedValue(new Error('Fail'));
+
+RENDER:
+  render(<ComponentName />);
+
+USER ACTIONS:
+  await user.click(element);
+  await user.type(input, 'text');
+  await user.clear(input);
+  await user.selectOptions(select, 'value');
+
+FIND ELEMENTS:
+  screen.getByText(/text/i)
+  screen.getByLabelText(/label/i)
+  screen.getAllByRole('button', { name: /text/i })
+  screen.getAllByTitle(/title/i)
+
+WAIT:
+  await waitFor(() => { ... });
+
+ASSERTIONS:
+  expect(element).toBeInTheDocument();
+  expect(fn).toHaveBeenCalledTimes(1);
+  expect(fn).toHaveBeenCalledWith(args);
+  expect(fn).toHaveBeenCalled();
+
+================================================================================
+                              HẾT
+================================================================================
